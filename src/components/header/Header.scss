@@ -1,0 +1,25 @@
+@import '../../variable/variable.scss';
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $blue-01;
+  position: relative;
+  z-index: 999;
+
+  .left-content {
+    display: flex;
+    align-items: center;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .app-name {
+    font-size: 30px;
+    font-weight: bold;
+    color: $blue-02;
+  }
+}

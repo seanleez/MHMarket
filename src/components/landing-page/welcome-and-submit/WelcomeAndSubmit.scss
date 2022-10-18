@@ -1,0 +1,25 @@
+@import '../../../variable/variable.scss';
+
+.submit-container {
+  margin: 20px 0;
+
+  .welcome-message {
+    margin: 0 20px;
+    .special-text {
+      color: $blue-02;
+    }
+  }
+  .submit-application {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px 0;
+    background-color: $blue-01;
+  }
+
+  button {
+    height: 50px;
+    min-width: 300px;
+    border-radius: calc(50px / 2);
+  }
+}

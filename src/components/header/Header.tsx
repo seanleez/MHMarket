@@ -1,0 +1,45 @@
+import { IconButton, Tooltip } from '@mui/material';
+import { FC, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import SignOutIcon from '../../assets/icon/signout-icon.svg';
+import './Header.scss';
+import NavigationMenu from './navigation-list/NavigationMenu';
+
+const Header: FC = () => {
+  const navigate = useNavigate();
+  const handleLogOut = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+
+  return (
+    <>
+      <div className="header-container">
+        <div className="left-content">
+          <Tooltip title="Menu">
+            <NavigationMenu />
+          </Tooltip>
+          <Link to="/">
+            <span className="app-name">MH-Market</span>
+          </Link>
+        </div>
+        <div className="right-content">
+          <span>Logged in as: </span>
+          <u>
+            <strong>
+              {currentUser &&
+                `${currentUser.user.last_name} ${currentUser.user.first_name}`}
+            </strong>
+          </u>
+          <IconButton sx={{ width: 45, height: 45 }} onClick={handleLogOut}>
+            <img src={SignOutIcon} alt="SignOutIcon" />
+          </IconButton>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Header;

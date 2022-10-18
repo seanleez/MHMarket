@@ -1,0 +1,68 @@
+@import '../../variable/variable.scss';
+
+.role-management-container {
+  position: relative;
+  width: 80%;
+  margin: auto;
+  border: 3px solid #115272;
+  border-radius: 30px;
+  padding: 50px;
+  margin-top: 50px;
+
+  .role-management-title {
+    position: absolute;
+    top: -25px;
+    left: 70px;
+    padding: 0 20px;
+    font-size: 30px;
+    background-color: white;
+  }
+
+  .role-management-features {
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+
+    .search-field {
+      display: flex;
+      align-items: center;
+      & > span {
+        vertical-align: super;
+        font-weight: bold;
+        font-size: 18px;
+        padding-right: 10px;
+      }
+      input {
+        padding: 10px;
+      }
+    }
+  }
+
+  table {
+    padding: 50px;
+
+    th {
+      background-color: #0038a8;
+    }
+
+    tr:nth-child(even) {
+      background-color: #e9ebf5;
+    }
+    tr:nth-child(odd) {
+      background-color: #cfd5ea;
+    }
+    svg {
+      margin: 0 5px;
+    }
+    button {
+      padding: 4px;
+    }
+    span.active {
+      color: #198754;
+    }
+    span.inactive {
+      color: #d93939;
+    }
+  }
+}
