@@ -33,7 +33,7 @@ const Header: FC = () => {
                 `${currentUser.user.last_name} ${currentUser.user.first_name}`}
             </strong>
           </u>
-          <IconButton sx={{ width: 45, height: 45 }} onClick={handleLogOut}>
+          <IconButton sx={{ width: 40, height: 40 }} onClick={handleLogOut}>
             <img src={SignOutIcon} alt="SignOutIcon" />
           </IconButton>
         </div>

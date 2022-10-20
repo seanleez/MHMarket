@@ -5,6 +5,8 @@ import LandingPage from './components/landing-page/LandingPage';
 import Login from './components/login/Login';
 import AddAndEditRole from './components/role-management/AddAndEditRole';
 import RoleManagement from './components/role-management/RoleManagement';
+import AddAndEditUser from './components/user-management/AddAndEditUser';
+import UserManagement from './components/user-management/UserManagement';
 
 function App() {
   const { pathname } = useLocation();
@@ -18,6 +20,9 @@ function App() {
         <Route path="/role-management" element={<RoleManagement />} />
         <Route path="/role/add-new" element={<AddAndEditRole />} />
         <Route path="/role/edit/:id" element={<AddAndEditRole />} />
+        <Route path="/user-management" element={<UserManagement />} />
+        <Route path="/user/add-new" element={<AddAndEditUser />} />
+
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>
       {/* {pathname !== '/' && <Footer />} */}

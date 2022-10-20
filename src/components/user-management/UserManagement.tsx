@@ -1,34 +1,33 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { rootURL } from '../../const/const';
+import { IManagementTableFormat } from '../../const/interface';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
-import './RoleManagement.scss';
-import { IManagementTableFormat } from '../../const/interface';
 
-// id of columns have to fit with id
 const columns: readonly IManagementTableFormat[] = [
-  { id: 'index', label: '', width: '5%', align: 'center' },
+  { id: 'user_id', label: 'USER ID', width: '10%', align: 'center' },
   {
-    id: 'name',
-    label: 'ROLE NAME',
-    width: '25%',
-    align: 'left',
-    isHaveSortIcon: true,
-  },
-  { id: 'description', label: 'DESCRIPTION', width: '40%', align: 'left' },
-  {
-    id: 'status',
-    label: 'STATUS',
-    width: '15%',
+    id: 'first_name',
+    label: 'USER NAME',
+    width: '20%',
     align: 'center',
     isHaveSortIcon: true,
   },
+  { id: 'email', label: 'EMAIL', width: '20%', align: 'center' },
+  {
+    id: 'roles',
+    label: 'ROLES',
+    width: '20%',
+    align: 'center',
+    isHaveSortIcon: true,
+  },
+  { id: 'status', label: 'STATUS', width: '15%', align: 'center' },
   { id: 'action', label: 'ACTION', width: '15%', align: 'center' },
 ];
 
-const RoleManagement: FC = () => {
+const UserManagement = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [rows, setRows] = useState<any>([]);
@@ -42,9 +41,8 @@ const RoleManagement: FC = () => {
 
   const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
   const token = currentUser?.access_token;
-
   useEffect(() => {
-    fetch(`${rootURL}/roles`, {
+    fetch(`${rootURL}/users`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -52,6 +50,7 @@ const RoleManagement: FC = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data.items);
         setRows(data.items);
       })
       .catch((err) => console.error(err));
@@ -59,7 +58,7 @@ const RoleManagement: FC = () => {
   }, [openAlertDialog]);
 
   const handleAddNew = () => {
-    navigate('/role/add-new');
+    navigate('/user/add-new');
   };
 
   const handleAcceptDialog = () => {
@@ -91,7 +90,7 @@ const RoleManagement: FC = () => {
   return (
     <>
       <TableManagement
-        name={'ROLE MANAGEMENT'}
+        name={'USER MANAGEMENT'}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}
@@ -101,7 +100,7 @@ const RoleManagement: FC = () => {
       <ConfirmDialog
         openProp={openConfirmDialog}
         message={`Are you sure you wanna delete ${
-          rows.find((row: any) => row.role_id === currentID.current)?.name
+          rows.find((row: any) => row.user_id === currentID.current)?.first_name
         } ?`}
         onCloseDialog={() => setOpenConfirmDialog(false)}
         onAcceptDialog={handleAcceptDialog}
@@ -115,4 +114,4 @@ const RoleManagement: FC = () => {
   );
 };
 
-export default RoleManagement;
+export default UserManagement;

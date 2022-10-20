@@ -3,8 +3,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import './AddAndEditForm.scss';
-import RoleForm from './RoleForm';
+import '../role-management/AddAndEditForm.scss';
+import UserForm from './UserForm';
 
 const stateValues = [
   {
@@ -17,7 +17,7 @@ const stateValues = [
   },
 ];
 
-const AddAndEditRole = () => {
+const AddAndEditUser = () => {
   const [pmsCategories, setPmsCategories] = useState<any[]>([]);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
@@ -130,7 +130,7 @@ const AddAndEditRole = () => {
   return (
     <div className="form-container">
       {currentEditRole && (
-        <RoleForm
+        <UserForm
           errorMes={errorMes}
           pmsCategories={pmsCategories}
           stateValues={stateValues}
@@ -139,7 +139,7 @@ const AddAndEditRole = () => {
         />
       )}
       {!currentEditRole && (
-        <RoleForm
+        <UserForm
           errorMes={errorMes}
           pmsCategories={pmsCategories}
           stateValues={stateValues}
@@ -160,4 +160,4 @@ const AddAndEditRole = () => {
   );
 };
 
-export default AddAndEditRole;
+export default AddAndEditUser;

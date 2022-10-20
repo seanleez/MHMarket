@@ -26,7 +26,8 @@ const SuccessDialog: React.FC<IDialog> = (props) => {
           sx={{
             display: 'flex',
             justifyContent: 'center',
-            p: 0,
+            paddingTop: '20px',
+            paddingBottom: 0,
           }}>
           <img
             src={SuccessIcon}
@@ -34,10 +35,7 @@ const SuccessDialog: React.FC<IDialog> = (props) => {
             style={{ width: '100px', height: '100px' }}
           />
         </DialogContent>
-        <DialogTitle
-          sx={{
-            pt: 0,
-          }}>
+        <DialogTitle sx={{ paddingTop: 0, paddingBottom: '20px' }}>
           {message}
         </DialogTitle>
         <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>

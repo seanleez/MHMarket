@@ -15,16 +15,37 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import DeleteIcon from '../../../assets/icon/delete-icon.svg';
 import EditIcon from '../../../assets/icon/edit-icon.svg';
 import SortIcon from '../../../assets/icon/sort-icon.svg';
+import { sortAscendingly, sortDescendingly } from '../../../helper/helperFuncs';
 import './TableManagement.scss';
 
-interface ITableManagement {
+export interface ITableManagement {
   name: string;
   columns: any;
-  rows: any;
-  onAddNew: () => void;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  rows?: any;
+  onAddNew?: () => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
+
+const getIdFieldByName = (name: string) => {
+  if (name === 'ROLE MANAGEMENT') {
+    return 'role_id';
+  } else if (name === 'USER MANAGEMENT') {
+    return 'user_id';
+  } else {
+    //
+  }
+};
+
+const getSearchField = (name: string) => {
+  if (name === 'ROLE MANAGEMENT') {
+    return 'name';
+  } else if (name === 'USER MANAGEMENT') {
+    return 'first_name';
+  } else {
+    //
+  }
+};
 
 const TableManagement: FC<ITableManagement> = (props) => {
   const { name, columns, rows, onAddNew, onEdit, onDelete } = props;
@@ -46,7 +67,9 @@ const TableManagement: FC<ITableManagement> = (props) => {
   useEffect(() => {
     setData(
       rows.filter((row: any) =>
-        row[columns[1].id].toLowerCase().includes(searchValue)
+        row[`${getSearchField(name)}`]
+          .toLowerCase()
+          .includes(searchValue.toLowerCase())
       )
     );
   }, [searchValue]);
@@ -65,10 +88,19 @@ const TableManagement: FC<ITableManagement> = (props) => {
         },
       ],
     },
-    // {
-    //   name: 'Role Management1',
-    //   listIcon: [DeleteIcon, EditIcon],
-    // },
+    {
+      name: 'User Management',
+      icons: [
+        {
+          name: EditIcon,
+          onClick: onEdit,
+        },
+        {
+          name: DeleteIcon,
+          onClick: onDelete,
+        },
+      ],
+    },
     // {
     //   name: 'Role Management2',
     //   listIcon: [DeleteIcon, EditIcon],
@@ -85,6 +117,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
     id: string
   ) => {
     switch (column.id) {
+      // ROLE MANAGEMENT
       case 'index': {
         return page * rowsPerPage + index + 1;
       }
@@ -113,6 +146,22 @@ const TableManagement: FC<ITableManagement> = (props) => {
           </>
         );
       }
+
+      // USER MANAGEMENT
+      case 'roles': {
+        return row[column.id] ? (
+          row[column.id].map((role: string, index: number) => (
+            <span key={index}>{role}</span>
+          ))
+        ) : (
+          <span></span>
+        );
+      }
+
+      case 'user_id': {
+        return <span>{row[column.id].slice(0, 8)}</span>;
+      }
+
       default: {
         return <span>{row[column.id]}</span>;
       }
@@ -126,12 +175,9 @@ const TableManagement: FC<ITableManagement> = (props) => {
   const handleSort = (id: string) => {
     toggleSorting.current = !toggleSorting.current;
     const newData = [...data].sort((a: any, b: any) => {
-      if (!(typeof a[id] === 'number')) {
-        return toggleSorting.current
-          ? b[id].localeCompare(a[id])
-          : a[id].localeCompare(b[id]);
-      }
-      return toggleSorting.current ? a[id] - b[id] : b[id] - a[id];
+      return toggleSorting.current
+        ? sortAscendingly(a[id], b[id])
+        : sortDescendingly(a[id], b[id]);
     });
     setData(newData);
   };
@@ -185,8 +231,9 @@ const TableManagement: FC<ITableManagement> = (props) => {
             {data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row: any, index: any) => {
+                const idField = getIdFieldByName(name);
                 return (
-                  <TableRow key={row.role_id}>
+                  <TableRow key={row[`${idField}`]}>
                     {columns.map((column: any) => {
                       return (
                         <TableCell key={column.id} align={column.align}>
@@ -197,7 +244,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
                             page,
                             rowsPerPage,
                             index,
-                            row.role_id
+                            row[`${idField}`]
                           )}
                         </TableCell>
                       );
@@ -213,7 +260,9 @@ const TableManagement: FC<ITableManagement> = (props) => {
         component="div"
         count={
           data.filter((row: any) =>
-            row[columns[1].id].toLowerCase().includes(searchValue)
+            row[`${getSearchField(name)}`]
+              .toLowerCase()
+              .includes(searchValue.toLowerCase())
           ).length
         }
         rowsPerPage={rowsPerPage}
