@@ -62,7 +62,7 @@ const UserManagement = () => {
   };
 
   const handleAcceptDialog = () => {
-    fetch(`${rootURL}/roles/${currentID.current}`, {
+    fetch(`${rootURL}/users/${currentID.current}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
