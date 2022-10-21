@@ -60,7 +60,7 @@ const Login: FC = () => {
               </InputAdornment>
             ),
           }}
-          defaultValue="SystemAddmin1@gmail.com"
+          defaultValue="CityMarketAddmin1@gmail.com"
           inputRef={usernameRef}
         />
         <br />

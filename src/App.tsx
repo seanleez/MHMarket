@@ -22,6 +22,7 @@ function App() {
         <Route path="/role/edit/:id" element={<AddAndEditRole />} />
         <Route path="/user-management" element={<UserManagement />} />
         <Route path="/user/add-new" element={<AddAndEditUser />} />
+        <Route path="/user/edit/:id" element={<AddAndEditUser />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>

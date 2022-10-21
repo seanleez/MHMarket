@@ -203,7 +203,11 @@ const TableManagement: FC<ITableManagement> = (props) => {
         </Button>
         <div className="search-field">
           <span>Search:</span>
-          <TextField value={searchValue} onChange={handleSearchValue} />
+          <TextField
+            value={searchValue}
+            onChange={handleSearchValue}
+            sx={{ flex: 1 }}
+          />
         </div>
       </div>
       <TableContainer>

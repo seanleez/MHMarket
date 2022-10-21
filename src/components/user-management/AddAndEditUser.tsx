@@ -6,34 +6,24 @@ import SuccessDialog from '../common/dialog/SuccessDialog';
 import '../role-management/AddAndEditForm.scss';
 import UserForm from './UserForm';
 
-const stateValues = [
-  {
-    value: 1,
-    label: 'active',
-  },
-  {
-    value: 0,
-    label: 'inactive',
-  },
-];
-
 const AddAndEditUser = () => {
-  const [pmsCategories, setPmsCategories] = useState<any[]>([]);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
   const [errorMes, setErrorMes] = useState<string>('');
-  const [currentEditRole, setCurrentEditRole] = useState<any>();
+  const [currentEditUser, setCurrentEditUser] = useState<any>();
 
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const isAtEditPage = location.pathname.includes('/role/edit');
+  const isAtEditPage = location.pathname.includes('/user/edit');
   const token = JSON.parse(
     localStorage.getItem('currentUser') ?? ''
   )?.access_token;
 
+  // Get roles and pass into select
   useEffect(() => {
-    fetch(`${rootURL}/permissions/categories`, {
+    fetch(`${rootURL}/roles`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -41,14 +31,14 @@ const AddAndEditUser = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setPmsCategories(data.items);
+        setUserRoles(data.items);
       })
       .catch((err) => console.error(err));
   }, []);
 
   useEffect(() => {
     if (isAtEditPage) {
-      fetch(`${rootURL}/roles/${params.id}`, {
+      fetch(`${rootURL}/users/${params.id}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -56,8 +46,8 @@ const AddAndEditUser = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          setCurrentEditRole(data);
           console.log(data);
+          setCurrentEditUser(data);
         })
         .catch((err) => console.error(err));
     }
@@ -104,7 +94,7 @@ const AddAndEditUser = () => {
     const token = currentUser?.access_token;
 
     const fetchURL = isAtEditPage
-      ? `${rootURL}/roles/${currentEditRole.role_id}`
+      ? `${rootURL}/roles/${currentEditUser.role_id}`
       : `${rootURL}/roles`;
 
     fetch(fetchURL, {
@@ -129,20 +119,18 @@ const AddAndEditUser = () => {
 
   return (
     <div className="form-container">
-      {currentEditRole && (
+      {currentEditUser && (
         <UserForm
           errorMes={errorMes}
-          pmsCategories={pmsCategories}
-          stateValues={stateValues}
-          currentEditRole={currentEditRole}
+          currentEditUser={currentEditUser}
+          userRoles={userRoles}
           onSubmit={handleSubmit}
         />
       )}
-      {!currentEditRole && (
+      {!currentEditUser && (
         <UserForm
           errorMes={errorMes}
-          pmsCategories={pmsCategories}
-          stateValues={stateValues}
+          userRoles={userRoles}
           onSubmit={handleSubmit}
         />
       )}

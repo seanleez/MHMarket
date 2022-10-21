@@ -1,107 +1,131 @@
-import {
-  TextField,
-  MenuItem,
-  Divider,
-  Box,
-  Typography,
-  FormControlLabel,
-  Checkbox,
-  Container,
-  Button,
-} from '@mui/material';
+import { Box, Button, Divider, MenuItem, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ListIcon from '../../assets/icon/list-icon.svg';
+import './UserForm.scss';
+
+const stateValues = [
+  {
+    value: 1,
+    label: 'active',
+  },
+  {
+    value: 0,
+    label: 'inactive',
+  },
+];
 
 const UserForm = (props: any) => {
-  const { stateValues, errorMes, pmsCategories, currentEditRole, onSubmit } =
-    props;
+  const { errorMes, currentEditUser, userRoles, onSubmit } = props;
 
   const navigate = useNavigate();
-  const isAtEditPage = location.pathname.includes('/role/edit');
+  const isAtEditPage = location.pathname.includes('/user/edit');
 
   return (
     <>
       <span className="title">
-        {isAtEditPage ? 'EDIT ROLE' : 'ADD NEW ROLE'}
+        {isAtEditPage ? 'EDIT MARKET USER' : 'ADD NEW USER'}
       </span>
       <form onSubmit={onSubmit}>
         <div className="section-title">INFORMATION</div>
-        <div className="information-fields">
+        <Box>
           <TextField
-            required
-            name="name"
-            label="RoleName"
+            disabled
+            label="User ID"
             variant="outlined"
             error={!!errorMes}
             helperText={errorMes}
-            defaultValue={currentEditRole?.name ?? ''}
-            sx={{ width: '50%' }}
+            defaultValue={currentEditUser?.user_id ?? ''}
           />
           <TextField
             required
             select
             name="status"
             label="Status"
-            defaultValue={currentEditRole?.status ?? ''}
-            sx={{ m: 1, width: '30%' }}>
+            defaultValue={currentEditUser?.status ?? ''}
+            sx={{ mx: 1 }}>
             {stateValues.map((option: any) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
           </TextField>
-        </div>
+        </Box>
+        <Divider sx={{ my: '30px' }} />
         <TextField
           required
-          fullWidth
-          name="description"
-          label="Description"
+          name="email"
+          label="Email Address"
           variant="outlined"
-          defaultValue={currentEditRole?.description ?? ''}
+          defaultValue={currentEditUser?.email ?? ''}
         />
+        <Box
+          sx={{ display: 'flex', justifyContent: 'space-between', mt: '30px' }}>
+          <TextField
+            required
+            name="last_name"
+            label="Last Name"
+            variant="outlined"
+            defaultValue={currentEditUser?.last_name ?? ''}
+          />
+          <TextField
+            required
+            name="first_name"
+            label="First Name"
+            variant="outlined"
+            defaultValue={currentEditUser?.first_name ?? ''}
+          />
+          <TextField
+            required
+            name="middle_name"
+            label="Middle Name"
+            variant="outlined"
+            defaultValue={currentEditUser?.middle_name ?? ''}
+          />
+        </Box>
         <Divider sx={{ my: '30px' }} />
-        <div className="section-title">PERMISSIONS</div>
-
-        {pmsCategories.map((category: any) => (
-          <div key={category.permission_category_id} className="checkbox-group">
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <img src={ListIcon} alt={ListIcon} />
-              <Typography>{category.name}</Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
-              {category.permissions.map((permission: any) => {
-                const { permission_id, name } = permission;
-                return (
-                  <FormControlLabel
-                    key={permission_id}
-                    label={name}
-                    control={
-                      <Checkbox
-                        id={permission_id}
-                        defaultChecked={currentEditRole?.permission_ids.includes(
-                          permission_id
-                        )}
-                      />
-                    }
-                  />
-                );
-              })}
-            </Box>
-          </div>
-        ))}
-        <Container
-          sx={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <Box sx={{ mt: '30px' }}>
+          <TextField
+            required
+            select
+            name="user_role"
+            label="User Role"
+            defaultValue={currentEditUser?.status ?? ''}>
+            {userRoles.map((role: any) => (
+              <MenuItem key={role.role_id} value={role.name}>
+                {role.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            required
+            select
+            name="market_name"
+            label="Market Name"
+            defaultValue={currentEditUser?.status ?? ''}
+            sx={{ mx: 1 }}>
+            {stateValues.map((option: any) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '10px',
+            mt: 4,
+          }}>
           <Button
             variant="outlined"
             size="large"
-            onClick={() => navigate('/role-management')}>
+            onClick={() => navigate('/user-management')}>
             Cancel
           </Button>
           <Button type="submit" variant="contained" size="large">
-            {isAtEditPage ? 'EDIT ROLE' : 'CREATE ROLE'}
+            {isAtEditPage ? 'EDIT USER' : 'CREATE USER'}
           </Button>
-        </Container>
+        </Box>
       </form>
     </>
   );

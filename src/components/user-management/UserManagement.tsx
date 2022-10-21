@@ -83,8 +83,7 @@ const UserManagement = () => {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/role/edit/${id}`);
-    console.log('edit');
+    navigate(`/user/edit/${id}`);
   };
 
   return (
