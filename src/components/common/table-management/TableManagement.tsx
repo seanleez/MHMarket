@@ -1,21 +1,33 @@
 import AddIcon from '@mui/icons-material/Add';
 import {
   Button,
-  TextField,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
   IconButton,
+  Table,
   TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TablePagination,
+  TableRow,
+  TextField,
 } from '@mui/material';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import DeleteIcon from '../../../assets/icon/delete-icon.svg';
 import EditIcon from '../../../assets/icon/edit-icon.svg';
 import SortIcon from '../../../assets/icon/sort-icon.svg';
-import { sortAscendingly, sortDescendingly } from '../../../helper/helperFuncs';
+import {
+  ROWS_PER_PAGE_OPTION,
+  INIT_TABLE_ROWS_NUMBER,
+  OTHER_RATE_DETAIL,
+  RATE_TYPE,
+  RATE_MANAGEMENT,
+} from '../../../const/const';
+import {
+  getIdFieldByName,
+  getSearchField,
+  sortAscendingly,
+  sortDescendingly,
+} from '../../../helper/helperFuncs';
 import './TableManagement.scss';
 
 export interface ITableManagement {
@@ -25,34 +37,18 @@ export interface ITableManagement {
   onAddNew?: () => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onView?: (id: string) => void;
 }
 
-const getIdFieldByName = (name: string) => {
-  if (name === 'ROLE MANAGEMENT') {
-    return 'role_id';
-  } else if (name === 'USER MANAGEMENT') {
-    return 'user_id';
-  } else {
-    //
-  }
-};
-
-const getSearchField = (name: string) => {
-  if (name === 'ROLE MANAGEMENT') {
-    return 'name';
-  } else if (name === 'USER MANAGEMENT') {
-    return 'first_name';
-  } else {
-    //
-  }
-};
-
 const TableManagement: FC<ITableManagement> = (props) => {
-  const { name, columns, rows, onAddNew, onEdit, onDelete } = props;
+  const { name, columns, rows, onAddNew, onEdit, onDelete, onView } = props;
   const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [searchValue, setSearchValue] = useState<string>('');
+  const [rowsPerPage, setRowsPerPage] = useState<number>(
+    INIT_TABLE_ROWS_NUMBER
+  );
   const [data, setData] = useState<any>(rows);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setData(rows);
@@ -91,10 +87,19 @@ const TableManagement: FC<ITableManagement> = (props) => {
         },
       ],
     },
-    // {
-    //   name: 'Role Management2',
-    //   listIcon: [DeleteIcon, EditIcon],
-    // },
+    {
+      name: 'Rate Management',
+      icons: [
+        {
+          name: EditIcon,
+          onClick: onEdit,
+        },
+        {
+          name: DeleteIcon,
+          onClick: onDelete,
+        },
+      ],
+    },
   ];
 
   const getTableCellContent = (
@@ -106,6 +111,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
     index: number,
     id: string
   ) => {
+    const rowValueByColId = row[column.id];
     switch (column.id) {
       // ROLE MANAGEMENT
       case 'index': {
@@ -139,33 +145,65 @@ const TableManagement: FC<ITableManagement> = (props) => {
 
       // USER MANAGEMENT
       case 'roles': {
-        return row[column.id] ? (
-          row[column.id].map((role: string, index: number) => (
+        return rowValueByColId ? (
+          rowValueByColId.map((role: string, index: number) => (
             <span key={index}>{role}</span>
           ))
         ) : (
           <span></span>
         );
       }
-
       case 'user_id': {
-        return <span>{row[column.id].slice(0, 8)}</span>;
+        return <span>{rowValueByColId.slice(0, 8)}</span>;
+      }
+
+      // RATE MANAGEMENT
+      case 'type': {
+        return (
+          <span>
+            {
+              RATE_TYPE.find((item: any) => item.type === rowValueByColId)
+                ?.value
+            }
+          </span>
+        );
+      }
+      case 'other_rate': {
+        return rowValueByColId ? (
+          <span>
+            {
+              OTHER_RATE_DETAIL.find(
+                (item: any) => item.detail === rowValueByColId.detail
+              )?.value
+            }
+          </span>
+        ) : (
+          <span></span>
+        );
       }
 
       default: {
-        return <span>{row[column.id]}</span>;
+        return <span>{rowValueByColId}</span>;
       }
     }
   };
 
-  const handleSearchValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setData(
-      rows.filter((row: any) =>
-        row[`${getSearchField(name)}`]
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase())
-      )
-    );
+  const handleSearchValue = () => {
+    const searchValue = searchInputRef.current?.value;
+    if (name === RATE_MANAGEMENT) {
+      const searchedTypeArray = RATE_TYPE.filter((item: any) =>
+        item.value.includes(searchValue)
+      ).map((item: any) => item.type);
+      setData(rows.filter((row: any) => searchedTypeArray.includes(row.type)));
+    } else {
+      setData(
+        rows.filter((row: any) => {
+          return row[`${getSearchField(name)}`]
+            .toLowerCase()
+            .includes(searchValue?.toLowerCase());
+        })
+      );
+    }
   };
 
   const handleSort = (id: string) => {
@@ -200,7 +238,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
         <div className="search-field">
           <span>Search:</span>
           <TextField
-            value={searchValue}
+            inputRef={searchInputRef}
             onChange={handleSearchValue}
             sx={{ flex: 1 }}
           />
@@ -256,15 +294,9 @@ const TableManagement: FC<ITableManagement> = (props) => {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={ROWS_PER_PAGE_OPTION}
         component="div"
-        count={
-          data.filter((row: any) =>
-            row[`${getSearchField(name)}`]
-              .toLowerCase()
-              .includes(searchValue.toLowerCase())
-          ).length
-        }
+        count={data.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

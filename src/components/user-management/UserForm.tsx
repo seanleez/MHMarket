@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ListIcon from '../../assets/icon/list-icon.svg';
-import { stateValues } from '../../const/const';
+import { STATE_VALUES } from '../../const/const';
 
 const UserForm = (props: any) => {
   const { errorMes, currentEditUser, userRoles, onSubmit } = props;
@@ -44,7 +44,7 @@ const UserForm = (props: any) => {
             name="status"
             label="Status"
             defaultValue={currentEditUser?.status ?? ''}>
-            {stateValues.map((option: any) => (
+            {STATE_VALUES.map((option: any) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

@@ -36,7 +36,7 @@ export const NAVIGATION_LIST = [
   },
 ];
 
-export const stateValues = [
+export const STATE_VALUES = [
   {
     value: 1,
     label: 'active',
@@ -46,3 +46,55 @@ export const stateValues = [
     label: 'inactive',
   },
 ];
+
+export const RATE_TYPE = [
+  {
+    type: 0,
+    value: 'Stall Rental Rate',
+  },
+  {
+    type: 1,
+    value: 'Stall Rights Rate',
+  },
+  {
+    type: 2,
+    value: 'Stall Security Bond',
+  },
+  {
+    type: 3,
+    value: 'Other Rate',
+  },
+];
+
+export const OTHER_RATE_DETAIL = [
+  {
+    detail: null,
+    value: '',
+  },
+  {
+    detail: 0,
+    value: 'New Stall Application Fee',
+  },
+  {
+    detail: 1,
+    value: 'Renewal Stall Application Fee',
+  },
+  {
+    detail: 2,
+    value: 'Transfer Stall Application Fee',
+  },
+  {
+    detail: 3,
+    value: 'Transfer Fee',
+  },
+  {
+    detail: 4,
+    value: 'Repair Permit Fee',
+  },
+];
+
+export const INIT_TABLE_ROWS_NUMBER = 5;
+export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
+export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
+export const ROLE_MANAGEMENT = 'ROLE MANAGEMENT';
+export const USER_MANAGEMENT = 'USER MANAGEMENT';

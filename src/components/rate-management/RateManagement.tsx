@@ -4,31 +4,29 @@ import { rootURL } from '../../const/const';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
-import './RoleManagement.scss';
 import { IManagementTableFormat } from '../../const/interface';
 
 // id of columns have to fit with id
 const columns: readonly IManagementTableFormat[] = [
   { id: 'index', label: '', width: '5%', align: 'center' },
   {
-    id: 'name',
-    label: 'ROLE NAME',
+    id: 'type',
+    label: 'RATE TYPE',
     width: '25%',
     align: 'left',
     isHaveSortIcon: true,
   },
-  { id: 'description', label: 'DESCRIPTION', width: '40%', align: 'left' },
+  { id: 'other_rate', label: 'RATE DETAIL', width: '40%', align: 'left' },
   {
     id: 'status',
-    label: 'STATUS',
+    label: 'APPROVAL STATUS',
     width: '15%',
     align: 'center',
-    isHaveSortIcon: true,
   },
   { id: 'action', label: 'ACTION', width: '15%', align: 'center' },
 ];
 
-const RoleManagement: FC = () => {
+const RateManagement: FC = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [rows, setRows] = useState<any>([]);
@@ -36,11 +34,15 @@ const RoleManagement: FC = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log('rows', rows);
+  });
+
   const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
   const token = currentUser?.access_token;
 
   useEffect(() => {
-    fetch(`${rootURL}/roles`, {
+    fetch(`${rootURL}/rates`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -48,6 +50,7 @@ const RoleManagement: FC = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log('data', data);
         setRows(data.items);
       })
       .catch((err) => console.error(err));
@@ -55,11 +58,11 @@ const RoleManagement: FC = () => {
   }, [openAlertDialog]);
 
   const handleAddNew = () => {
-    navigate('/role/add-new');
+    navigate('/rate/add-new');
   };
 
   const handleAcceptDialog = () => {
-    fetch(`${rootURL}/roles/${currentID.current}`, {
+    fetch(`${rootURL}/rates/${currentID.current}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -67,9 +70,9 @@ const RoleManagement: FC = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         setOpenConfirmDialog(false);
         setOpenAlertDialog(true);
-        console.log(data);
       })
       .catch((err) => console.error(err));
   };
@@ -80,24 +83,23 @@ const RoleManagement: FC = () => {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/role/edit/${id}`);
-    console.log('edit');
+    navigate(`/rate/edit/${id}`);
   };
 
   return (
     <>
       <TableManagement
-        name={'ROLE MANAGEMENT'}
+        name={'RATE MANAGEMENT'}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        // onDelete={handleDelete}
       />
       <ConfirmDialog
         openProp={openConfirmDialog}
         message={`Are you sure you wanna delete ${
-          rows.find((row: any) => row.role_id === currentID.current)?.name
+          rows.find((row: any) => row.rate_id === currentID.current)?.name
         } ?`}
         onCloseDialog={() => setOpenConfirmDialog(false)}
         onAcceptDialog={handleAcceptDialog}
@@ -111,4 +113,4 @@ const RoleManagement: FC = () => {
   );
 };
 
-export default RoleManagement;
+export default RateManagement;

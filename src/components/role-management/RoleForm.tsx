@@ -12,17 +12,13 @@ import {
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ListIcon from '../../assets/icon/list-icon.svg';
-import { stateValues } from '../../const/const';
+import { STATE_VALUES } from '../../const/const';
 
 const RoleForm = (props: any) => {
   const { errorMes, pmsCategories, currentEditRole, onSubmit } = props;
 
   const navigate = useNavigate();
   const isAtEditPage = location.pathname.includes('/role/edit');
-
-  useEffect(() => {
-    console.log(pmsCategories);
-  });
 
   return (
     <>
@@ -49,7 +45,7 @@ const RoleForm = (props: any) => {
             label="Status"
             defaultValue={currentEditRole?.status ?? ''}
             sx={{ m: 1, width: '30%' }}>
-            {stateValues.map((option: any) => (
+            {STATE_VALUES.map((option: any) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
