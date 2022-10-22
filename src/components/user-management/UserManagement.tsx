@@ -7,11 +7,17 @@ import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
 
 const columns: readonly IManagementTableFormat[] = [
-  { id: 'user_id', label: 'USER ID', width: '10%', align: 'center' },
   {
     id: 'first_name',
-    label: 'USER NAME',
-    width: '20%',
+    label: 'FIRST NAME',
+    width: '15%',
+    align: 'center',
+    isHaveSortIcon: true,
+  },
+  {
+    id: 'last_name',
+    label: 'LAST NAME',
+    width: '15%',
     align: 'center',
     isHaveSortIcon: true,
   },
@@ -50,16 +56,11 @@ const UserManagement = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.items);
         setRows(data.items);
       })
       .catch((err) => console.error(err));
     // When delete a role, fetch this APIGET again to get new data
   }, [openAlertDialog]);
-
-  const handleAddNew = () => {
-    navigate('/user/add-new');
-  };
 
   const handleAcceptDialog = () => {
     fetch(`${rootURL}/users/${currentID.current}`, {
@@ -72,9 +73,12 @@ const UserManagement = () => {
       .then((data) => {
         setOpenConfirmDialog(false);
         setOpenAlertDialog(true);
-        console.log(data);
       })
       .catch((err) => console.error(err));
+  };
+
+  const handleAddNew = () => {
+    navigate('/user/add-new');
   };
 
   const handleDelete = (id: string) => {

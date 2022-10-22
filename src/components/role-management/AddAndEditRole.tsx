@@ -6,17 +6,6 @@ import SuccessDialog from '../common/dialog/SuccessDialog';
 import './AddAndEditForm.scss';
 import RoleForm from './RoleForm';
 
-const stateValues = [
-  {
-    value: 1,
-    label: 'active',
-  },
-  {
-    value: 0,
-    label: 'inactive',
-  },
-];
-
 const AddAndEditRole = () => {
   const [pmsCategories, setPmsCategories] = useState<any[]>([]);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
@@ -133,7 +122,6 @@ const AddAndEditRole = () => {
         <RoleForm
           errorMes={errorMes}
           pmsCategories={pmsCategories}
-          stateValues={stateValues}
           currentEditRole={currentEditRole}
           onSubmit={handleSubmit}
         />
@@ -142,7 +130,6 @@ const AddAndEditRole = () => {
         <RoleForm
           errorMes={errorMes}
           pmsCategories={pmsCategories}
-          stateValues={stateValues}
           onSubmit={handleSubmit}
         />
       )}

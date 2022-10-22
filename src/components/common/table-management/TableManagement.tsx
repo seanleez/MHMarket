@@ -64,16 +64,6 @@ const TableManagement: FC<ITableManagement> = (props) => {
 
   let toggleSorting = useRef<boolean>(true);
 
-  useEffect(() => {
-    setData(
-      rows.filter((row: any) =>
-        row[`${getSearchField(name)}`]
-          .toLowerCase()
-          .includes(searchValue.toLowerCase())
-      )
-    );
-  }, [searchValue]);
-
   const listIconActionByName = [
     {
       name: 'Role Management',
@@ -169,7 +159,13 @@ const TableManagement: FC<ITableManagement> = (props) => {
   };
 
   const handleSearchValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
+    setData(
+      rows.filter((row: any) =>
+        row[`${getSearchField(name)}`]
+          .toLowerCase()
+          .includes(event.target.value.toLowerCase())
+      )
+    );
   };
 
   const handleSort = (id: string) => {

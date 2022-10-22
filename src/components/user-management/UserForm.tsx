@@ -1,17 +1,16 @@
-import { Box, Button, Divider, MenuItem, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import './UserForm.scss';
-
-const stateValues = [
-  {
-    value: 1,
-    label: 'active',
-  },
-  {
-    value: 0,
-    label: 'inactive',
-  },
-];
+import ListIcon from '../../assets/icon/list-icon.svg';
+import { stateValues } from '../../const/const';
 
 const UserForm = (props: any) => {
   const { errorMes, currentEditUser, userRoles, onSubmit } = props;
@@ -27,21 +26,24 @@ const UserForm = (props: any) => {
       <form onSubmit={onSubmit}>
         <div className="section-title">INFORMATION</div>
         <Box>
-          <TextField
-            disabled
-            label="User ID"
-            variant="outlined"
-            error={!!errorMes}
-            helperText={errorMes}
-            defaultValue={currentEditUser?.user_id ?? ''}
-          />
+          {isAtEditPage && (
+            <TextField
+              disabled
+              name="user_id"
+              label="User ID"
+              variant="outlined"
+              error={!!errorMes}
+              helperText={errorMes}
+              defaultValue={currentEditUser?.user_id ?? ''}
+              sx={{ mr: 1 }}
+            />
+          )}
           <TextField
             required
             select
             name="status"
             label="Status"
-            defaultValue={currentEditUser?.status ?? ''}
-            sx={{ mx: 1 }}>
+            defaultValue={currentEditUser?.status ?? ''}>
             {stateValues.map((option: any) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
@@ -74,7 +76,6 @@ const UserForm = (props: any) => {
             defaultValue={currentEditUser?.first_name ?? ''}
           />
           <TextField
-            required
             name="middle_name"
             label="Middle Name"
             variant="outlined"
@@ -82,32 +83,38 @@ const UserForm = (props: any) => {
           />
         </Box>
         <Divider sx={{ my: '30px' }} />
-        <Box sx={{ mt: '30px' }}>
-          <TextField
-            required
-            select
-            name="user_role"
-            label="User Role"
-            defaultValue={currentEditUser?.status ?? ''}>
-            {userRoles.map((role: any) => (
-              <MenuItem key={role.role_id} value={role.name}>
-                {role.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            required
-            select
+        <Box sx={{ display: 'flex' }}>
+          <Box className="checkbox-group" sx={{ width: '50%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <img src={ListIcon} alt={ListIcon} />
+              <Typography>User Roles</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
+              {userRoles.map((roles: any) => {
+                const { name, role_id } = roles;
+                return (
+                  <FormControlLabel
+                    key={role_id}
+                    label={name}
+                    control={
+                      <Checkbox
+                        id={role_id}
+                        defaultChecked={currentEditUser?.role_ids.includes(
+                          role_id
+                        )}
+                      />
+                    }
+                  />
+                );
+              })}
+            </Box>
+          </Box>
+          {/* <TextField
+            disabled
             name="market_name"
             label="Market Name"
-            defaultValue={currentEditUser?.status ?? ''}
-            sx={{ mx: 1 }}>
-            {stateValues.map((option: any) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+            variant="outlined"
+          /> */}
         </Box>
         <Box
           sx={{

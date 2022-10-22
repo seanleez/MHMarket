@@ -35,3 +35,14 @@ export const NAVIGATION_LIST = [
     url: '/analytics-reports',
   },
 ];
+
+export const stateValues = [
+  {
+    value: 1,
+    label: 'active',
+  },
+  {
+    value: 0,
+    label: 'inactive',
+  },
+];

@@ -9,15 +9,20 @@ import {
   Container,
   Button,
 } from '@mui/material';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ListIcon from '../../assets/icon/list-icon.svg';
+import { stateValues } from '../../const/const';
 
 const RoleForm = (props: any) => {
-  const { stateValues, errorMes, pmsCategories, currentEditRole, onSubmit } =
-    props;
+  const { errorMes, pmsCategories, currentEditRole, onSubmit } = props;
 
   const navigate = useNavigate();
   const isAtEditPage = location.pathname.includes('/role/edit');
+
+  useEffect(() => {
+    console.log(pmsCategories);
+  });
 
   return (
     <>
