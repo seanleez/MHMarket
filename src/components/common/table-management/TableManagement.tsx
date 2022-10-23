@@ -30,18 +30,17 @@ import {
 } from '../../../helper/helperFuncs';
 import './TableManagement.scss';
 
-export interface ITableManagement {
+interface ITableManagement {
   name: string;
   columns: any;
   rows?: any;
   onAddNew?: () => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onView?: (id: string) => void;
 }
 
 const TableManagement: FC<ITableManagement> = (props) => {
-  const { name, columns, rows, onAddNew, onEdit, onDelete, onView } = props;
+  const { name, columns, rows, onAddNew, onEdit, onDelete } = props;
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(
     INIT_TABLE_ROWS_NUMBER

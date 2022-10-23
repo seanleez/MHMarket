@@ -44,58 +44,70 @@ const AddAndEditRate = () => {
     setOpenAlertDialog(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent, rateType: number) => {
     e.preventDefault();
     const payload: any = {};
-    const permissionIds: string[] = [];
+
+    // Get value from form and assign them to payload
     let elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
       if (el.nodeName === 'INPUT') {
-        const element = el as HTMLInputElement;
-        if (element.type === 'checkbox') {
-          element.checked && permissionIds.push(element.id);
+        const { value, name } = el as HTMLInputElement;
+
+        if (rateType === 2) {
+          if (!payload.hasOwnProperty('security_bond')) {
+            payload['security_bond'] = {};
+          }
+          if (['amount', 'rental_fee'].includes(name)) {
+            payload['security_bond'][name] = Number(value);
+          }
         }
-        if (element.type === 'text') {
-          payload[element.name] = element.value;
+
+        if (rateType === 3) {
+          if (!payload.hasOwnProperty('other_rate')) {
+            payload['other_rate'] = {};
+          }
+          if (['detail', 'amount'].includes(name)) {
+            payload['other_rate'][name] = Number(value);
+          }
         }
-        if (element.name === 'status') {
-          payload[element.name] = Number(element.value);
+
+        if (name === 'rate_id') {
+          payload[name] = value;
+        }
+        if (['type', 'status'].includes(name)) {
+          payload[name] = Number(value);
         }
       }
     });
-
     console.log(payload);
-    // if (!permissionIds.length) {
-    //   setOpenAlertDialog(true);
-    //   return;
-    // }
 
-    // Call API Add New
-    // const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-    // const token = currentUser?.access_token;
+    // Call API Add New or Edit
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+    const token = currentUser?.access_token;
 
-    // const fetchURL = isAtEditPage
-    //   ? `${rootURL}/roles/${currentEditRole.role_id}`
-    //   : `${rootURL}/roles`;
+    const fetchURL = isAtEditPage
+      ? `${rootURL}/rates/${currentEditRate.rate_id}`
+      : `${rootURL}/rates`;
 
-    // fetch(fetchURL, {
-    //   method: isAtEditPage ? 'PUT' : 'POST',
-    //   credentials: 'same-origin',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    //   body: JSON.stringify(payload),
-    // })
-    //   .then((res) => res.json())
-    //   .then((response) => {
-    //     if (response.error_code) {
-    //       setErrorMes(response.error_description);
-    //     } else {
-    //       setOpenSuccessDialog(true);
-    //     }
-    //   })
-    //   .catch((err) => console.error(err));
+    fetch(fetchURL, {
+      method: isAtEditPage ? 'PUT' : 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_code);
+        } else {
+          setOpenSuccessDialog(true);
+        }
+      })
+      .catch((err) => console.error(err));
   };
 
   return (

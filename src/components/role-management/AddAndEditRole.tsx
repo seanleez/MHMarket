@@ -68,15 +68,15 @@ const AddAndEditRole = () => {
     let elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
       if (el.nodeName === 'INPUT') {
-        const element = el as HTMLInputElement;
-        if (element.type === 'checkbox') {
-          element.checked && permissionIds.push(element.id);
+        const { type, name, value, checked, id } = el as HTMLInputElement;
+        if (type === 'checkbox') {
+          checked && permissionIds.push(id);
         }
-        if (element.type === 'text') {
-          payload[element.name] = element.value;
+        if (type === 'text') {
+          payload[name] = value;
         }
-        if (element.name === 'status') {
-          payload[element.name] = Number(element.value);
+        if (name === 'status') {
+          payload[name] = Number(value);
         }
       }
     });

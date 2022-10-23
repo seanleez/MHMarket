@@ -1,15 +1,31 @@
 import { Box, Button, Divider, MenuItem, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RATE_TYPE, STATE_VALUES } from '../../const/const';
+import OtherRate from './rate-type-component/OtherRate';
+import StallRentalRate from './rate-type-component/StallRentalRate';
+import StallSecurityRate from './rate-type-component/StallSecurityRate';
 
 const RateForm = (props: any) => {
   const { currentEditRate, onSubmit } = props;
-  const [rateType, setRateType] = useState<string>('');
+  const [rateType, setRateType] = useState<number>(currentEditRate?.type ?? '');
 
-  useEffect(() => {
-    console.log(rateType);
-  });
+  const getUIByRateType = (rateType: number) => {
+    switch (rateType) {
+      case 0:
+        return (
+          <StallRentalRate
+            amounts={currentEditRate?.rental_rate?.class_rental_amounts}
+          />
+        );
+      case 2:
+        return <StallSecurityRate currentEditRate={currentEditRate} />;
+      case 3:
+        return <OtherRate currentEditRate={currentEditRate} />;
+      default:
+        return <StallRentalRate currentEditRate={currentEditRate} />;
+    }
+  };
 
   const navigate = useNavigate();
   const isAtEditPage = location.pathname.includes('/rate/edit');
@@ -19,8 +35,7 @@ const RateForm = (props: any) => {
       <span className="title">
         {isAtEditPage ? 'EDIT RATE' : 'ADD NEW RATE'}
       </span>
-      <form onSubmit={onSubmit}>
-        <div className="section-title">INFORMATION</div>
+      <form onSubmit={(e: React.FormEvent) => onSubmit(e, rateType)}>
         <Box>
           {isAtEditPage && (
             <TextField
@@ -28,7 +43,7 @@ const RateForm = (props: any) => {
               name="rate_id"
               label="Rate ID"
               variant="outlined"
-              defaultValue={currentEditRate?.user_id ?? ''}
+              defaultValue={currentEditRate?.rate_id ?? ''}
               sx={{ mr: 1 }}
             />
           )}
@@ -51,9 +66,9 @@ const RateForm = (props: any) => {
           select
           name="type"
           label="Rate type"
-          defaultValue={currentEditRate?.status ?? ''}
+          value={rateType}
           onChange={(e) => {
-            setRateType(e.target.value);
+            setRateType(Number(e.target.value));
           }}>
           {RATE_TYPE.map((option: any) => (
             <MenuItem key={option.type} value={option.type}>
@@ -61,6 +76,9 @@ const RateForm = (props: any) => {
             </MenuItem>
           ))}
         </TextField>
+
+        {getUIByRateType(rateType)}
+
         <Box
           sx={{
             display: 'flex',

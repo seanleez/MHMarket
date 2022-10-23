@@ -58,7 +58,7 @@ export const RATE_TYPE = [
   },
   {
     type: 2,
-    value: 'Stall Security Bond',
+    value: 'Stall Security Rate',
   },
   {
     type: 3,
@@ -90,6 +90,21 @@ export const OTHER_RATE_DETAIL = [
   {
     detail: 4,
     value: 'Repair Permit Fee',
+  },
+];
+
+export const CLASS_RENTAL_AMOUNT = [
+  {
+    value: 1,
+    label: 'Class A',
+  },
+  {
+    value: 2,
+    label: 'Class B',
+  },
+  {
+    value: 3,
+    label: 'Class C',
   },
 ];
 
