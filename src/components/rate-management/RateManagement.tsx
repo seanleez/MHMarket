@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import { RATE_TYPE, rootURL } from '../../const/const';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
@@ -94,12 +94,16 @@ const RateManagement: FC = () => {
         rows={rows}
         onAddNew={handleAddNew}
         onEdit={handleEdit}
-        // onDelete={handleDelete}
+        onDelete={handleDelete}
       />
       <ConfirmDialog
         openProp={openConfirmDialog}
         message={`Are you sure you wanna delete ${
-          rows.find((row: any) => row.rate_id === currentID.current)?.name
+          RATE_TYPE.find(
+            (item: any) =>
+              item.type ===
+              rows.find((row: any) => row.rate_id === currentID.current)?.type
+          )?.value
         } ?`}
         onCloseDialog={() => setOpenConfirmDialog(false)}
         onAcceptDialog={handleAcceptDialog}

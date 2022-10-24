@@ -23,8 +23,8 @@ import DeleteIcon from '../../../assets/icon/delete-icon.svg';
 interface ITableStallRate {
   columns: any;
   rows?: any;
-  onAddNew?: () => void;
-  onDelete: (id: number) => void;
+  onAddNew: () => void;
+  onDelete: (id: string) => void;
 }
 
 const TableStallRate: FC<ITableStallRate> = (props) => {
@@ -35,18 +35,12 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
   );
 
   const getTableCellContent = (row: any, column: any, index: number) => {
-    if (column.id === 'action') {
-      return (
-        <IconButton onClick={() => onDelete(index)}>
-          <img src={DeleteIcon} alt={`${DeleteIcon}`} />
-        </IconButton>
-      );
-    } else if (column.id === 'clazz') {
+    if (column.id === 'clazz') {
       return (
         <TextField
           required
           select
-          name="detail"
+          name={`clazz-${index}`}
           label="Rate Detail"
           defaultValue={row[column.id] ?? ''}
           style={{ width: '80%' }}>
@@ -57,17 +51,23 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
           ))}
         </TextField>
       );
-    } else {
+    } else if (column.id === 'amount') {
       return (
         <TextField
           required
-          name="amount"
+          name={`amount-${index}`}
           label="Amount"
           variant="outlined"
           defaultValue={row[column.id] ?? ''}
           type="number"
           style={{ width: '80%' }}
         />
+      );
+    } else {
+      return (
+        <IconButton onClick={() => onDelete(row.id)}>
+          <img src={DeleteIcon} alt={`${DeleteIcon}`} />
+        </IconButton>
       );
     }
   };
@@ -110,9 +110,9 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
           <TableBody>
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row: any, index: any) => {
+              .map((row: any, index: number) => {
                 return (
-                  <TableRow key={index}>
+                  <TableRow key={row.id}>
                     {columns.map((column: any) => {
                       return (
                         <TableCell key={column.id} align={column.align}>

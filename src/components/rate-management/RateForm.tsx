@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RATE_TYPE, STATE_VALUES } from '../../const/const';
 import OtherRate from './rate-type-component/OtherRate';
-import StallRentalRate from './rate-type-component/StallRentalRate';
+import StallRentalRightsRate from './rate-type-component/StallRentalRightsRate';
 import StallSecurityRate from './rate-type-component/StallSecurityRate';
 
 const RateForm = (props: any) => {
@@ -14,7 +14,7 @@ const RateForm = (props: any) => {
     switch (rateType) {
       case 0:
         return (
-          <StallRentalRate
+          <StallRentalRightsRate
             amounts={currentEditRate?.rental_rate?.class_rental_amounts}
           />
         );
@@ -23,7 +23,11 @@ const RateForm = (props: any) => {
       case 3:
         return <OtherRate currentEditRate={currentEditRate} />;
       default:
-        return <StallRentalRate currentEditRate={currentEditRate} />;
+        return (
+          <StallRentalRightsRate
+            amounts={currentEditRate?.rights_rate?.class_rights_amounts}
+          />
+        );
     }
   };
 

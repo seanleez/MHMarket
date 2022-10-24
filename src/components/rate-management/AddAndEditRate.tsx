@@ -47,34 +47,61 @@ const AddAndEditRate = () => {
   const handleSubmit = (e: React.FormEvent, rateType: number) => {
     e.preventDefault();
     const payload: any = {};
-
+    let tempObj: any = {};
+    let currentIndex = 0;
     // Get value from form and assign them to payload
     let elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
       if (el.nodeName === 'INPUT') {
-        const { value, name } = el as HTMLInputElement;
+        const { name, value } = el as HTMLInputElement;
 
-        if (rateType === 2) {
-          if (!payload.hasOwnProperty('security_bond')) {
-            payload['security_bond'] = {};
-          }
-          if (['amount', 'rental_fee'].includes(name)) {
-            payload['security_bond'][name] = Number(value);
-          }
+        switch (rateType) {
+          case 0:
+          case 1:
+            const propertyRate = rateType === 0 ? 'rental_rate' : 'rights_rate';
+            const subPropertyRate =
+              rateType === 0 ? 'class_rental_amounts' : 'class_rights_amounts';
+            if (!payload.hasOwnProperty(propertyRate)) {
+              payload[propertyRate] = {
+                [subPropertyRate]: [],
+              };
+            }
+            if (name.includes('clazz') || name.includes('amount')) {
+              if (currentIndex !== Number(name.split('-')[1])) {
+                tempObj = {};
+                currentIndex = Number(name.split('-')[1]);
+              }
+              tempObj[`${name.split('-')[0]}`] = Number(value);
+              if (
+                tempObj.hasOwnProperty('clazz') &&
+                tempObj.hasOwnProperty('amount')
+              ) {
+                payload[propertyRate][subPropertyRate].push(tempObj);
+              }
+            }
+            break;
+
+          case 2:
+            if (!payload.hasOwnProperty('security_bond')) {
+              payload['security_bond'] = {};
+            }
+            if (['amount', 'rental_fee'].includes(name)) {
+              payload['security_bond'][name] = Number(value);
+            }
+            break;
+
+          case 3:
+            if (!payload.hasOwnProperty('other_rate')) {
+              payload['other_rate'] = {};
+            }
+            if (['detail', 'amount'].includes(name)) {
+              payload['other_rate'][name] = Number(value);
+            }
+            break;
+          default:
+            break;
         }
 
-        if (rateType === 3) {
-          if (!payload.hasOwnProperty('other_rate')) {
-            payload['other_rate'] = {};
-          }
-          if (['detail', 'amount'].includes(name)) {
-            payload['other_rate'][name] = Number(value);
-          }
-        }
-
-        if (name === 'rate_id') {
-          payload[name] = value;
-        }
         if (['type', 'status'].includes(name)) {
           payload[name] = Number(value);
         }
