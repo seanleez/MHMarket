@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
+import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import RateForm from './RateForm';
 
 const AddAndEditRate = () => {
-  const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
-  const [openAlertDialog, setOpenAlertDialog] = useState(false);
+  const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [currentEditRate, setCurrentEditRate] = useState<any>();
+
+  const errorMes = useRef<string>('');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,7 +22,7 @@ const AddAndEditRate = () => {
     localStorage.getItem('currentUser') ?? ''
   )?.access_token;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isAtEditPage) {
       fetch(`${rootURL}/rates/${params.id}`, {
         method: 'GET',
@@ -49,6 +53,8 @@ const AddAndEditRate = () => {
     const payload: any = {};
     let tempObj: any = {};
     let currentIndex = 0;
+    let flag = false;
+
     // Get value from form and assign them to payload
     let elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
@@ -79,6 +85,21 @@ const AddAndEditRate = () => {
                 payload[propertyRate][subPropertyRate].push(tempObj);
               }
             }
+
+            const checkClassArray = payload[propertyRate][subPropertyRate].map(
+              (item: any) => item.clazz
+            );
+            if (checkClassArray.length > 1) {
+              checkClassArray.forEach((element: any) => {
+                const appearTime = checkClassArray.filter(
+                  (item: any) => item === element
+                ).length;
+                if (appearTime > 1) {
+                  flag = true;
+                  setOpenAlertDialog(true);
+                }
+              });
+            }
             break;
 
           case 2:
@@ -107,6 +128,8 @@ const AddAndEditRate = () => {
         }
       }
     });
+
+    if (flag) return;
     console.log(payload);
 
     // Call API Add New or Edit
@@ -129,12 +152,16 @@ const AddAndEditRate = () => {
       .then((res) => res.json())
       .then((response) => {
         if (response.error_code) {
-          throw new Error(response.error_code);
+          errorMes.current = response?.errors?.type ?? 'Error';
+          throw new Error(response);
         } else {
           setOpenSuccessDialog(true);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.dir(err);
+        setOpenErrorDialog(true);
+      });
   };
 
   return (
@@ -145,8 +172,13 @@ const AddAndEditRate = () => {
       {!currentEditRate && <RateForm onSubmit={handleSubmit} />}
       <AlertDialog
         openProp={openAlertDialog}
-        message={'Choose at least one permission'}
+        message={'All classes have to be unique'}
         onCloseDialog={handleCloseAlertDialog}
+      />
+      <ErrorDialog
+        openProp={openErrorDialog}
+        message={errorMes.current}
+        onCloseDialog={() => setOpenErrorDialog(false)}
       />
       <SuccessDialog
         openProp={openSuccessDialog}
