@@ -53,10 +53,6 @@ const TableManagement: FC<ITableManagement> = (props) => {
     setData(rows);
   }, [rows]);
 
-  useEffect(() => {
-    console.log(rows);
-  }, []);
-
   let toggleSorting = useRef<boolean>(true);
 
   const listIconActionByName = [

@@ -17,15 +17,13 @@ const columns: readonly IManagementTableFormat[] = [
 
 const StallRentalRightsRate = (props: any) => {
   const { amounts } = props;
-  const [rows, setRows] = useState(amounts ?? []);
-
-  useEffect(() => {
-    setRows(
-      rows.map((row: any) => {
-        return { ...row, id: uuid() };
-      })
-    );
-  }, []);
+  const [rows, setRows] = useState(
+    amounts
+      ? amounts.map((row: any) => {
+          return { ...row, id: uuid() };
+        })
+      : []
+  );
 
   useEffect(() => {
     console.log('rows', rows);

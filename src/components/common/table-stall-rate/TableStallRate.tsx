@@ -111,6 +111,7 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row: any, index: number) => {
+                console.log(row.id);
                 return (
                   <TableRow key={row.id}>
                     {columns.map((column: any) => {
