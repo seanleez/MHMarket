@@ -49,7 +49,9 @@ const MarketForm = (props: any) => {
             ))}
           </TextField>
         </Box>
+        <Divider sx={{ my: '30px' }} />
 
+        <div className="section-title">ADDRESS</div>
         <Box
           sx={{
             display: 'flex',
@@ -102,6 +104,32 @@ const MarketForm = (props: any) => {
               </MenuItem>
             ))}
           </TextField>
+        </Box>
+        <Box>
+          <TextField
+            disabled
+            name="zipcode"
+            label="Zipcode"
+            variant="outlined"
+            defaultValue={currentEditMarket?.name ?? ''}
+            style={{ width: '25%' }}
+          />
+          <TextField
+            disabled
+            name="district"
+            label="District"
+            variant="outlined"
+            defaultValue={currentEditMarket?.name ?? ''}
+            style={{ width: '25%' }}
+          />
+          <br />
+          <TextField
+            fullWidth
+            name="location"
+            label="Map Location"
+            variant="outlined"
+            defaultValue={currentEditMarket?.name ?? ''}
+          />
         </Box>
 
         <Divider sx={{ my: '30px' }} />
