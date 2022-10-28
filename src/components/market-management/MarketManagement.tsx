@@ -14,20 +14,20 @@ const columns: readonly IManagementTableFormat[] = [
     align: 'center',
   },
   {
-    id: 'first_name',
+    id: 'name',
     label: 'MARKET NAME',
     width: '20%',
     align: 'center',
     isHaveSortIcon: true,
   },
   {
-    id: 'last_name',
+    id: 'market_location',
     label: 'LOCATION',
     width: '20%',
     align: 'center',
     isHaveSortIcon: true,
   },
-  { id: 'email', label: 'MARKET TYPE', width: '20%', align: 'center' },
+  { id: 'market_type', label: 'MARKET TYPE', width: '20%', align: 'center' },
   {
     id: 'status',
     label: 'STATUS',
@@ -84,7 +84,7 @@ const MarketManagement = () => {
   };
 
   const handleAddNew = () => {
-    navigate('/user/add-new');
+    navigate('/market/add-new');
   };
 
   const handleDelete = (id: string) => {
@@ -102,7 +102,7 @@ const MarketManagement = () => {
         name={'MARKET MANAGEMENT'}
         columns={columns}
         rows={rows}
-        // onAddNew={handleAddNew}
+        onAddNew={handleAddNew}
         // onEdit={handleEdit}
         // onDelete={handleDelete}
       />

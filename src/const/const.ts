@@ -66,6 +66,25 @@ export const RATE_TYPE = [
   },
 ];
 
+export const MARKET_TYPE = [
+  {
+    type: 0,
+    value: 'Public Market',
+  },
+  {
+    type: 1,
+    value: 'Private Market',
+  },
+  {
+    type: 2,
+    value: 'Private Talipapa',
+  },
+  {
+    type: 3,
+    value: 'Hawking/Vending Site',
+  },
+];
+
 export const OTHER_RATE_DETAIL = [
   {
     detail: null,
@@ -113,3 +132,9 @@ export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
 export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
 export const ROLE_MANAGEMENT = 'ROLE MANAGEMENT';
 export const USER_MANAGEMENT = 'USER MANAGEMENT';
+export const LIST_TABLE_NAME = [
+  'Role Management',
+  'User Management',
+  'Rate Management',
+  'Market Management',
+];

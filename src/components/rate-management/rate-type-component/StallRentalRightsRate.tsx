@@ -18,18 +18,16 @@ const columns: readonly IManagementTableFormat[] = [
 
 const StallRentalRightsRate = (props: any) => {
   const { amounts } = props;
-  const [rows, setRows] = useState(amounts ?? []);
+  const [rows, setRows] = useState(
+    amounts
+      ? amounts.map((row: any) => {
+          return { ...row, id: uuid() };
+        })
+      : []
+  );
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
 
   const alertMessage = useRef<string>('');
-
-  useEffect(() => {
-    setRows(
-      rows.map((row: any) => {
-        return { ...row, id: uuid() };
-      })
-    );
-  }, []);
 
   useEffect(() => {
     console.log('rows', rows);
