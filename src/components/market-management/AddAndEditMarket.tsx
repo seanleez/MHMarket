@@ -165,7 +165,7 @@ const AddAndEditMarket = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="form-container text-field-1-4">
       {currentEditRate && (
         <MarketForm currentEditRate={currentEditRate} onSubmit={handleSubmit} />
       )}
