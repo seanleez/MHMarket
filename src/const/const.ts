@@ -132,6 +132,7 @@ export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
 export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
 export const ROLE_MANAGEMENT = 'ROLE MANAGEMENT';
 export const USER_MANAGEMENT = 'USER MANAGEMENT';
+export const MARKET_MANAGEMENT = 'MARKET MANAGEMENT';
 export const LIST_TABLE_NAME = [
   'Role Management',
   'User Management',

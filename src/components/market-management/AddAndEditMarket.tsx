@@ -10,38 +10,38 @@ const AddAndEditMarket = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
-  const [currentEditRate, setCurrentEditRate] = useState<any>();
+  const [currentEditMarket, setCurrentEditMarket] = useState<any>();
 
   const errorMes = useRef<string>('');
 
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const isAtEditPage = location.pathname.includes('/rate/edit');
+  const isAtEditPage = location.pathname.includes('/market/edit');
   const token = JSON.parse(
     localStorage.getItem('currentUser') ?? ''
   )?.access_token;
 
-  // useLayoutEffect(() => {
-  //   if (isAtEditPage) {
-  //     fetch(`${rootURL}/rates/${params.id}`, {
-  //       method: 'GET',
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         console.log(data);
-  //         setCurrentEditRate(data);
-  //       })
-  //       .catch((err) => console.error(err));
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (isAtEditPage) {
+      fetch(`${rootURL}/markets/${params.id}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setCurrentEditMarket(data);
+        })
+        .catch((err) => console.error(err));
+    }
+  }, []);
 
   const handleCloseSuccessDialog = () => {
     setOpenSuccessDialog(false);
-    navigate('/rate-management');
+    navigate('/market-management');
   };
 
   const handleCloseAlertDialog = () => {
@@ -51,125 +51,62 @@ const AddAndEditMarket = () => {
   const handleSubmit = (e: React.FormEvent, rateType: number) => {
     e.preventDefault();
     const payload: any = {};
-    let tempObj: any = {};
-    let currentIndex = 0;
-    let flag = false;
 
-    // Get value from form and assign them to payload
     let elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
       if (el.nodeName === 'INPUT') {
-        const { name, value } = el as HTMLInputElement;
-
-        switch (rateType) {
-          case 0:
-          case 1:
-            const propertyRate = rateType === 0 ? 'rental_rate' : 'rights_rate';
-            const subPropertyRate =
-              rateType === 0 ? 'class_rental_amounts' : 'class_rights_amounts';
-            if (!payload.hasOwnProperty(propertyRate)) {
-              payload[propertyRate] = {
-                [subPropertyRate]: [],
-              };
-            }
-            if (name.includes('clazz') || name.includes('amount')) {
-              if (currentIndex !== Number(name.split('-')[1])) {
-                tempObj = {};
-                currentIndex = Number(name.split('-')[1]);
-              }
-              tempObj[`${name.split('-')[0]}`] = Number(value);
-              if (
-                tempObj.hasOwnProperty('clazz') &&
-                tempObj.hasOwnProperty('amount')
-              ) {
-                payload[propertyRate][subPropertyRate].push(tempObj);
-              }
-            }
-
-            const checkClassArray = payload[propertyRate][subPropertyRate].map(
-              (item: any) => item.clazz
-            );
-            if (checkClassArray.length > 1) {
-              checkClassArray.forEach((element: any) => {
-                const appearTime = checkClassArray.filter(
-                  (item: any) => item === element
-                ).length;
-                if (appearTime > 1) {
-                  flag = true;
-                  setOpenAlertDialog(true);
-                }
-              });
-            }
-            break;
-
-          case 2:
-            if (!payload.hasOwnProperty('security_bond')) {
-              payload['security_bond'] = {};
-            }
-            if (['amount', 'rental_fee'].includes(name)) {
-              payload['security_bond'][name] = Number(value);
-            }
-            break;
-
-          case 3:
-            if (!payload.hasOwnProperty('other_rate')) {
-              payload['other_rate'] = {};
-            }
-            if (['detail', 'amount'].includes(name)) {
-              payload['other_rate'][name] = Number(value);
-            }
-            break;
-          default:
-            break;
+        const element = el as HTMLInputElement;
+        if (element.type === 'text') {
+          payload[element.name] = element.value;
         }
-
-        if (['type', 'status'].includes(name)) {
-          payload[name] = Number(value);
+        if (element.name === 'status') {
+          payload[element.name] = Number(element.value);
         }
       }
     });
-
-    if (flag) return;
     console.log(payload);
 
     // Call API Add New or Edit
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-    const token = currentUser?.access_token;
+    // const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+    // const token = currentUser?.access_token;
 
-    const fetchURL = isAtEditPage
-      ? `${rootURL}/rates/${currentEditRate.rate_id}`
-      : `${rootURL}/rates`;
+    // const fetchURL = isAtEditPage
+    //   ? `${rootURL}/markets/${currentEditMarket.rate_id}`
+    //   : `${rootURL}/markets`;
 
-    fetch(fetchURL, {
-      method: isAtEditPage ? 'PUT' : 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          errorMes.current = response?.errors?.type ?? 'Error';
-          throw new Error(response);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => {
-        console.dir(err);
-        setOpenErrorDialog(true);
-      });
+    // fetch(fetchURL, {
+    //   method: isAtEditPage ? 'PUT' : 'POST',
+    //   credentials: 'same-origin',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    //   body: JSON.stringify(payload),
+    // })
+    //   .then((res) => res.json())
+    //   .then((response) => {
+    //     if (response.error_code) {
+    //       errorMes.current = response?.errors?.type ?? 'Error';
+    //       throw new Error(response);
+    //     } else {
+    //       setOpenSuccessDialog(true);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.dir(err);
+    //     setOpenErrorDialog(true);
+    //   });
   };
 
   return (
     <div className="form-container text-field-1-4">
-      {currentEditRate && (
-        <MarketForm currentEditRate={currentEditRate} onSubmit={handleSubmit} />
+      {currentEditMarket && (
+        <MarketForm
+          currentEditMarket={currentEditMarket}
+          onSubmit={handleSubmit}
+        />
       )}
-      {!currentEditRate && <MarketForm onSubmit={handleSubmit} />}
+      {!currentEditMarket && <MarketForm onSubmit={handleSubmit} />}
       <AlertDialog
         openProp={openAlertDialog}
         message={'All classes have to be unique'}

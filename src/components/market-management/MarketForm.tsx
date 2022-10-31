@@ -6,14 +6,120 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { STATE_VALUES } from '../../const/const';
+import { rootURL, STATE_VALUES } from '../../const/const';
 
 const MarketForm = (props: any) => {
   const { currentEditMarket, onSubmit } = props;
+  const [listProvinces, setListProvinces] = useState<any>([]);
+  const [provinceValue, setProvinceValue] = useState<string>('');
+  const [listCities, setListCities] = useState<any>([]);
+  const [cityValue, setCityValue] = useState<string>('');
+  const [listWards, setListWards] = useState<any>([]);
+  const [wardValue, setWardValue] = useState<string>('');
+
+  const [zipcode, setZipcode] = useState<string>('');
+  const [district, setDistrict] = useState<string>('');
 
   const navigate = useNavigate();
-  const isAtEditPage = location.pathname.includes('/role/edit');
+  const isAtEditPage = location.pathname.includes('/market/edit');
+  const token = JSON.parse(
+    localStorage.getItem('currentUser') ?? ''
+  )?.access_token;
+
+  useEffect(() => {
+    fetch(`${rootURL}/locations/provinces`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data && data.provinces) {
+          setListProvinces(data.provinces);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const handleChangeProvince = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProvinceValue(e.target.value);
+    fetch(
+      `${rootURL}/locations/cities?` +
+        new URLSearchParams({
+          province: e.target.value,
+        }),
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data && data.cities) {
+          setListCities(data.cities);
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const handleChangeCity = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCityValue(e.target.value);
+    fetch(
+      `${rootURL}/locations/wards?` +
+        new URLSearchParams({
+          province: provinceValue,
+          city: e.target.value,
+        }),
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data && data.wards) {
+          setListWards(data.wards);
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const handleChangeWard = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWardValue(e.target.value);
+    fetch(
+      `${rootURL}/locations/query?` +
+        new URLSearchParams({
+          province: provinceValue,
+          city: cityValue,
+          ward: e.target.value,
+        }),
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data && data.location) {
+          setZipcode(data.location.zipcode);
+          setDistrict(data.location.district);
+        }
+      })
+      .catch((err) => console.error(err));
+  };
 
   return (
     <>
@@ -63,41 +169,46 @@ const MarketForm = (props: any) => {
             name="street"
             label="Street"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.location?.address ?? ''}
           />
           <TextField
             required
             select
             name="province"
             label="Province"
-            defaultValue={currentEditMarket?.status ?? ''}>
-            {STATE_VALUES.map((option: any) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            value={provinceValue}
+            onChange={handleChangeProvince}>
+            {listProvinces.map((province: string, index: number) => (
+              <MenuItem key={index} value={province}>
+                {province}
               </MenuItem>
             ))}
           </TextField>
           <TextField
             required
             select
+            disabled={!!!provinceValue}
             name="city"
             label="City"
-            defaultValue={currentEditMarket?.status ?? ''}>
-            {STATE_VALUES.map((option: any) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            value={cityValue}
+            onChange={handleChangeCity}>
+            {listCities.map((city: string, index: number) => (
+              <MenuItem key={index} value={city}>
+                {city}
               </MenuItem>
             ))}
           </TextField>
           <TextField
             required
             select
+            disabled={!!!cityValue}
             name="ward"
             label="Ward"
-            defaultValue={currentEditMarket?.status ?? ''}>
-            {STATE_VALUES.map((option: any) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            value={wardValue}
+            onChange={handleChangeWard}>
+            {listWards.map((ward: string, index: number) => (
+              <MenuItem key={index} value={ward}>
+                {ward}
               </MenuItem>
             ))}
           </TextField>
@@ -113,14 +224,20 @@ const MarketForm = (props: any) => {
             name="zipcode"
             label="Zipcode"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            value={zipcode}
+            onChange={(e: any) => {
+              setZipcode(e.target.value);
+            }}
           />
           <TextField
             disabled
             name="district"
             label="District"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            value={district}
+            onChange={(e: any) => {
+              setDistrict(e.target.value);
+            }}
           />
           <Box sx={{ width: '49%' }} />
         </Box>

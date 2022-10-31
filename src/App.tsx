@@ -36,6 +36,7 @@ function App() {
 
         <Route path="/market-management" element={<MarketManagement />} />
         <Route path="/market/add-new" element={<AddAndEditMarket />} />
+        <Route path="/market/edit/:id" element={<AddAndEditMarket />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>
