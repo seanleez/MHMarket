@@ -8,10 +8,17 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL, STATE_VALUES } from '../../const/const';
+import {
+  CLASS_RENTAL_AMOUNT,
+  MARKET_TYPE,
+  rootURL,
+  STATE_VALUES,
+} from '../../const/const';
 
 const MarketForm = (props: any) => {
   const { currentEditMarket, onSubmit } = props;
+  const isAtEditPage = location.pathname.includes('/market/edit');
+
   const [listProvinces, setListProvinces] = useState<any>([]);
   const [provinceValue, setProvinceValue] = useState<string>('');
   const [listCities, setListCities] = useState<any>([]);
@@ -23,7 +30,6 @@ const MarketForm = (props: any) => {
   const [district, setDistrict] = useState<string>('');
 
   const navigate = useNavigate();
-  const isAtEditPage = location.pathname.includes('/market/edit');
   const token = JSON.parse(
     localStorage.getItem('currentUser') ?? ''
   )?.access_token;
@@ -37,12 +43,63 @@ const MarketForm = (props: any) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data && data.provinces) {
           setListProvinces(data.provinces);
+          setProvinceValue(currentEditMarket?.location?.province ?? '');
         }
       })
       .catch((err) => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    if (isAtEditPage) {
+      fetch(
+        `${rootURL}/locations/cities?` +
+          new URLSearchParams({
+            province: currentEditMarket?.location?.province,
+          }),
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.cities) {
+            setListCities(data.cities);
+            setCityValue(currentEditMarket?.location?.city ?? '');
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtEditPage) {
+      fetch(
+        `${rootURL}/locations/wards?` +
+          new URLSearchParams({
+            province: currentEditMarket?.location?.province,
+            city: currentEditMarket?.location?.city,
+          }),
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.wards) {
+            setListWards(data.wards);
+            setWardValue(currentEditMarket?.location?.ward ?? '');
+          }
+        })
+        .catch((err) => console.error(err));
+    }
   }, []);
 
   const handleChangeProvince = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +118,6 @@ const MarketForm = (props: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data && data.cities) {
           setListCities(data.cities);
         }
@@ -86,7 +142,6 @@ const MarketForm = (props: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data && data.wards) {
           setListWards(data.wards);
         }
@@ -112,7 +167,6 @@ const MarketForm = (props: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data && data.location) {
           setZipcode(data.location.zipcode);
           setDistrict(data.location.district);
@@ -166,7 +220,7 @@ const MarketForm = (props: any) => {
           }}>
           <TextField
             required
-            name="street"
+            name="address"
             label="Street"
             variant="outlined"
             defaultValue={currentEditMarket?.location?.address ?? ''}
@@ -221,7 +275,6 @@ const MarketForm = (props: any) => {
           }}>
           <TextField
             disabled
-            name="zipcode"
             label="Zipcode"
             variant="outlined"
             value={zipcode}
@@ -231,7 +284,6 @@ const MarketForm = (props: any) => {
           />
           <TextField
             disabled
-            name="district"
             label="District"
             variant="outlined"
             value={district}
@@ -243,10 +295,10 @@ const MarketForm = (props: any) => {
         </Box>
         <TextField
           fullWidth
-          name="location"
+          name="google_map"
           label="Map Location"
           variant="outlined"
-          defaultValue={currentEditMarket?.name ?? ''}
+          defaultValue={currentEditMarket?.google_map ?? ''}
           style={{ width: '100%' }}
         />
         <div className="section-title">CONTACT PERSON</div>
@@ -258,30 +310,30 @@ const MarketForm = (props: any) => {
           }}>
           <TextField
             required
-            name="firstName"
+            name="first_name"
             label="First Name"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.first_name ?? ''}
           />
           <TextField
-            name="middleName"
+            name="middle_name"
             label="Middle Name"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.middle_name ?? ''}
           />
           <TextField
             required
-            name="lastName"
+            name="last_name"
             label="Last Name"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.last_name ?? ''}
           />
           <TextField
             required
             name="email"
             label="Email Address"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.email ?? ''}
           />
         </Box>
         <Box
@@ -294,19 +346,19 @@ const MarketForm = (props: any) => {
             name="position"
             label="Position"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.position ?? ''}
           />
           <TextField
-            name="telNum"
+            name="telephone"
             label="Telephone No."
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.telephone ?? ''}
           />
           <TextField
-            name="mobileNum"
+            name="mobile_phone"
             label="Mobile No."
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}
+            defaultValue={currentEditMarket?.supervisor?.mobile_phone ?? ''}
           />
           <Box sx={{ width: '24%' }} />
         </Box>
@@ -321,24 +373,23 @@ const MarketForm = (props: any) => {
           }}>
           <TextField
             required
-            select
-            name="marketType"
+            disabled
+            name="type"
             label="Market Type"
             variant="outlined"
-            defaultValue={currentEditMarket?.name ?? ''}>
-            {STATE_VALUES.map((option: any) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+            defaultValue={
+              MARKET_TYPE.find(
+                (item: any) => item.type === currentEditMarket?.type
+              )?.value ?? ''
+            }
+          />
           <TextField
             required
             select
-            name="marketClass"
+            name="clazz"
             label="MarketClass"
-            defaultValue={currentEditMarket?.status ?? ''}>
-            {STATE_VALUES.map((option: any) => (
+            defaultValue={currentEditMarket?.clazz ?? ''}>
+            {CLASS_RENTAL_AMOUNT.map((option: any) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -352,11 +403,11 @@ const MarketForm = (props: any) => {
           <Button
             variant="outlined"
             size="large"
-            onClick={() => navigate('/role-management')}>
+            onClick={() => navigate('/market-management')}>
             Cancel
           </Button>
           <Button type="submit" variant="contained" size="large">
-            {isAtEditPage ? 'EDIT ROLE' : 'CREATE ROLE'}
+            {isAtEditPage ? 'EDIT MARKET' : 'CREATE MARKET'}
           </Button>
         </Container>
       </form>

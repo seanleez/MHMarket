@@ -68,19 +68,19 @@ export const RATE_TYPE = [
 
 export const MARKET_TYPE = [
   {
-    type: 0,
+    type: 1,
     value: 'Public Market',
   },
   {
-    type: 1,
+    type: 2,
     value: 'Private Market',
   },
   {
-    type: 2,
+    type: 3,
     value: 'Private Talipapa',
   },
   {
-    type: 3,
+    type: 4,
     value: 'Hawking/Vending Site',
   },
 ];
