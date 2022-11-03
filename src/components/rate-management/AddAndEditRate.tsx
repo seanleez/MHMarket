@@ -165,7 +165,7 @@ const AddAndEditRate = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="form-container text-field-1-3">
       {currentEditRate && (
         <RateForm currentEditRate={currentEditRate} onSubmit={handleSubmit} />
       )}

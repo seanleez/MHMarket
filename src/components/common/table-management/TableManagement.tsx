@@ -21,6 +21,8 @@ import {
   OTHER_RATE_DETAIL,
   RATE_TYPE,
   RATE_MANAGEMENT,
+  MARKET_TYPE,
+  LIST_TABLE_NAME,
 } from '../../../const/const';
 import {
   getIdFieldByName,
@@ -53,15 +55,11 @@ const TableManagement: FC<ITableManagement> = (props) => {
     setData(rows);
   }, [rows]);
 
-  useEffect(() => {
-    console.log(rows);
-  }, []);
-
   let toggleSorting = useRef<boolean>(true);
 
-  const listIconActionByName = [
-    {
-      name: 'Role Management',
+  const LIST_ACTION_ICON_BY_NAME = LIST_TABLE_NAME.map((title: string) => {
+    return {
+      name: title,
       icons: [
         {
           name: EditIcon,
@@ -72,34 +70,8 @@ const TableManagement: FC<ITableManagement> = (props) => {
           onClick: onDelete,
         },
       ],
-    },
-    {
-      name: 'User Management',
-      icons: [
-        {
-          name: EditIcon,
-          onClick: onEdit,
-        },
-        {
-          name: DeleteIcon,
-          onClick: onDelete,
-        },
-      ],
-    },
-    {
-      name: 'Rate Management',
-      icons: [
-        {
-          name: EditIcon,
-          onClick: onEdit,
-        },
-        {
-          name: DeleteIcon,
-          onClick: onDelete,
-        },
-      ],
-    },
-  ];
+    };
+  });
 
   const getTableCellContent = (
     name: string,
@@ -119,15 +91,15 @@ const TableManagement: FC<ITableManagement> = (props) => {
       case 'action': {
         return (
           <>
-            {listIconActionByName
-              .find((item) => item.name.toUpperCase() === name)
-              ?.icons.map((icon: any, index: number) => {
-                return (
-                  <IconButton key={index} onClick={() => icon.onClick(id)}>
-                    <img src={icon.name} alt={`${icon}`} />
-                  </IconButton>
-                );
-              })}
+            {LIST_ACTION_ICON_BY_NAME.find(
+              (item) => item.name.toUpperCase() === name
+            )?.icons.map((icon: any, index: number) => {
+              return (
+                <IconButton key={index} onClick={() => icon.onClick(id)}>
+                  <img src={icon.name} alt={`${icon}`} />
+                </IconButton>
+              );
+            })}
           </>
         );
       }
@@ -175,6 +147,27 @@ const TableManagement: FC<ITableManagement> = (props) => {
                 (item: any) => item.detail === rowValueByColId.detail
               )?.value
             }
+          </span>
+        ) : (
+          <span></span>
+        );
+      }
+
+      // MARKET MANAGEMENT
+      case 'market_location': {
+        return row['location'] ? (
+          <span>{`${row['location']['address'] + ',' ?? ''} ${
+            row['location']['district'] ?? ''
+          }`}</span>
+        ) : (
+          <span></span>
+        );
+      }
+
+      case 'market_type': {
+        return row['type'] ? (
+          <span>
+            {MARKET_TYPE.find((item: any) => item.type === row['type'])?.value}
           </span>
         ) : (
           <span></span>

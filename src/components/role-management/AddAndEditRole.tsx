@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import './AddAndEditForm.scss';
+import '../Form.scss';
 import RoleForm from './RoleForm';
 
 const AddAndEditRole = () => {

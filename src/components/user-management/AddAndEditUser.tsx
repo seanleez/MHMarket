@@ -4,7 +4,7 @@ import { rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import '../role-management/AddAndEditForm.scss';
+import '../Form.scss';
 import UserForm from './UserForm';
 
 const AddAndEditUser = () => {
@@ -117,7 +117,7 @@ const AddAndEditUser = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="form-container text-field-1-3">
       {currentEditUser && (
         <UserForm
           currentEditUser={currentEditUser}

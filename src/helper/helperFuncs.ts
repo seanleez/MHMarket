@@ -1,4 +1,5 @@
 import {
+  MARKET_MANAGEMENT,
   RATE_MANAGEMENT,
   ROLE_MANAGEMENT,
   USER_MANAGEMENT,
@@ -19,6 +20,8 @@ export const getIdFieldByName = (name: string) => {
     return 'user_id';
   } else if (name === RATE_MANAGEMENT) {
     return 'rate_id';
+  } else if (name === MARKET_MANAGEMENT) {
+    return 'market_id';
   } else {
     //
   }
@@ -31,6 +34,8 @@ export const getSearchField = (name: string) => {
     return 'first_name';
   } else if (name === RATE_MANAGEMENT) {
     return 'type';
+  } else if (name === MARKET_MANAGEMENT) {
+    return 'name';
   } else {
     //
   }

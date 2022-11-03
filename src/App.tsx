@@ -3,6 +3,8 @@ import './App.scss';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
 import Login from './components/login/Login';
+import AddAndEditMarket from './components/market-management/AddAndEditMarket';
+import MarketManagement from './components/market-management/MarketManagement';
 import AddAndEditRate from './components/rate-management/AddAndEditRate';
 import RateManagement from './components/rate-management/RateManagement';
 import AddAndEditRole from './components/role-management/AddAndEditRole';
@@ -31,6 +33,10 @@ function App() {
         <Route path="/rate-management" element={<RateManagement />} />
         <Route path="/rate/add-new" element={<AddAndEditRate />} />
         <Route path="/rate/edit/:id" element={<AddAndEditRate />} />
+
+        <Route path="/market-management" element={<MarketManagement />} />
+        <Route path="/market/add-new" element={<AddAndEditMarket />} />
+        <Route path="/market/edit/:id" element={<AddAndEditMarket />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>
