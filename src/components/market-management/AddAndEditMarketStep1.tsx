@@ -1,12 +1,12 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MARKET_TYPE, rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import MarketForm from './MarketForm';
+import MarketFormStep1 from './MarketFormStep1';
 
-const AddAndEditMarket = () => {
+const AddAndEditMarketStep1 = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
@@ -43,7 +43,9 @@ const AddAndEditMarket = () => {
 
   const handleCloseSuccessDialog = () => {
     setOpenSuccessDialog(false);
-    navigate('/market-management');
+    isAtEditPage
+      ? navigate(`/market/edit/step2/${params.id}`)
+      : navigate('/market/add-new/step2');
   };
 
   const handleCloseAlertDialog = () => {
@@ -116,11 +118,11 @@ const AddAndEditMarket = () => {
           errorMes.current = response?.errors?.type ?? 'Error';
           throw new Error(response);
         } else {
+          response && localStorage.setItem('marketId', response.market_id);
           setOpenSuccessDialog(true);
         }
       })
       .catch((err) => {
-        console.dir(err);
         setOpenErrorDialog(true);
       });
   };
@@ -128,12 +130,12 @@ const AddAndEditMarket = () => {
   return (
     <div className="form-container text-field-1-4">
       {currentEditMarket && (
-        <MarketForm
+        <MarketFormStep1
           currentEditMarket={currentEditMarket}
           onSubmit={handleSubmit}
         />
       )}
-      {!currentEditMarket && <MarketForm onSubmit={handleSubmit} />}
+      {!currentEditMarket && <MarketFormStep1 onSubmit={handleSubmit} />}
       <AlertDialog
         openProp={openAlertDialog}
         message={'All classes have to be unique'}
@@ -153,4 +155,4 @@ const AddAndEditMarket = () => {
   );
 };
 
-export default AddAndEditMarket;
+export default AddAndEditMarketStep1;

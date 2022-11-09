@@ -15,7 +15,7 @@ import {
   STATE_VALUES,
 } from '../../const/const';
 
-const MarketForm = (props: any) => {
+const MarketFormStep1 = (props: any) => {
   const { currentEditMarket, onSubmit } = props;
   const isAtEditPage = location.pathname.includes('/market/edit');
 
@@ -35,42 +35,60 @@ const MarketForm = (props: any) => {
   )?.access_token;
 
   useEffect(() => {
-    fetch(`${rootURL}/locations/provinces`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.provinces) {
-          setListProvinces(data.provinces);
-          setProvinceValue(currentEditMarket?.location?.province ?? '');
-        }
-      })
-      .catch((err) => console.error(err));
-  }, []);
-
-  useEffect(() => {
     if (isAtEditPage) {
-      fetch(
-        `${rootURL}/locations/cities?` +
-          new URLSearchParams({
-            province: currentEditMarket?.location?.province,
-          }),
-        {
+      Promise.all([
+        fetch(`${rootURL}/locations/provinces`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.cities) {
-            setListCities(data.cities);
-            setCityValue(currentEditMarket?.location?.city ?? '');
+        }),
+        fetch(
+          `${rootURL}/locations/cities?` +
+            new URLSearchParams({
+              province: currentEditMarket?.location?.province,
+            }),
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
+        ),
+        fetch(
+          `${rootURL}/locations/wards?` +
+            new URLSearchParams({
+              province: currentEditMarket?.location?.province,
+              city: currentEditMarket?.location?.city,
+            }),
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        ),
+      ])
+        .then((resList) => resList.map((res) => res.json()))
+        .then((promises) => {
+          const getData = async (prms: any) => {
+            const result = [];
+            for (const promise of prms) {
+              result.push(await promise);
+            }
+            return result;
+          };
+          return getData(promises);
+        })
+        .then((datas) => {
+          const [{ provinces }, { cities }, { wards }] = datas;
+          setListProvinces(provinces);
+          setProvinceValue(currentEditMarket?.location?.province ?? '');
+          setListCities(cities);
+          setCityValue(currentEditMarket?.location?.city ?? '');
+          setListWards(wards);
+          setWardValue(currentEditMarket?.location?.ward ?? '');
+          return { provinces, cities, wards };
         })
         .catch((err) => console.error(err));
     }
@@ -79,10 +97,11 @@ const MarketForm = (props: any) => {
   useEffect(() => {
     if (isAtEditPage) {
       fetch(
-        `${rootURL}/locations/wards?` +
+        `${rootURL}/locations/query?` +
           new URLSearchParams({
-            province: currentEditMarket?.location?.province,
-            city: currentEditMarket?.location?.city,
+            province: currentEditMarket?.location?.province ?? '',
+            city: currentEditMarket?.location?.city ?? '',
+            ward: currentEditMarket?.location?.ward ?? '',
           }),
         {
           method: 'GET',
@@ -93,9 +112,10 @@ const MarketForm = (props: any) => {
       )
         .then((res) => res.json())
         .then((data) => {
-          if (data && data.wards) {
-            setListWards(data.wards);
-            setWardValue(currentEditMarket?.location?.ward ?? '');
+          console.log(data);
+          if (data && data.location) {
+            setZipcode(data.location.zipcode);
+            setDistrict(data.location.district);
           }
         })
         .catch((err) => console.error(err));
@@ -180,8 +200,22 @@ const MarketForm = (props: any) => {
       <span className="title">
         {isAtEditPage ? 'EDIT MARKET' : 'ADD NEW MARKET'}
       </span>
+      <div className="step-circles-container">
+        <div className="step-circle">
+          <div className="active">1</div>
+          <div>Information</div>
+        </div>
+        <div className="step-circle">
+          <div>2</div>
+          <div>Floorplan</div>
+        </div>
+        <div className="step-circle">
+          <div>3</div>
+          <div>Review</div>
+        </div>
+      </div>
       <form onSubmit={onSubmit}>
-        <div className="section-title">BASIC</div>
+        <div className="section-title mt-50">BASIC</div>
         <Box
           sx={{
             display: 'flex',
@@ -370,6 +404,7 @@ const MarketForm = (props: any) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             margin: '16px 0',
+            mb: 10,
           }}>
           <TextField
             required
@@ -399,7 +434,11 @@ const MarketForm = (props: any) => {
         </Box>
         <Divider sx={{ my: '30px' }} />
         <Container
-          sx={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '10px',
+          }}>
           <Button
             variant="outlined"
             size="large"
@@ -407,7 +446,7 @@ const MarketForm = (props: any) => {
             Cancel
           </Button>
           <Button type="submit" variant="contained" size="large">
-            {isAtEditPage ? 'EDIT MARKET' : 'CREATE MARKET'}
+            Submit
           </Button>
         </Container>
       </form>
@@ -415,4 +454,4 @@ const MarketForm = (props: any) => {
   );
 };
 
-export default MarketForm;
+export default MarketFormStep1;
