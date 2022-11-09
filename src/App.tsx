@@ -1,5 +1,6 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.scss';
+import Canvas from './components/drag-and-drop-stall/Canvas';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
 import Login from './components/login/Login';
@@ -18,7 +19,8 @@ function App() {
 
   return (
     <div className="App">
-      {pathname !== '/' && <Header />}
+      <Canvas />
+      {/* {pathname !== '/' && <Header />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<LandingPage />} />
@@ -54,7 +56,7 @@ function App() {
         />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
-      </Routes>
+      </Routes> */}
       {/* {pathname !== '/' && <Footer />} */}
     </div>
   );
