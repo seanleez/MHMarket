@@ -1,10 +1,11 @@
 import React from 'react';
-import { Stage, Layer, Star, Text, Rect } from 'react-konva';
+import { Layer, Stage, Text } from 'react-konva';
+import { v4 as uuid } from 'uuid';
 import Rectangle from './Rectangle';
 
 function generateShapes() {
   return [...Array(10)].map((_, i) => ({
-    id: i.toString(),
+    id: uuid(),
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
     rotation: 0,
@@ -20,6 +21,7 @@ const Canvas: React.FC = () => {
   const handleDragStart = (e: any) => {
     console.dir(e.target);
     const id = e.target.id();
+    console.log(id);
     setRects(
       rects.map((rect) => {
         return {

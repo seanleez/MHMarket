@@ -10,7 +10,7 @@ const AddAndEditMarketStep2 = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
-  const [listFloors, setListFloors] = useState<any>();
+  const [listFloors, setListFloors] = useState<any>([]);
 
   const errorMes = useRef<string>('');
 
@@ -32,8 +32,10 @@ const AddAndEditMarketStep2 = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-          setListFloors(data);
+          if (data && data.floors) {
+            console.log(data);
+            setListFloors(data.floors);
+          }
         })
         .catch((err) => console.error(err));
     }
@@ -48,7 +50,7 @@ const AddAndEditMarketStep2 = () => {
     setOpenAlertDialog(false);
   };
 
-  const handlePublish = (e: React.FormEvent) => {
+  const handleCreateFloor = (e: React.FormEvent) => {
     e.preventDefault();
     const payload: any = {
       location: {},
@@ -119,9 +121,32 @@ const AddAndEditMarketStep2 = () => {
     //   });
   };
 
+  const handleAddNew = () => {
+    console.log('add');
+  };
+
+  const handleEdit = () => {
+    console.log('edit');
+  };
+
+  const handleDelete = () => {
+    console.log('delete');
+  };
+
+  const handlePublish = () => {
+    console.log('delete');
+  };
+
   return (
     <div className="form-container">
-      <MarketFormStep2 onSubmit={handlePublish} isAtEditPage={isAtEditPage} />
+      <MarketFormStep2
+        rows={listFloors}
+        onSubmit={handleCreateFloor}
+        onAddNew={handleAddNew}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onPublish={handlePublish}
+      />
       <AlertDialog
         openProp={openAlertDialog}
         message={'All classes have to be unique'}

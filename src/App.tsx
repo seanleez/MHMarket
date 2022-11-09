@@ -19,8 +19,8 @@ function App() {
 
   return (
     <div className="App">
-      <Canvas />
-      {/* {pathname !== '/' && <Header />}
+      {/* <Canvas /> */}
+      {pathname !== '/' && <Header />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<LandingPage />} />
@@ -56,7 +56,7 @@ function App() {
         />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
-      </Routes> */}
+      </Routes>
       {/* {pathname !== '/' && <Footer />} */}
     </div>
   );

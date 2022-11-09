@@ -133,9 +133,11 @@ export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
 export const ROLE_MANAGEMENT = 'ROLE MANAGEMENT';
 export const USER_MANAGEMENT = 'USER MANAGEMENT';
 export const MARKET_MANAGEMENT = 'MARKET MANAGEMENT';
+export const FLOOR_MANAGEMENT = 'FLOOR MANAGEMENT';
 export const LIST_TABLE_NAME = [
   'Role Management',
   'User Management',
   'Rate Management',
   'Market Management',
+  'Floor Management',
 ];
