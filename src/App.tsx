@@ -1,9 +1,11 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.scss';
+import Canvas from './components/drag-and-drop-stall/Canvas';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
 import Login from './components/login/Login';
-import AddAndEditMarket from './components/market-management/AddAndEditMarket';
+import AddAndEditMarketStep1 from './components/market-management/AddAndEditMarketStep1';
+import AddAndEditMarketStep2 from './components/market-management/AddAndEditMarketStep2';
 import MarketManagement from './components/market-management/MarketManagement';
 import AddAndEditRate from './components/rate-management/AddAndEditRate';
 import RateManagement from './components/rate-management/RateManagement';
@@ -17,7 +19,8 @@ function App() {
 
   return (
     <div className="App">
-      {pathname !== '/' && <Header />}
+      <Canvas />
+      {/* {pathname !== '/' && <Header />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<LandingPage />} />
@@ -35,11 +38,25 @@ function App() {
         <Route path="/rate/edit/:id" element={<AddAndEditRate />} />
 
         <Route path="/market-management" element={<MarketManagement />} />
-        <Route path="/market/add-new" element={<AddAndEditMarket />} />
-        <Route path="/market/edit/:id" element={<AddAndEditMarket />} />
+        <Route
+          path="/market/add-new/step1"
+          element={<AddAndEditMarketStep1 />}
+        />
+        <Route
+          path="/market/edit/step1/:id"
+          element={<AddAndEditMarketStep1 />}
+        />
+        <Route
+          path="/market/add-new/step2"
+          element={<AddAndEditMarketStep2 />}
+        />
+        <Route
+          path="/market/edit/step2/:id"
+          element={<AddAndEditMarketStep2 />}
+        />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
-      </Routes>
+      </Routes> */}
       {/* {pathname !== '/' && <Footer />} */}
     </div>
   );

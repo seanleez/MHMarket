@@ -84,7 +84,7 @@ const MarketManagement = () => {
   };
 
   const handleAddNew = () => {
-    navigate('/market/add-new');
+    navigate('/market/add-new/step1');
   };
 
   const handleDelete = (id: string) => {
@@ -93,7 +93,7 @@ const MarketManagement = () => {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/market/edit/${id}`);
+    navigate(`/market/edit/step1/${id}`);
   };
 
   return (
