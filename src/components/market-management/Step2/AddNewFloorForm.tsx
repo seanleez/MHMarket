@@ -12,6 +12,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
+import Canvas from './Canvas';
 
 interface IAddNewFloorForm {
   onSubmit: () => void;
@@ -78,7 +79,9 @@ const AddNewFloorForm: React.FC<IAddNewFloorForm> = (props) => {
       </Box>
 
       <Collapse in={expand}>
-        <Paper elevation={5}>111</Paper>
+        <Paper elevation={5}>
+          <Canvas />
+        </Paper>
       </Collapse>
     </form>
   );

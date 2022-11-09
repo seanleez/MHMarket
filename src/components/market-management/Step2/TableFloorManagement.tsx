@@ -102,10 +102,10 @@ const TableFloorManagement: FC<ITableFloorManagement> = (props) => {
             {data.map((row: any, index: any) => {
               const idField = getIdFieldByName(name);
               return (
-                <TableRow key={row[`${idField}`]}>
-                  {columns.map((column: any) => {
+                <TableRow key={index}>
+                  {columns.map((column: any, index: number) => {
                     return (
-                      <TableCell key={column.id} align={column.align}>
+                      <TableCell key={index} align={column.align}>
                         {getTableCellContent(
                           name,
                           column,
