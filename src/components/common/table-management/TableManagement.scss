@@ -9,6 +9,12 @@
   padding: 50px;
   margin-top: 50px;
 
+  &.nested-table {
+    padding: 0;
+    border: none;
+    width: 100%;
+  }
+
   .table-management-title {
     position: absolute;
     top: -25px;

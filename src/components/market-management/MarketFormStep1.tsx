@@ -14,6 +14,7 @@ import {
   rootURL,
   STATE_VALUES,
 } from '../../const/const';
+import ProgressCirle from '../common/progress-circle/ProgressCircle';
 
 const MarketFormStep1 = (props: any) => {
   const { currentEditMarket, onSubmit } = props;
@@ -35,7 +36,7 @@ const MarketFormStep1 = (props: any) => {
   )?.access_token;
 
   useEffect(() => {
-    if (isAtEditPage) {
+    if (isAtEditPage && currentEditMarket) {
       Promise.all([
         fetch(`${rootURL}/locations/provinces`, {
           method: 'GET',
@@ -95,7 +96,7 @@ const MarketFormStep1 = (props: any) => {
   }, []);
 
   useEffect(() => {
-    if (isAtEditPage) {
+    if (isAtEditPage && currentEditMarket) {
       fetch(
         `${rootURL}/locations/query?` +
           new URLSearchParams({
@@ -200,20 +201,7 @@ const MarketFormStep1 = (props: any) => {
       <span className="title">
         {isAtEditPage ? 'EDIT MARKET' : 'ADD NEW MARKET'}
       </span>
-      <div className="step-circles-container">
-        <div className="step-circle">
-          <div className="active">1</div>
-          <div>Information</div>
-        </div>
-        <div className="step-circle">
-          <div>2</div>
-          <div>Floorplan</div>
-        </div>
-        <div className="step-circle">
-          <div>3</div>
-          <div>Review</div>
-        </div>
-      </div>
+      <ProgressCirle step={1} />
       <form onSubmit={onSubmit}>
         <div className="section-title mt-50">BASIC</div>
         <Box

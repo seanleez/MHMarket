@@ -36,13 +36,29 @@ interface ITableManagement {
   name: string;
   columns: any;
   rows?: any;
+  dontHaveSearchField?: boolean;
+  dontHavePagination?: boolean;
+  isNestedTable?: boolean;
+  isDisableAddNewBtn?: boolean;
   onAddNew?: () => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
 }
 
 const TableManagement: FC<ITableManagement> = (props) => {
-  const { name, columns, rows, onAddNew, onEdit, onDelete } = props;
+  const {
+    name,
+    dontHaveSearchField,
+    dontHavePagination,
+    isNestedTable,
+    isDisableAddNewBtn,
+    columns,
+    rows,
+    onAddNew,
+    onEdit,
+    onDelete,
+  } = props;
+
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(
     INIT_TABLE_ROWS_NUMBER
@@ -87,21 +103,6 @@ const TableManagement: FC<ITableManagement> = (props) => {
       // ROLE MANAGEMENT
       case 'index': {
         return page * rowsPerPage + index + 1;
-      }
-      case 'action': {
-        return (
-          <>
-            {LIST_ACTION_ICON_BY_NAME.find(
-              (item) => item.name.toUpperCase() === name
-            )?.icons.map((icon: any, index: number) => {
-              return (
-                <IconButton key={index} onClick={() => icon.onClick(id)}>
-                  <img src={icon.name} alt={`${icon}`} />
-                </IconButton>
-              );
-            })}
-          </>
-        );
       }
       case 'status': {
         return (
@@ -174,6 +175,22 @@ const TableManagement: FC<ITableManagement> = (props) => {
         );
       }
 
+      case 'action': {
+        return (
+          <>
+            {LIST_ACTION_ICON_BY_NAME.find(
+              (item) => item.name.toUpperCase() === name
+            )?.icons.map((icon: any, index: number) => {
+              return (
+                <IconButton key={index} onClick={() => icon.onClick(id)}>
+                  <img src={icon.name} alt={`${icon}`} />
+                </IconButton>
+              );
+            })}
+          </>
+        );
+      }
+
       default: {
         return <span>{rowValueByColId}</span>;
       }
@@ -220,21 +237,29 @@ const TableManagement: FC<ITableManagement> = (props) => {
   };
 
   return (
-    <div className="table-management-container">
+    <div
+      className={`table-management-container ${
+        isNestedTable ? 'nested-table' : ''
+      }`}>
       <span className="table-management-title">{name}</span>
       <div className="table-management-features">
-        <Button variant="contained" className="primary" onClick={onAddNew}>
+        <Button
+          variant="contained"
+          disabled={isDisableAddNewBtn}
+          onClick={onAddNew}>
           Add New
           <AddIcon />
         </Button>
-        <div className="search-field">
-          <span>Search:</span>
-          <TextField
-            inputRef={searchInputRef}
-            onChange={handleSearchValue}
-            sx={{ flex: 1 }}
-          />
-        </div>
+        {!dontHaveSearchField && (
+          <div className="search-field">
+            <span>Search:</span>
+            <TextField
+              inputRef={searchInputRef}
+              onChange={handleSearchValue}
+              sx={{ flex: 1 }}
+            />
+          </div>
+        )}
       </div>
       <TableContainer>
         <Table>
@@ -285,15 +310,17 @@ const TableManagement: FC<ITableManagement> = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={ROWS_PER_PAGE_OPTION}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      {!dontHavePagination && (
+        <TablePagination
+          rowsPerPageOptions={ROWS_PER_PAGE_OPTION}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      )}
     </div>
   );
 };

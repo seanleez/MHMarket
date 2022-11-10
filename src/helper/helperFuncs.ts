@@ -1,4 +1,5 @@
 import {
+  FLOOR_MANAGEMENT,
   MARKET_MANAGEMENT,
   RATE_MANAGEMENT,
   ROLE_MANAGEMENT,
@@ -22,6 +23,8 @@ export const getIdFieldByName = (name: string) => {
     return 'rate_id';
   } else if (name === MARKET_MANAGEMENT) {
     return 'market_id';
+  } else if (name === FLOOR_MANAGEMENT) {
+    return 'floor_id';
   } else {
     //
   }
