@@ -18,9 +18,7 @@ const Header: FC = () => {
     <>
       <div className="header-container">
         <div className="left-content">
-          <Tooltip title="Menu">
-            <NavigationMenu />
-          </Tooltip>
+          <NavigationMenu />
           <Link to="/">
             <span className="app-name">MH-Market</span>
           </Link>

@@ -65,7 +65,7 @@ const AddAndEditRole = () => {
     e.preventDefault();
     const payload: any = {};
     const permissionIds: string[] = [];
-    let elementsInForm = (e.target as HTMLFormElement).elements;
+    const elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
       if (el.nodeName === 'INPUT') {
         const { type, name, value, checked, id } = el as HTMLInputElement;

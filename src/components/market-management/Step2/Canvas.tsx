@@ -1,84 +1,177 @@
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
-import { Layer, Stage, Image } from 'react-konva';
-import { v4 as uuid } from 'uuid';
-import Rectangle from './Rectangle';
-import AddNewShape from '../../../assets/icon/add-new-shape-icon.svg';
+import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
+import { v4 as uuid } from 'uuid';
+import AddNewShape from '../../../assets/icon/add-new-shape-icon.svg';
+import DeleteStall from '../../../assets/icon/delete-stall-icon.svg';
+import ConfirmDialog from '../../common/dialog/ConfirmDialog';
+import Rectangle from './Rectangle';
+import StallDetailDialog from './StallDetailDialog';
 
 const SCROLL_BAR_WIDTH = 15;
-const CANVAS_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
-const CANVAS_HEIGHT = window.innerHeight;
+const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
+const CONTAINER_HEIGHT = 0.7 * window.innerHeight;
 
-function generateShapes() {
-  return [...Array(10)].map((_, i) => ({
-    id: uuid(),
-    x: Math.random() * CANVAS_WIDTH,
-    y: Math.random() * CANVAS_HEIGHT,
-    rotation: 0,
-    isDragging: false,
-  }));
+interface IRect {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
-const INITIAL_STATE = generateShapes();
-
-const LionImage = () => {
-  const [image] = useImage('https://konvajs.org/assets/lion.png');
-  return <Image image={image} />;
-};
-
 const Canvas: React.FC = () => {
-  const [rects, setRects] = useState(INITIAL_STATE);
+  const [rects, setRects] = useState<IRect[]>([]);
+  const [selectedId, setSelectedId] = useState<string>('');
+  const [canvasWidth, setCanvasWidth] = useState<number>(0);
+  const [canvasHeight, setCanvasHeight] = useState<number>(0);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
+  const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
+  const [image, status] = useImage(
+    'https://images.unsplash.com/photo-1552872673-9b7b99711ebb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+  );
+
+  const imageRef = useRef(null);
 
   useEffect(() => {
-    console.log(window.innerWidth);
-    console.log(window.innerWidth * 0.9);
-  }, []);
+    const imgEl = (imageRef.current as any).getAttrs()?.image;
+    if (status === 'loaded') {
+      setCanvasWidth(imgEl?.width);
+      setCanvasHeight(imgEl?.height);
+    }
+  }, [status]);
 
-  const handleDragStart = (e: any) => {
-    console.dir(e.target);
-    const id = e.target.id();
-    console.log(id);
-    setRects(
-      rects.map((rect) => {
-        return {
-          ...rect,
-          isDragging: rect.id === id,
-        };
-      })
-    );
+  useEffect(() => {
+    console.log(rects);
+  }, [rects]);
+
+  const handleChange = (rect: IRect, newAttrs: any) => {
+    const newRects = [...rects];
+    const changingRectId = newRects.findIndex((item) => item.id === rect.id);
+    if (changingRectId !== undefined) {
+      newRects[changingRectId] = newAttrs;
+      setRects(newRects);
+    }
   };
-  const handleDragEnd = (e: any) => {
-    setRects(
-      rects.map((rect) => {
-        return {
-          ...rect,
-          isDragging: false,
-        };
-      })
-    );
+  const checkDeselect = (e: any) => {
+    // deselect when clicked on empty area
+    const clickedOnEmpty = e.target.getClassName() === 'Image';
+    if (clickedOnEmpty) {
+      setSelectedId('');
+    }
+  };
+
+  const handleAddNewStall = () => {
+    const newRects = [...rects];
+    const Rect = {
+      id: uuid(),
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+    };
+    newRects.push(Rect);
+    setRects(newRects);
+  };
+
+  const handleDeleteStall = () => {
+    if (rects.length > 0) {
+      setOpenConfirmDialog(true);
+    }
+  };
+
+  const handleAcceptConfirmDialog = () => {
+    const newRects = [...rects];
+    setRects(newRects.filter((rect: IRect) => rect.id !== selectedId));
+    setOpenConfirmDialog(false);
+  };
+
+  const handleDblClickStall = (id: string) => {
+    console.log(id);
+    setOpenDetailDialog(true);
+  };
+
+  const handleEditDetailStall = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload: any = {};
+    const elementsInForm = (e.target as HTMLFormElement).elements;
+    [...elementsInForm].forEach((el) => {
+      if (el.nodeName === 'INPUT') {
+        const { type, name, value } = el as HTMLInputElement;
+        if (type === 'text') {
+          payload[name] = value;
+        }
+        if (name !== 'name') {
+          payload[name] = Number(value);
+        }
+      }
+    });
+    payload['stall_id'] = selectedId;
+    console.log(payload);
   };
 
   return (
     <>
-      <Box sx={{ backgroundColor: 'gray' }}>
-        <IconButton>
-          <img src={AddNewShape} alt={AddNewShape} />
-        </IconButton>
+      <Box
+        sx={{
+          backgroundColor: '#0038a8',
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: '10px',
+          padding: '5px 0',
+        }}>
+        <Tooltip title={'Create Stall'}>
+          <IconButton onClick={handleAddNewStall}>
+            <img src={AddNewShape} alt={AddNewShape} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={'Delete Stall'}>
+          <IconButton onClick={handleDeleteStall}>
+            <img src={DeleteStall} alt={DeleteStall} />
+          </IconButton>
+        </Tooltip>
       </Box>
-      <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
-        <Layer style={{ border: '1px solid black' }}>
-          <LionImage />
-          {rects.map((rect: any, i: number) => (
-            <Rectangle
-              key={i}
-              rect={rect}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            />
-          ))}
-        </Layer>
-      </Stage>
+      <div
+        style={{
+          width: CONTAINER_WIDTH,
+          height: CONTAINER_HEIGHT,
+          overflow: 'auto',
+        }}>
+        <Stage
+          width={canvasWidth}
+          height={canvasHeight}
+          onMouseDown={checkDeselect}
+          onTouchStart={checkDeselect}>
+          <Layer>
+            <Image image={image} ref={imageRef} />
+            {rects.length > 0 &&
+              rects.map((rect: IRect) => (
+                <Rectangle
+                  key={rect.id}
+                  shapeProps={rect}
+                  isSelected={rect.id === selectedId}
+                  onSelect={() => {
+                    setSelectedId(rect.id);
+                  }}
+                  onChange={(newAttrs) => handleChange(rect, newAttrs)}
+                  onDoubleClickStall={() => handleDblClickStall(rect.id)}
+                />
+              ))}
+          </Layer>
+        </Stage>
+      </div>
+      <StallDetailDialog
+        openProp={openDetailDialog}
+        onCloseDialog={() => setOpenDetailDialog(false)}
+        onSubmit={handleEditDetailStall}
+      />
+      <ConfirmDialog
+        openProp={openConfirmDialog}
+        message={'Are you sure you wanna delete?'}
+        onCloseDialog={() => setOpenConfirmDialog(false)}
+        onAcceptDialog={handleAcceptConfirmDialog}
+      />
     </>
   );
 };
