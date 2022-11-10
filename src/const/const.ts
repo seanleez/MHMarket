@@ -127,6 +127,47 @@ export const CLASS_RENTAL_AMOUNT = [
   },
 ];
 
+export const STALL_STATUS = [
+  {
+    value: 1,
+    label: 'Inactive',
+  },
+  {
+    value: 2,
+    label: 'Active',
+  },
+];
+
+export const STALL_TYPE = [
+  {
+    value: 1,
+    label: 'Temporary',
+  },
+  {
+    value: 2,
+    label: 'Permanent',
+  },
+];
+
+export const STALL_CLASS = [
+  {
+    value: 1,
+    label: 'Regular',
+  },
+  {
+    value: 2,
+    label: 'Front Corner',
+  },
+  {
+    value: 3,
+    label: 'Front',
+  },
+  {
+    value: 4,
+    label: 'Inside Corner',
+  },
+];
+
 export const INIT_TABLE_ROWS_NUMBER = 5;
 export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
 export const RATE_MANAGEMENT = 'RATE MANAGEMENT';

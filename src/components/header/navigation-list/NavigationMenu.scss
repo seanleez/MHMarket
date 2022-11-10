@@ -1,5 +1,13 @@
 .navigation-container {
   position: relative;
+  display: flex;
+  align-items: center;
+
+  button {
+    img {
+      width: 90%;
+    }
+  }
 
   ul {
     position: absolute;

@@ -1,0 +1,29 @@
+.form-detail-container {
+  min-width: 500px;
+}
+.dialog-detail-infor-title {
+  text-align: center;
+  font-weight: 600;
+}
+
+.field-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px;
+
+  & > p:nth-child(1) {
+    min-width: 45%;
+    text-align: right;
+  }
+
+  & > :nth-child(2) {
+    flex-grow: 1;
+  }
+}
+
+.dialog-actions {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 15px 0 !important;
+}
