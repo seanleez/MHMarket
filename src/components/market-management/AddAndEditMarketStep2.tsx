@@ -140,7 +140,7 @@ const AddAndEditMarketStep2 = () => {
   return (
     <div className="form-container">
       <MarketFormStep2
-        rows={listFloors}
+        listFloors={listFloors}
         onSubmit={handleCreateFloor}
         onAddNew={handleAddNew}
         onEdit={handleEdit}
