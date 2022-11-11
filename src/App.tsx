@@ -1,6 +1,6 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.scss';
-import Canvas from './components/market-management/Step2/Canvas';
+import Canvas from './components/market-management/Canvas/Canvas';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
 import Login from './components/login/Login';

@@ -21,16 +21,19 @@ interface IRect {
   height: number;
 }
 
-const Canvas: React.FC = () => {
+interface ICanvas {
+  imgBackground: string;
+}
+
+const Canvas: React.FC<ICanvas> = (props) => {
+  const { imgBackground } = props;
   const [rects, setRects] = useState<IRect[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
   const [canvasWidth, setCanvasWidth] = useState<number>(0);
   const [canvasHeight, setCanvasHeight] = useState<number>(0);
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
-  const [image, status] = useImage(
-    'https://images.unsplash.com/photo-1552872673-9b7b99711ebb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
-  );
+  const [image, status] = useImage(imgBackground ?? '');
 
   const imageRef = useRef(null);
 
@@ -118,7 +121,6 @@ const Canvas: React.FC = () => {
           backgroundColor: '#0038a8',
           display: 'flex',
           justifyContent: 'center',
-          marginTop: '10px',
           padding: '5px 0',
         }}>
         <Tooltip title={'Create Stall'}>
