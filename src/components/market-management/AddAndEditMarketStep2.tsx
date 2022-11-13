@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MARKET_TYPE, rootURL } from '../../const/const';
+import { FloorContext } from '../../context/FloorContext';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
@@ -10,7 +11,8 @@ const AddAndEditMarketStep2 = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
-  const [listFloors, setListFloors] = useState<any>([]);
+
+  const floorContext = useContext(FloorContext);
 
   const errorMes = useRef<string>('');
 
@@ -33,8 +35,7 @@ const AddAndEditMarketStep2 = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data && data.floors) {
-            console.log(data);
-            setListFloors(data.floors);
+            floorContext.setListFloors(data.floors);
           }
         })
         .catch((err) => console.error(err));
@@ -140,7 +141,7 @@ const AddAndEditMarketStep2 = () => {
   return (
     <div className="form-container">
       <MarketFormStep2
-        listFloors={listFloors}
+        listFloors={floorContext.listFloors}
         onSubmit={handleCreateFloor}
         onAddNew={handleAddNew}
         onEdit={handleEdit}
