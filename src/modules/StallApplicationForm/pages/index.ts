@@ -1,0 +1,1 @@
+export { default as BlankInfomationStallForm } from './BlankInfomationStallForm'

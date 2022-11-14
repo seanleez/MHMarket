@@ -1,0 +1,1 @@
+export { BlankInfomationStallForm } from './StallApplicationForm/pages';
