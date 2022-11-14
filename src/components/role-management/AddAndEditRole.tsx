@@ -17,9 +17,12 @@ const AddAndEditRole = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/role/edit');
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
+  
+  const currentUser = localStorage.getItem('currentUser') ? 
+    JSON.parse(localStorage.getItem('currentUser') as string) : 
+    null;
+  const token = currentUser?.access_token;
+
 
   useEffect(() => {
     fetch(`${rootURL}/permissions/categories`, {

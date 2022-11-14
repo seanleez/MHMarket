@@ -9,7 +9,9 @@ import CircularLoading from '../../common/loading/CircularLoading';
 interface IAddNewFloor {
   onCancel: () => void;
 }
-const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+const currentUser = localStorage.getItem('currentUser') ? 
+  JSON.parse(localStorage.getItem('currentUser') as string) : 
+  null;
 const token = currentUser?.access_token;
 
 const AddNewFloor: React.FC<IAddNewFloor> = (props) => {

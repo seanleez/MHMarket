@@ -38,8 +38,11 @@ const RateManagement: FC = () => {
     console.log('rows', rows);
   });
 
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+  const currentUser = localStorage.getItem('currentUser') ? 
+    JSON.parse(localStorage.getItem('currentUser') as string) : 
+    null;
   const token = currentUser?.access_token;
+
 
   useEffect(() => {
     fetch(`${rootURL}/rates`, {

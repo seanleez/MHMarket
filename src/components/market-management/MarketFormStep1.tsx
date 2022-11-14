@@ -31,9 +31,11 @@ const MarketFormStep1 = (props: any) => {
   const [district, setDistrict] = useState<string>('');
 
   const navigate = useNavigate();
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
+  
+  const currentUser = localStorage.getItem('currentUser') ? 
+    JSON.parse(localStorage.getItem('currentUser') as string) : 
+    null;
+  const token = currentUser?.access_token;
 
   useEffect(() => {
     if (isAtEditPage && currentEditMarket) {

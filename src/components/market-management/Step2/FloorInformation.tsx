@@ -18,7 +18,9 @@ import ErrorDialog from '../../common/dialog/ErrorDialog';
 import CircularLoading from '../../common/loading/CircularLoading';
 import Canvas from '../Canvas/Canvas';
 
-const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+const currentUser = localStorage.getItem('currentUser') ? 
+  JSON.parse(localStorage.getItem('currentUser') as string) : 
+  null;
 const token = currentUser?.access_token;
 
 const marketId = localStorage.getItem('marketId');
