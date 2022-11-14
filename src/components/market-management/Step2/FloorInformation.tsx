@@ -249,7 +249,10 @@ const FloorInformation: React.FC<any> = (props) => {
       </form>
       <Collapse in={expand}>
         <Paper elevation={5}>
-          <Canvas imgBackground={floor.image_url} />
+          <Canvas
+            imgBackground={floor.image_url}
+            floorId={floor.floorplan_id}
+          />
         </Paper>
       </Collapse>
       <CircularLoading loading={loading} message={'Loading File...'} />

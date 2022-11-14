@@ -1,4 +1,4 @@
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
@@ -6,9 +6,11 @@ import { v4 as uuid } from 'uuid';
 import AddNewShape from '../../../assets/icon/add-new-stall-icon.svg';
 import DeleteStall from '../../../assets/icon/delete-stall-icon.svg';
 import DragArrow from '../../../assets/icon/draggable-arrow-icon.svg';
+import { rootURL } from '../../../const/const';
 import ConfirmDialog from '../../common/dialog/ConfirmDialog';
 import Rectangle from './Rectangle';
 import StallDetailDialog from './StallDetailDialog';
+import { useSnackbar } from 'notistack';
 
 const SCROLL_BAR_WIDTH = 15;
 const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
@@ -26,19 +28,28 @@ interface IRect {
 
 interface ICanvas {
   imgBackground: string;
+  floorId: string;
 }
 
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
+
 const Canvas: React.FC<ICanvas> = (props) => {
-  const { imgBackground } = props;
+  const { imgBackground, floorId } = props;
   const [rects, setRects] = useState<IRect[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
   const [canvasWidth, setCanvasWidth] = useState<number>(0);
   const [canvasHeight, setCanvasHeight] = useState<number>(0);
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
+  const [isDraggable, setIsDraggable] = useState<boolean>(false);
   const [image, status] = useImage(imgBackground ?? '');
 
   const imageRef = useRef(null);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const imgEl = (imageRef.current as any).getAttrs()?.image;
@@ -69,18 +80,45 @@ const Canvas: React.FC<ICanvas> = (props) => {
   };
 
   const handleAddNewStall = () => {
-    const newRects = [...rects];
-    const Rect = {
-      id: uuid(),
+    const payload = {
       x: 0,
       y: 0,
       rotation: 0,
       width: 100,
       height: 100,
-      draggable: false,
+    } as any;
+
+    const newRects = [...rects];
+    const Rect = {
+      id: uuid(),
+      ...payload,
+      draggable: isDraggable,
     };
     newRects.push(Rect);
     setRects(newRects);
+
+    payload['floorplan_id'] = floorId;
+
+    // Call API create stall
+    fetch(`${rootURL}/stalls`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          enqueueSnackbar(response.error_description, { variant: 'error' });
+        } else {
+          enqueueSnackbar('Successfully add new stall', { variant: 'success' });
+        }
+      })
+      .catch((err) => {
+        enqueueSnackbar(err.message, { variant: 'error' });
+      });
   };
 
   const handleOpenConfirmDialog = () => {
@@ -119,7 +157,8 @@ const Canvas: React.FC<ICanvas> = (props) => {
     console.log(payload);
   };
 
-  const handleAllowDrag = () => {
+  const toggleDragMode = () => {
+    setIsDraggable((prev) => !prev);
     if (rects.length > 0) {
       const newRects = rects.map((rect: IRect) => {
         return {
@@ -137,26 +176,39 @@ const Canvas: React.FC<ICanvas> = (props) => {
         sx={{
           backgroundColor: '#0038a8',
           display: 'flex',
-          justifyContent: 'center',
-          padding: '5px 0',
+          justifyContent: 'space-between',
+          gap: '10px',
+          padding: '10px 30px',
         }}>
-        <Tooltip title={'Drag Stall'}>
-          <IconButton
-            onClick={handleAllowDrag}
-            sx={{ backgroundColor: 'black' }}>
-            <img src={DragArrow} alt={DragArrow} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={'Create Stall'}>
-          <IconButton onClick={handleAddNewStall}>
-            <img src={AddNewShape} alt={AddNewShape} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={'Delete Stall'}>
-          <IconButton onClick={handleOpenConfirmDialog}>
-            <img src={DeleteStall} alt={DeleteStall} />
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ display: 'flex', gap: '10px' }}>
+          <Tooltip title={`${isDraggable ? 'Drag Mode On' : 'Drag Mode Off'}`}>
+            <IconButton
+              onClick={toggleDragMode}
+              sx={{
+                backgroundColor: `${isDraggable ? 'black' : '#0038a8'}`,
+                '&:hover': {
+                  backgroundColor: `${isDraggable ? 'black' : '#0038a8'}`,
+                },
+              }}>
+              <img src={DragArrow} alt={DragArrow} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Create Stall'}>
+            <IconButton onClick={handleAddNewStall}>
+              <img src={AddNewShape} alt={AddNewShape} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Delete Stall'}>
+            <IconButton onClick={handleOpenConfirmDialog}>
+              <img src={DeleteStall} alt={DeleteStall} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography sx={{ color: 'white' }}>
+            {rects.length > 0 ? `There has ${rects.length} stall(s)` : ''}
+          </Typography>
+        </Box>
       </Box>
       <div
         style={{

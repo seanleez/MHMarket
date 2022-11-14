@@ -59,7 +59,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
       <Rect
         {...shapeProps}
         opacity={0.8}
-        fill="#89b717"
+        fill="red"
         ref={shapeRef}
         onTap={onSelect}
         onClick={onSelect}
