@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { rootURL } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
+import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
 
@@ -40,18 +41,17 @@ const columns: readonly IManagementTableFormat[] = [
 
 const MarketManagement = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
-  const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
   const [rows, setRows] = useState<any>([]);
   const currentID = useRef<string>('');
+  const errMess = useRef<string>('');
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(rows);
-  });
-
   const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
   const token = currentUser?.access_token;
+
   useEffect(() => {
     fetch(`${rootURL}/markets`, {
       method: 'GET',
@@ -65,10 +65,10 @@ const MarketManagement = () => {
         setRows(data.items);
       })
       .catch((err) => console.error(err));
-    // When delete a role, fetch this APIGET again to get new data
-  }, [openAlertDialog]);
+    // When delete a market, fetch this APIGET again to get new data
+  }, [openSuccessDialog]);
 
-  const handleAcceptDialog = () => {
+  const handleDeleteMarket = () => {
     fetch(`${rootURL}/markets/${currentID.current}`, {
       method: 'DELETE',
       headers: {
@@ -76,9 +76,14 @@ const MarketManagement = () => {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then((response) => {
         setOpenConfirmDialog(false);
-        setOpenAlertDialog(true);
+        if (response.error_code) {
+          errMess.current = response.error_description;
+          setOpenErrorDialog(true);
+        } else {
+          setOpenSuccessDialog(true);
+        }
       })
       .catch((err) => console.error(err));
   };
@@ -87,7 +92,8 @@ const MarketManagement = () => {
     navigate('/market/add-new/step1');
   };
 
-  const handleDelete = (id: string) => {
+  const handleOpenConfirmDialog = (id: string) => {
+    console.log(id);
     currentID.current = id;
     setOpenConfirmDialog(true);
   };
@@ -104,20 +110,25 @@ const MarketManagement = () => {
         rows={rows}
         onAddNew={handleAddNew}
         onEdit={handleEdit}
-        // onDelete={handleDelete}
+        onDelete={handleOpenConfirmDialog}
       />
       <ConfirmDialog
         openProp={openConfirmDialog}
         message={`Are you sure you wanna delete ${
-          rows.find((row: any) => row.user_id === currentID.current)?.first_name
+          rows.find((row: any) => row.market_id === currentID.current)?.name
         } ?`}
         onCloseDialog={() => setOpenConfirmDialog(false)}
-        onAcceptDialog={handleAcceptDialog}
+        onAcceptDialog={handleDeleteMarket}
       />
       <SuccessDialog
-        openProp={openAlertDialog}
+        openProp={openSuccessDialog}
         message={'Delete Successfully!'}
-        onCloseDialog={() => setOpenAlertDialog(false)}
+        onCloseDialog={() => setOpenSuccessDialog(false)}
+      />
+      <ErrorDialog
+        openProp={openErrorDialog}
+        message={errMess.current}
+        onCloseDialog={() => setOpenErrorDialog(false)}
       />
     </>
   );

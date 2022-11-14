@@ -118,7 +118,9 @@ const AddAndEditMarketStep1 = () => {
           errorMes.current = response?.errors?.type ?? 'Error';
           throw new Error(response);
         } else {
-          response && localStorage.setItem('marketId', response.market_id);
+          console.log(response);
+          const id = isAtEditPage ? response.market_id : response.id;
+          response && localStorage.setItem('marketId', id);
           setOpenSuccessDialog(true);
         }
       })

@@ -4,14 +4,10 @@ import ProgressCirle from '../common/progress-circle/ProgressCircle';
 import FloorList from './Step2/FloorList';
 
 const MarketFormStep2 = (props: any) => {
-  const { listFloors, onSubmit, onAddNew, onEdit, onDelete, onPublish } = props;
+  const { onPublish } = props;
   const isAtEditPage = location.pathname.includes('/market/edit');
 
   const navigate = useNavigate();
-  const params = useParams();
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
 
   return (
     <>
@@ -21,7 +17,7 @@ const MarketFormStep2 = (props: any) => {
       <ProgressCirle step={2} />
       <div className="section-title">FLOOR PLAN</div>
 
-      <FloorList listFloors={listFloors} />
+      <FloorList />
 
       <Container
         sx={{
@@ -29,10 +25,7 @@ const MarketFormStep2 = (props: any) => {
           justifyContent: 'center',
           gap: '10px',
         }}>
-        <Button
-          variant="outlined"
-          size="large"
-          onClick={() => navigate(`/market/edit/step1/${params.id}`)}>
+        <Button variant="outlined" size="large" onClick={() => navigate(-1)}>
           Back
         </Button>
         <Button

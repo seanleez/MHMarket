@@ -92,11 +92,24 @@ const MarketFormStep1 = (props: any) => {
           return { provinces, cities, wards };
         })
         .catch((err) => console.error(err));
+    } else {
+      fetch(`${rootURL}/locations/provinces`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          if (response && response.provinces) {
+            setListProvinces(response.provinces);
+          }
+        });
     }
   }, []);
 
   useEffect(() => {
-    if (isAtEditPage && currentEditMarket) {
+    if ((isAtEditPage && currentEditMarket) || listWards.length > 0) {
       fetch(
         `${rootURL}/locations/query?` +
           new URLSearchParams({
@@ -403,7 +416,7 @@ const MarketFormStep1 = (props: any) => {
             defaultValue={
               MARKET_TYPE.find(
                 (item: any) => item.type === currentEditMarket?.type
-              )?.value ?? ''
+              )?.value ?? MARKET_TYPE[0].value
             }
           />
           <TextField
@@ -427,10 +440,7 @@ const MarketFormStep1 = (props: any) => {
             justifyContent: 'center',
             gap: '10px',
           }}>
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={() => navigate('/market-management')}>
+          <Button variant="outlined" size="large" onClick={() => navigate(-1)}>
             Cancel
           </Button>
           <Button type="submit" variant="contained" size="large">

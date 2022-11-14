@@ -3,8 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
 import { v4 as uuid } from 'uuid';
-import AddNewShape from '../../../assets/icon/add-new-shape-icon.svg';
+import AddNewShape from '../../../assets/icon/add-new-stall-icon.svg';
 import DeleteStall from '../../../assets/icon/delete-stall-icon.svg';
+import DragArrow from '../../../assets/icon/draggable-arrow-icon.svg';
 import ConfirmDialog from '../../common/dialog/ConfirmDialog';
 import Rectangle from './Rectangle';
 import StallDetailDialog from './StallDetailDialog';
@@ -17,8 +18,10 @@ interface IRect {
   id: string;
   x: number;
   y: number;
+  rotation: number;
   width: number;
   height: number;
+  draggable: boolean;
 }
 
 interface ICanvas {
@@ -71,20 +74,22 @@ const Canvas: React.FC<ICanvas> = (props) => {
       id: uuid(),
       x: 0,
       y: 0,
+      rotation: 0,
       width: 100,
       height: 100,
+      draggable: false,
     };
     newRects.push(Rect);
     setRects(newRects);
   };
 
-  const handleDeleteStall = () => {
+  const handleOpenConfirmDialog = () => {
     if (rects.length > 0) {
       setOpenConfirmDialog(true);
     }
   };
 
-  const handleAcceptConfirmDialog = () => {
+  const handleDeleteStall = () => {
     const newRects = [...rects];
     setRects(newRects.filter((rect: IRect) => rect.id !== selectedId));
     setOpenConfirmDialog(false);
@@ -114,6 +119,18 @@ const Canvas: React.FC<ICanvas> = (props) => {
     console.log(payload);
   };
 
+  const handleAllowDrag = () => {
+    if (rects.length > 0) {
+      const newRects = rects.map((rect: IRect) => {
+        return {
+          ...rect,
+          draggable: !rect.draggable,
+        };
+      });
+      setRects(newRects);
+    }
+  };
+
   return (
     <>
       <Box
@@ -123,13 +140,20 @@ const Canvas: React.FC<ICanvas> = (props) => {
           justifyContent: 'center',
           padding: '5px 0',
         }}>
+        <Tooltip title={'Drag Stall'}>
+          <IconButton
+            onClick={handleAllowDrag}
+            sx={{ backgroundColor: 'black' }}>
+            <img src={DragArrow} alt={DragArrow} />
+          </IconButton>
+        </Tooltip>
         <Tooltip title={'Create Stall'}>
           <IconButton onClick={handleAddNewStall}>
             <img src={AddNewShape} alt={AddNewShape} />
           </IconButton>
         </Tooltip>
         <Tooltip title={'Delete Stall'}>
-          <IconButton onClick={handleDeleteStall}>
+          <IconButton onClick={handleOpenConfirmDialog}>
             <img src={DeleteStall} alt={DeleteStall} />
           </IconButton>
         </Tooltip>
@@ -172,7 +196,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
         openProp={openConfirmDialog}
         message={'Are you sure you wanna delete?'}
         onCloseDialog={() => setOpenConfirmDialog(false)}
-        onAcceptDialog={handleAcceptConfirmDialog}
+        onAcceptDialog={handleDeleteStall}
       />
     </>
   );
