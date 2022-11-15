@@ -38,7 +38,6 @@ const FLOOR_LIST_COLUMN: IManagementTableFormat[] = [
 const FloorList: React.FC = () => {
   const [isHaveAddNewRow, setIsHaveAddNewRow] = useState(false);
   const floorContext = useContext(FloorContext);
-
   return (
     <Box sx={{ marginBottom: '40px' }}>
       <Box
