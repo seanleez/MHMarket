@@ -1,16 +1,23 @@
 import { useEffect, useRef } from 'react';
 import { Rect, Transformer } from 'react-konva';
 interface IRectangle {
-  shapeProps: any;
+  stall: any;
   isSelected: boolean;
+  draggable: boolean;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
   onDoubleClickStall: () => void;
 }
 
 const Rectangle: React.FC<IRectangle> = (props) => {
-  const { shapeProps, isSelected, onSelect, onChange, onDoubleClickStall } =
-    props;
+  const {
+    stall,
+    isSelected,
+    draggable,
+    onSelect,
+    onChange,
+    onDoubleClickStall,
+  } = props;
   const shapeRef = useRef(null);
   const trRef = useRef(null);
 
@@ -24,7 +31,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
 
   const handleDragEnd = (e: any) => {
     onChange({
-      ...shapeProps,
+      ...stall,
       x: e.target.x(),
       y: e.target.y(),
     });
@@ -44,7 +51,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
     (node as any).scaleX(1);
     (node as any).scaleY(1);
     onChange({
-      ...shapeProps,
+      ...stall,
       rotation: (node as any).rotation(),
       x: (node as any).x(),
       y: (node as any).y(),
@@ -57,7 +64,13 @@ const Rectangle: React.FC<IRectangle> = (props) => {
   return (
     <>
       <Rect
-        {...shapeProps}
+        id={stall?.stall_id}
+        x={stall?.x}
+        y={stall?.y}
+        rotation={stall?.rotation}
+        width={stall?.width}
+        height={stall?.height}
+        draggable={draggable}
         opacity={0.8}
         fill="red"
         ref={shapeRef}

@@ -16,19 +16,10 @@ const SCROLL_BAR_WIDTH = 15;
 const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
 const CONTAINER_HEIGHT = 0.7 * window.innerHeight;
 
-interface IRect {
-  id: string;
-  x: number;
-  y: number;
-  rotation: number;
-  width: number;
-  height: number;
-  draggable: boolean;
-}
-
 interface ICanvas {
   imgBackground: string;
   floorId: string;
+  listStalls: any[];
 }
 
 const currentUser = localStorage.getItem('currentUser')
@@ -37,8 +28,8 @@ const currentUser = localStorage.getItem('currentUser')
 const token = currentUser?.access_token;
 
 const Canvas: React.FC<ICanvas> = (props) => {
-  const { imgBackground, floorId } = props;
-  const [rects, setRects] = useState<IRect[]>([]);
+  const { imgBackground, floorId, listStalls } = props;
+  const [rects, setRects] = useState(listStalls);
   const [selectedId, setSelectedId] = useState<string>('');
   const [canvasWidth, setCanvasWidth] = useState<number>(0);
   const [canvasHeight, setCanvasHeight] = useState<number>(0);
@@ -60,16 +51,48 @@ const Canvas: React.FC<ICanvas> = (props) => {
   }, [status]);
 
   useEffect(() => {
-    console.log(rects);
+    console.log('listStalls', listStalls);
+    console.log('rects', rects);
   }, [rects]);
 
-  const handleChange = (rect: IRect, newAttrs: any) => {
-    const newRects = [...rects];
-    const changingRectId = newRects.findIndex((item) => item.id === rect.id);
-    if (changingRectId !== undefined) {
-      newRects[changingRectId] = newAttrs;
-      setRects(newRects);
-    }
+  useEffect(() => {
+    setRects(listStalls);
+  }, [listStalls]);
+
+  const handleChange = (rect: any, newAttrs: any) => {
+    const { stall_id, x, y, rotation, width, height } = rect;
+    const payload = {
+      floorplan_id: floorId,
+      ...{ stall_id, x, y, rotation, width, height },
+    };
+
+    fetch(`${rootURL}/stalls/${rect.stall_id}/position`, {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_description);
+        } else {
+          const newRects = [...rects];
+          const changedRectIndex = newRects.findIndex(
+            (item) => item.stall_id === rect.stall_id
+          );
+          if (changedRectIndex !== undefined) {
+            newRects[changedRectIndex] = newAttrs;
+            setRects(newRects);
+          }
+          enqueueSnackbar('Successfully update stall', { variant: 'success' });
+        }
+      })
+      .catch((err) => {
+        enqueueSnackbar(err.message, { variant: 'error' });
+      });
   };
   const checkDeselect = (e: any) => {
     // deselect when clicked on empty area
@@ -81,21 +104,12 @@ const Canvas: React.FC<ICanvas> = (props) => {
 
   const handleAddNewStall = () => {
     const payload = {
-      x: 0,
-      y: 0,
+      x: 100,
+      y: 100,
       rotation: 0,
       width: 100,
       height: 100,
     } as any;
-
-    const newRects = [...rects];
-    const Rect = {
-      id: uuid(),
-      ...payload,
-      draggable: isDraggable,
-    };
-    newRects.push(Rect);
-    setRects(newRects);
 
     payload['floorplan_id'] = floorId;
 
@@ -111,8 +125,11 @@ const Canvas: React.FC<ICanvas> = (props) => {
       .then((res) => res.json())
       .then((response) => {
         if (response.error_code) {
-          enqueueSnackbar(response.error_description, { variant: 'error' });
+          throw new Error(response.error_description);
         } else {
+          const newRects = [...rects];
+          newRects.push(response);
+          setRects(newRects);
           enqueueSnackbar('Successfully add new stall', { variant: 'success' });
         }
       })
@@ -128,9 +145,31 @@ const Canvas: React.FC<ICanvas> = (props) => {
   };
 
   const handleDeleteStall = () => {
-    const newRects = [...rects];
-    setRects(newRects.filter((rect: IRect) => rect.id !== selectedId));
     setOpenConfirmDialog(false);
+
+    fetch(`${rootURL}/stalls/${selectedId}`, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_description);
+        } else {
+          console.log(response);
+          const newRects = [...rects];
+          setRects(
+            newRects.filter((rect: any) => rect.stall_id !== selectedId)
+          );
+          enqueueSnackbar('Successfully delete stall', { variant: 'success' });
+        }
+      })
+      .catch((err) => {
+        enqueueSnackbar(err.message, { variant: 'error' });
+      });
   };
 
   const handleDblClickStall = (id: string) => {
@@ -160,7 +199,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
   const toggleDragMode = () => {
     setIsDraggable((prev) => !prev);
     if (rects.length > 0) {
-      const newRects = rects.map((rect: IRect) => {
+      const newRects = rects.map((rect: any) => {
         return {
           ...rect,
           draggable: !rect.draggable,
@@ -206,7 +245,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography sx={{ color: 'white' }}>
-            {rects.length > 0 ? `There has ${rects.length} stall(s)` : ''}
+            {rects.length > 0 ? `Number of stalls: ${rects.length}` : ''}
           </Typography>
         </Box>
       </Box>
@@ -224,16 +263,17 @@ const Canvas: React.FC<ICanvas> = (props) => {
           <Layer>
             <Image image={image} ref={imageRef} />
             {rects.length > 0 &&
-              rects.map((rect: IRect) => (
+              rects.map((rect: any) => (
                 <Rectangle
-                  key={rect.id}
-                  shapeProps={rect}
-                  isSelected={rect.id === selectedId}
+                  key={rect.stall_id}
+                  stall={rect}
+                  draggable={isDraggable}
+                  isSelected={rect.stall_id === selectedId}
                   onSelect={() => {
-                    setSelectedId(rect.id);
+                    setSelectedId(rect.stall_id);
                   }}
                   onChange={(newAttrs) => handleChange(rect, newAttrs)}
-                  onDoubleClickStall={() => handleDblClickStall(rect.id)}
+                  onDoubleClickStall={() => handleDblClickStall(rect.stall_id)}
                 />
               ))}
           </Layer>

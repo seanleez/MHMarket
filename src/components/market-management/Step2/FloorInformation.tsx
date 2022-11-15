@@ -7,7 +7,13 @@ import {
   Paper,
   TextField,
 } from '@mui/material';
-import React, { FormEvent, useContext, useRef, useState } from 'react';
+import React, {
+  FormEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '../../../assets/icon/delete-icon.svg';
 import EditIcon from '../../../assets/icon/edit-icon.svg';
@@ -18,15 +24,16 @@ import ErrorDialog from '../../common/dialog/ErrorDialog';
 import CircularLoading from '../../common/loading/CircularLoading';
 import Canvas from '../Canvas/Canvas';
 
-const currentUser = localStorage.getItem('currentUser') ? 
-  JSON.parse(localStorage.getItem('currentUser') as string) : 
-  null;
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
 const token = currentUser?.access_token;
 
 const marketId = localStorage.getItem('marketId');
 
 const FloorInformation: React.FC<any> = (props) => {
   const { floor, columns, displayMode } = props;
+  const [listStalls, setListStalls] = useState([]);
   const [isDisplayMode, setIsDisplayMode] = useState<boolean>(displayMode);
   const [expand, setExpand] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,7 +58,7 @@ const FloorInformation: React.FC<any> = (props) => {
         );
       case 'expand':
         return (
-          <IconButton onClick={() => setExpand((prev) => !prev)}>
+          <IconButton onClick={handleExpandCollapse}>
             <ExpandMoreIcon
               style={expand ? { transform: 'scale(1,-1)' } : {}}
             />
@@ -59,6 +66,33 @@ const FloorInformation: React.FC<any> = (props) => {
         );
       default:
         return floor[`${column.id}`];
+    }
+  };
+
+  useEffect(() => {
+    console.log(listStalls);
+  });
+
+  const handleExpandCollapse = () => {
+    setExpand((prev) => !prev);
+    if (expand === false) {
+      fetch(`${rootURL}/floors/${floor.floorplan_id}?draft=true`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          if (response.error_code) {
+            throw new Error(response.error_description);
+          } else {
+            if (response && response.stalls) {
+              setListStalls(response.stalls);
+            }
+          }
+        })
+        .catch((err) => console.error(err));
     }
   };
 
@@ -252,6 +286,7 @@ const FloorInformation: React.FC<any> = (props) => {
           <Canvas
             imgBackground={floor.image_url}
             floorId={floor.floorplan_id}
+            listStalls={listStalls}
           />
         </Paper>
       </Collapse>
