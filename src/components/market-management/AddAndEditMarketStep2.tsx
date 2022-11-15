@@ -20,13 +20,16 @@ const AddAndEditMarketStep2 = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
+
+  const currentUser = localStorage.getItem('currentUser') ? 
+    JSON.parse(localStorage.getItem('currentUser') as string) : 
+    null;
+  const token = currentUser?.access_token;
+
 
   useEffect(() => {
     if (isAtEditPage) {
-      fetch(`${rootURL}/markets/${params.id}/floors`, {
+      fetch(`${rootURL}/markets/${params.id}/floors?draft=true`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,104 +53,13 @@ const AddAndEditMarketStep2 = () => {
   const handleCloseAlertDialog = () => {
     setOpenAlertDialog(false);
   };
-
-  const handleCreateFloor = (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload: any = {
-      location: {},
-      supervisor: {},
-    };
-
-    let elementsInForm = (e.target as HTMLFormElement).elements;
-    [...elementsInForm].forEach((el) => {
-      if (el.nodeName === 'INPUT' && (el as HTMLInputElement).name) {
-        const { type, name, value } = el as HTMLInputElement;
-        if (type === 'text') {
-          if (['address', 'city', 'province', 'ward'].includes(name)) {
-            payload.location[name] = value;
-          } else if (
-            [
-              'email',
-              'first_name',
-              'last_name',
-              'middle_name',
-              'mobile_phone',
-              'position',
-              'telephone',
-            ].includes(name)
-          ) {
-            payload.supervisor[name] = value;
-          } else {
-            payload[name] = value;
-          }
-        }
-        if (['status', 'clazz'].includes(name)) {
-          payload[name] = Number(value);
-        }
-        if (name === 'type') {
-          payload[name] =
-            MARKET_TYPE.find((item: any) => item.value === value)?.type ?? 1;
-        }
-      }
-    });
-
-    console.log(payload);
-
-    // Call API Add New or Edit
-    // const fetchURL = isAtEditPage
-    //   ? `${rootURL}/markets/${currentEditMarket.market_id}`
-    //   : `${rootURL}/markets`;
-
-    // fetch(fetchURL, {
-    //   method: isAtEditPage ? 'PUT' : 'POST',
-    //   credentials: 'same-origin',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    //   body: JSON.stringify(payload),
-    // })
-    //   .then((res) => res.json())
-    //   .then((response) => {
-    //     if (response.error_code) {
-    //       errorMes.current = response?.errors?.type ?? 'Error';
-    //       throw new Error(response);
-    //     } else {
-    //       setOpenSuccessDialog(true);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.dir(err);
-    //     setOpenErrorDialog(true);
-    //   });
-  };
-
-  const handleAddNew = () => {
-    console.log('add');
-  };
-
-  const handleEdit = () => {
-    console.log('edit');
-  };
-
-  const handleDelete = () => {
-    console.log('delete');
-  };
-
   const handlePublish = () => {
     console.log('delete');
   };
 
   return (
     <div className="form-container">
-      <MarketFormStep2
-        listFloors={floorContext.listFloors}
-        onSubmit={handleCreateFloor}
-        onAddNew={handleAddNew}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onPublish={handlePublish}
-      />
+      <MarketFormStep2 onPublish={handlePublish} />
       <AlertDialog
         openProp={openAlertDialog}
         message={'All classes have to be unique'}

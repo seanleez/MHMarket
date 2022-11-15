@@ -1,13 +1,10 @@
 import { Box, Button, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IManagementTableFormat } from '../../../const/interface';
 import FloorInformation from './FloorInformation';
 import AddIcon from '@mui/icons-material/Add';
 import AddNewFloor from './AddNewFloor';
-
-interface IFloorList {
-  listFloors: any;
-}
+import { FloorContext } from '../../../context/FloorContext';
 
 const FLOOR_LIST_COLUMN: IManagementTableFormat[] = [
   {
@@ -38,9 +35,9 @@ const FLOOR_LIST_COLUMN: IManagementTableFormat[] = [
   { id: 'expand', label: '', width: '5%', align: 'center' },
 ];
 
-const FloorList: React.FC<IFloorList> = (props) => {
-  const { listFloors } = props;
+const FloorList: React.FC = () => {
   const [isHaveAddNewRow, setIsHaveAddNewRow] = useState(false);
+  const floorContext = useContext(FloorContext);
 
   return (
     <Box sx={{ marginBottom: '40px' }}>
@@ -55,8 +52,9 @@ const FloorList: React.FC<IFloorList> = (props) => {
         ))}
       </Box>
       <Box>
-        {listFloors.map((floor: any) => (
+        {floorContext.listFloors.map((floor: any) => (
           <FloorInformation
+            key={floor.floorplan_id}
             floor={floor}
             columns={FLOOR_LIST_COLUMN}
             displayMode={true}
@@ -69,7 +67,8 @@ const FloorList: React.FC<IFloorList> = (props) => {
       <Button
         disabled={isHaveAddNewRow}
         variant="contained"
-        onClick={() => setIsHaveAddNewRow(true)}>
+        onClick={() => setIsHaveAddNewRow(true)}
+        sx={{ marginTop: '20px' }}>
         Add New
         <AddIcon />
       </Button>

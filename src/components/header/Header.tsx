@@ -12,7 +12,9 @@ const Header: FC = () => {
     navigate('/');
   };
 
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+  const currentUser = localStorage.getItem('currentUser') ? 
+    JSON.parse(localStorage.getItem('currentUser') as string) : 
+    null;
 
   return (
     <>

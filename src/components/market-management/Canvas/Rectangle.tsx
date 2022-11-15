@@ -36,6 +36,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
     // but in the store we have only width and height
     // to match the data better we will reset scale on transform end
     const node = shapeRef.current;
+    console.log(node);
     const scaleX = (node as any).scaleX();
     const scaleY = (node as any).scaleY();
 
@@ -44,6 +45,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
     (node as any).scaleY(1);
     onChange({
       ...shapeProps,
+      rotation: (node as any).rotation(),
       x: (node as any).x(),
       y: (node as any).y(),
       // set minimal value
@@ -56,9 +58,8 @@ const Rectangle: React.FC<IRectangle> = (props) => {
     <>
       <Rect
         {...shapeProps}
-        draggable
         opacity={0.8}
-        fill="#89b717"
+        fill="red"
         ref={shapeRef}
         onTap={onSelect}
         onClick={onSelect}

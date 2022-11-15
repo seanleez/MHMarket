@@ -19,9 +19,11 @@ const AddAndEditMarketStep1 = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
+
+  const currentUser = localStorage.getItem('currentUser') ? 
+    JSON.parse(localStorage.getItem('currentUser') as string) : 
+    null;
+  const token = currentUser?.access_token;
 
   useEffect(() => {
     if (isAtEditPage) {
@@ -118,7 +120,9 @@ const AddAndEditMarketStep1 = () => {
           errorMes.current = response?.errors?.type ?? 'Error';
           throw new Error(response);
         } else {
-          response && localStorage.setItem('marketId', response.market_id);
+          console.log(response);
+          const id = isAtEditPage ? response.market_id : response.id;
+          response && localStorage.setItem('marketId', id);
           setOpenSuccessDialog(true);
         }
       })

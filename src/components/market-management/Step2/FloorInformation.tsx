@@ -1,52 +1,41 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
   Button,
-  IconButton,
-  TextField,
   Collapse,
+  IconButton,
   Paper,
+  TextField,
 } from '@mui/material';
+import React, { FormEvent, useContext, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import DeleteIcon from '../../../assets/icon/delete-icon.svg';
 import EditIcon from '../../../assets/icon/edit-icon.svg';
-import { FormEvent, useContext, useState } from 'react';
-import Canvas from '../Canvas/Canvas';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { FloorContext } from '../../../context/FloorContext';
 import { rootURL } from '../../../const/const';
+import { FloorContext } from '../../../context/FloorContext';
+import ConfirmDialog from '../../common/dialog/ConfirmDialog';
+import ErrorDialog from '../../common/dialog/ErrorDialog';
+import CircularLoading from '../../common/loading/CircularLoading';
+import Canvas from '../Canvas/Canvas';
 
-const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
+const currentUser = localStorage.getItem('currentUser') ? 
+  JSON.parse(localStorage.getItem('currentUser') as string) : 
+  null;
 const token = currentUser?.access_token;
 
-const updateImage = (imageData: FormData) => {
-  fetch(`${rootURL}/files/upload`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: {
-      // @ts-ignore
-      Authorization: `Bearer ${token}`,
-    },
-    body: imageData,
-  })
-    .then((res) => res.json())
-    .then((response) => {
-      if (response.error_code) {
-        // setErrorMes(response.error_description);
-        console.log(response);
-      } else {
-        console.log(response);
-        // setOpenSuccessDialog(true);
-      }
-    })
-    .catch((err) => console.error(err));
-};
+const marketId = localStorage.getItem('marketId');
 
 const FloorInformation: React.FC<any> = (props) => {
   const { floor, columns, displayMode } = props;
   const [isDisplayMode, setIsDisplayMode] = useState<boolean>(displayMode);
   const [expand, setExpand] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
 
+  const payload = useRef<any>({});
   const floorContext = useContext(FloorContext);
-
+  const params = useParams();
   const getContent = (column: any) => {
     switch (column.id) {
       case 'action':
@@ -55,7 +44,7 @@ const FloorInformation: React.FC<any> = (props) => {
             <IconButton onClick={() => setIsDisplayMode(false)}>
               <img src={EditIcon} alt={EditIcon} />
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => setOpenConfirmDialog(true)}>
               <img src={DeleteIcon} alt={DeleteIcon} />
             </IconButton>
           </Box>
@@ -73,36 +62,112 @@ const FloorInformation: React.FC<any> = (props) => {
     }
   };
 
+  const handleDeleteFloor = () => {
+    setOpenConfirmDialog(false);
+    fetch(`${rootURL}/floors/${floor.floorplan_id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        fetch(`${rootURL}/markets/${marketId}/floors?draft=true`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data && data.floors) {
+              floorContext.setListFloors(data.floors);
+            }
+          });
+      })
+      .catch((err) => setOpenErrorDialog(true));
+  };
+
   const handleUpdateFloor = (e: FormEvent) => {
-    console.log(floor);
     e.preventDefault();
 
-    const payload: any = {};
-
-    payload['market_id'] = localStorage.getItem('marketId');
-    payload['floorplan_id'] = floor?.floorplan_id;
-    payload['image_name'] = floor?.image_name;
-    payload['image_url'] = floor?.image_url;
+    payload.current['market_id'] = marketId;
+    payload.current['floorplan_id'] = floor?.floorplan_id;
 
     const elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
       if (el.nodeName === 'INPUT') {
         const { type, name, value, files } = el as HTMLInputElement;
         if (type === 'text') {
-          payload[name] = value;
+          payload.current[name] = value;
         }
-        if (type === 'file') {
-          if (files && files[0]) {
-            const imageData = new FormData();
-            // @ts-ignore
-            imageData.append('attachment', files?.[0]);
-            updateImage(imageData);
-          }
+        if (type === 'file' && files?.length === 0) {
+          payload.current['image_name'] = floor?.image_name;
+          payload.current['image_url'] = floor?.image_url;
         }
       }
     });
 
-    console.log(payload);
+    console.log(payload.current);
+    fetch(`${rootURL}/floors/${floor.floorplan_id}`, {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload.current),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          // setErrorMes(response.error_description);
+          console.log(response);
+        } else {
+          fetch(`${rootURL}/markets/${params.id}/floors?draft=true`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data && data.floors) {
+                floorContext.setListFloors(data.floors);
+                setIsDisplayMode(true);
+              }
+            });
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const imageData = new FormData();
+    // @ts-ignore
+    imageData.append('attachment', e.target.files?.[0]);
+
+    setLoading(true);
+    fetch(`${rootURL}/files/upload`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: imageData,
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          // setErrorMes(response.error_description);
+          console.log(response);
+        } else {
+          payload.current['image_name'] = response?.content;
+          payload.current['image_url'] = response?.pre_signed_url;
+          console.log(payload.current);
+          setLoading(false);
+        }
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -113,7 +178,6 @@ const FloorInformation: React.FC<any> = (props) => {
           alignItems: 'center',
           border: '1px solid gray',
           padding: '10px 0',
-          margin: '10px 0',
           minHeight: '30px',
         }}
         onSubmit={handleUpdateFloor}>
@@ -155,7 +219,11 @@ const FloorInformation: React.FC<any> = (props) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <input type="file" />
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleFileChange}
+                />
               </Box>
             </Box>
             <Box
@@ -181,9 +249,24 @@ const FloorInformation: React.FC<any> = (props) => {
       </form>
       <Collapse in={expand}>
         <Paper elevation={5}>
-          <Canvas imgBackground={floor.image_url} />
+          <Canvas
+            imgBackground={floor.image_url}
+            floorId={floor.floorplan_id}
+          />
         </Paper>
       </Collapse>
+      <CircularLoading loading={loading} message={'Loading File...'} />
+      <ConfirmDialog
+        openProp={openConfirmDialog}
+        message={'Are you sure you wanna delete this floor?'}
+        onAcceptDialog={handleDeleteFloor}
+        onCloseDialog={() => setOpenConfirmDialog(false)}
+      />
+      <ErrorDialog
+        openProp={openErrorDialog}
+        message={'Something went wrong!'}
+        onCloseDialog={() => setOpenErrorDialog(false)}
+      />
     </Box>
   );
 };
