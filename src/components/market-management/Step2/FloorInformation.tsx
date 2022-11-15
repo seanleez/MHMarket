@@ -69,10 +69,6 @@ const FloorInformation: React.FC<any> = (props) => {
     }
   };
 
-  useEffect(() => {
-    console.log(listStalls);
-  });
-
   const handleExpandCollapse = () => {
     setExpand((prev) => !prev);
     if (expand === false) {
@@ -88,6 +84,7 @@ const FloorInformation: React.FC<any> = (props) => {
             throw new Error(response.error_description);
           } else {
             if (response && response.stalls) {
+              console.log(response);
               setListStalls(response.stalls);
             }
           }

@@ -1,8 +1,8 @@
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
-import { v4 as uuid } from 'uuid';
 import AddNewShape from '../../../assets/icon/add-new-stall-icon.svg';
 import DeleteStall from '../../../assets/icon/delete-stall-icon.svg';
 import DragArrow from '../../../assets/icon/draggable-arrow-icon.svg';
@@ -10,7 +10,6 @@ import { rootURL } from '../../../const/const';
 import ConfirmDialog from '../../common/dialog/ConfirmDialog';
 import Rectangle from './Rectangle';
 import StallDetailDialog from './StallDetailDialog';
-import { useSnackbar } from 'notistack';
 
 const SCROLL_BAR_WIDTH = 15;
 const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
@@ -59,14 +58,23 @@ const Canvas: React.FC<ICanvas> = (props) => {
     setRects(listStalls);
   }, [listStalls]);
 
-  const handleChange = (rect: any, newAttrs: any) => {
-    const { stall_id, x, y, rotation, width, height } = rect;
+  const handleChange = (newAttrs: any) => {
+    const { stall_id, x, y, rotation, width, height } = newAttrs;
     const payload = {
       floorplan_id: floorId,
       ...{ stall_id, x, y, rotation, width, height },
     };
 
-    fetch(`${rootURL}/stalls/${rect.stall_id}/position`, {
+    const newRects = [...rects];
+    const changedRectIndex = newRects.findIndex(
+      (item) => item.stall_id === stall_id
+    );
+    if (changedRectIndex !== undefined) {
+      newRects[changedRectIndex] = newAttrs;
+      setRects(newRects);
+    }
+
+    fetch(`${rootURL}/stalls/${stall_id}/position`, {
       method: 'PUT',
       credentials: 'same-origin',
       headers: {
@@ -79,14 +87,6 @@ const Canvas: React.FC<ICanvas> = (props) => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          const newRects = [...rects];
-          const changedRectIndex = newRects.findIndex(
-            (item) => item.stall_id === rect.stall_id
-          );
-          if (changedRectIndex !== undefined) {
-            newRects[changedRectIndex] = newAttrs;
-            setRects(newRects);
-          }
           enqueueSnackbar('Successfully update stall', { variant: 'success' });
         }
       })
@@ -272,7 +272,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
                   onSelect={() => {
                     setSelectedId(rect.stall_id);
                   }}
-                  onChange={(newAttrs) => handleChange(rect, newAttrs)}
+                  onChange={handleChange}
                   onDoubleClickStall={() => handleDblClickStall(rect.stall_id)}
                 />
               ))}
