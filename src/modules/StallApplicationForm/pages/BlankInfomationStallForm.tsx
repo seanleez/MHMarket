@@ -1,11 +1,18 @@
+import { Box } from '@mui/material';
 import React from 'react';
-import Layout from '../Layout';
+import { FormCommonInfor } from '../components';
+import FormContainer from '../Layouts';
 
 const BlankInfomationStallForm = () => {
   return (
-    <Layout>
+    <FormContainer
+      status='New'
+      dateSubmitted='12/10/2022'
+      formNumber='022'
+      shouldGray={true}
+    >
       test
-    </Layout>
+    </FormContainer>
   );
 };
 
