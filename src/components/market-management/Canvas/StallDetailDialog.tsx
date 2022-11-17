@@ -16,13 +16,15 @@ import * as React from 'react';
 import { STALL_CLASS, STALL_STATUS, STALL_TYPE } from '../../../const/const';
 import './StallDetailDialog.scss';
 interface IStallDetailDialog {
+  stall: any;
   openProp: boolean;
   onCloseDialog: () => void;
   onSubmit: (e: any) => void;
 }
 
 const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
-  const { openProp, onCloseDialog, onSubmit } = props;
+  const { stall, openProp, onCloseDialog, onSubmit } = props;
+  console.log(stall);
   return (
     <div>
       <Dialog open={openProp} onClose={onCloseDialog}>
@@ -34,11 +36,17 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
           <DialogContent>
             <Box className="field-container">
               <Typography>Stall ID:</Typography>
-              <Typography>1</Typography>
+              <Typography>{stall?.code}</Typography>
             </Box>
             <Box className="field-container">
               <Typography>Stall Number:</Typography>
-              <TextField required size="small" name="name" variant="outlined" />
+              <TextField
+                required
+                size="small"
+                name="stall_name"
+                variant="outlined"
+                defaultValue={stall?.stall_name}
+              />
             </Box>
             <Box className="field-container">
               <Typography>Stall Type:</Typography>
@@ -46,9 +54,9 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
                 required
                 select
                 size="small"
-                name="type"
+                name="stall_type"
                 variant="outlined"
-                defaultValue={STALL_TYPE[0].value}>
+                defaultValue={stall?.stall_type ?? STALL_TYPE[0].value}>
                 {STALL_TYPE.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -62,9 +70,9 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
                 required
                 select
                 size="small"
-                name="status"
+                name="stall_status"
                 variant="outlined"
-                defaultValue={STALL_STATUS[0].value}>
+                defaultValue={stall?.stall_status ?? STALL_STATUS[0].value}>
                 {STALL_STATUS.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -75,11 +83,10 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
             <Box className="field-container">
               <Typography>Area:</Typography>
               <TextField
-                disabled
                 size="small"
                 name="area"
                 variant="outlined"
-                defaultValue={445}
+                defaultValue={stall?.area}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
@@ -87,7 +94,7 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
                     </InputAdornment>
                   ),
                 }}
-                style={{ maxWidth: '20%' }}
+                style={{ maxWidth: '30%' }}
               />
             </Box>
             <Box className="field-container">
@@ -96,9 +103,9 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
                 required
                 select
                 size="small"
-                name="clazz"
+                name="stall_class"
                 variant="outlined"
-                defaultValue={STALL_CLASS[0].value}>
+                defaultValue={stall?.stall_class ?? STALL_CLASS[0].value}>
                 {STALL_CLASS.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}

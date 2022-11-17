@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Rect, Transformer } from 'react-konva';
+import { CONTAINER_HEIGHT, CONTAINER_WIDTH } from '../../../const/const';
+
 interface IRectangle {
   stall: any;
   isSelected: boolean;
@@ -43,7 +45,6 @@ const Rectangle: React.FC<IRectangle> = (props) => {
     // but in the store we have only width and height
     // to match the data better we will reset scale on transform end
     const node = shapeRef.current;
-    console.log(node);
     const scaleX = (node as any).scaleX();
     const scaleY = (node as any).scaleY();
 
@@ -71,8 +72,8 @@ const Rectangle: React.FC<IRectangle> = (props) => {
         width={stall?.width}
         height={stall?.height}
         draggable={draggable}
-        opacity={0.8}
-        fill="red"
+        opacity={0.9}
+        fill={stall.stall_name ? '#007e33' : '#ff4444'}
         ref={shapeRef}
         onTap={onSelect}
         onClick={onSelect}

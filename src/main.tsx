@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <SnackbarProvider
       maxSnack={3}
-      autoHideDuration={1500}
+      autoHideDuration={3000}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
       <FloorContextProvider>
         <App />
