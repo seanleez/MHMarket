@@ -20,9 +20,9 @@ const AddAndEditMarketStep1 = () => {
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
 
   useEffect(() => {
@@ -132,7 +132,7 @@ const AddAndEditMarketStep1 = () => {
   };
 
   return (
-    <div className="form-container text-field-1-4">
+    <div className="container text-field-1-4">
       {currentEditMarket && (
         <MarketFormStep1
           currentEditMarket={currentEditMarket}

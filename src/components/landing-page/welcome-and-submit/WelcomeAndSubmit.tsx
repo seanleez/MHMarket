@@ -1,8 +1,10 @@
 import { Button } from '@mui/material';
 import { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './WelcomeAndSubmit.scss';
 
 const WelcomeAndSubmit: FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="submit-container">
       <div className="welcome-message">
@@ -17,7 +19,10 @@ const WelcomeAndSubmit: FC = () => {
       </div>
       <div className="submit-application">
         <h3>Submit your market lease-related application here!</h3>
-        <Button variant="contained" className="primary">
+        <Button
+          variant="contained"
+          className="primary"
+          onClick={() => navigate('/submit-application')}>
           Submit Application
         </Button>
       </div>

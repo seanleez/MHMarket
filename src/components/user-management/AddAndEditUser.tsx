@@ -4,7 +4,6 @@ import { rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import '../Form.scss';
 import UserForm from './UserForm';
 
 const AddAndEditUser = () => {
@@ -19,12 +18,11 @@ const AddAndEditUser = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/user/edit');
-  
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
-  const token = currentUser?.access_token;
 
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
+  const token = currentUser?.access_token;
 
   // Get roles and pass into select
   useEffect(() => {
@@ -120,7 +118,7 @@ const AddAndEditUser = () => {
   };
 
   return (
-    <div className="form-container text-field-1-3">
+    <div className="container text-field-1-3">
       {currentEditUser && (
         <UserForm
           currentEditUser={currentEditUser}
