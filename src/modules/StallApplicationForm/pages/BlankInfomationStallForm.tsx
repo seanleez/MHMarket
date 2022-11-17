@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import React from 'react';
-import { FormCommonInfor } from '../components';
+import { FormCommonInfor, FormOwnerInfor } from '../components';
 import FormContainer from '../Layouts';
 
 const BlankInfomationStallForm = () => {
@@ -11,7 +11,7 @@ const BlankInfomationStallForm = () => {
       formNumber='022'
       shouldGray={true}
     >
-      test
+      <FormOwnerInfor />
     </FormContainer>
   );
 };

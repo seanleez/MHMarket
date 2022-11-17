@@ -33,7 +33,7 @@ const FormCommonInfor = ({ shouldGray, status, dateSubmitted, formNumber }: IFor
       }}
     >
       {/* left */}
-      <Grid container xs={6} md={5}  spacing={2} sx={{
+      <Grid container xs={6} md={5} spacing={2} sx={{
         maxWidth: 'fit-content'
       }}>
         <Grid item xs={5} sx={itemCenter}>
