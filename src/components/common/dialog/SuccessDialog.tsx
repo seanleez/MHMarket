@@ -35,10 +35,11 @@ const SuccessDialog: React.FC<IDialog> = (props) => {
             style={{ width: '100px', height: '100px' }}
           />
         </DialogContent>
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: '20px' }}>
+        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>
           {message}
         </DialogTitle>
-        <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
+        <DialogActions
+          sx={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
           <Button
             onClick={onCloseDialog}
             autoFocus

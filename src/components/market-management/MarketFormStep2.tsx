@@ -1,14 +1,35 @@
 import { Button, Container } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { rootURL } from '../../const/const';
+import SuccessDialog from '../common/dialog/SuccessDialog';
 import ProgressCirle from '../common/progress-circle/ProgressCircle';
 import FloorList from './Step2/FloorList';
 
-const MarketFormStep2 = (props: any) => {
-  const { onPublish } = props;
-  const isAtEditPage = location.pathname.includes('/market/edit');
+const marketId = localStorage.getItem('marketId');
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
 
+const MarketFormStep2 = (props: any) => {
+  const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
+  const isAtEditPage = location.pathname.includes('/market/edit');
   const navigate = useNavigate();
 
+  const handlePublish = () => {
+    fetch(`${rootURL}/markets/${marketId}/publish`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        setOpenSuccessDialog(true);
+      })
+      .catch((err) => console.error(err));
+  };
   return (
     <>
       <span className="title">
@@ -32,10 +53,15 @@ const MarketFormStep2 = (props: any) => {
           type="submit"
           variant="contained"
           size="large"
-          onClick={onPublish}>
+          onClick={handlePublish}>
           Publish
         </Button>
       </Container>
+      <SuccessDialog
+        openProp={openSuccessDialog}
+        message={'Publish Successfully'}
+        onCloseDialog={() => setOpenSuccessDialog(false)}
+      />
     </>
   );
 };
