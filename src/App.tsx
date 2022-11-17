@@ -1,6 +1,5 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
-import './App.scss';
-import Canvas from './components/market-management/Canvas/Canvas';
+import './style/main.scss';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
 import Login from './components/login/Login';
@@ -11,6 +10,7 @@ import AddAndEditRate from './components/rate-management/AddAndEditRate';
 import RateManagement from './components/rate-management/RateManagement';
 import AddAndEditRole from './components/role-management/AddAndEditRole';
 import RoleManagement from './components/role-management/RoleManagement';
+import SubmitApplication from './components/submit-application/SubmitApplication';
 import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
 
@@ -54,6 +54,7 @@ function App() {
           path="/market/edit/step2/:id"
           element={<AddAndEditMarketStep2 />}
         />
+        <Route path="/submit-application" element={<SubmitApplication />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>

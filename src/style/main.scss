@@ -1,6 +1,14 @@
-@import '../variable/variable.scss';
+@import './variable.scss';
 
-.form-container {
+button.primary {
+  background-color: $blue-02 !important;
+}
+
+.App {
+  margin-bottom: 50px;
+}
+
+.container {
   position: relative;
   width: 90%;
   margin: auto;
@@ -8,6 +16,10 @@
   border-radius: 30px;
   padding: 30px;
   margin-top: 40px;
+
+  &.min-h-500 {
+    min-height: 500px;
+  }
 
   .title {
     position: absolute;

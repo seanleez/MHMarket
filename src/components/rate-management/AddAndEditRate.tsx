@@ -19,11 +19,10 @@ const AddAndEditRate = () => {
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/rate/edit');
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
-
 
   useLayoutEffect(() => {
     if (isAtEditPage) {
@@ -168,7 +167,7 @@ const AddAndEditRate = () => {
   };
 
   return (
-    <div className="form-container text-field-1-3">
+    <div className="container text-field-1-3">
       {currentEditRate && (
         <RateForm currentEditRate={currentEditRate} onSubmit={handleSubmit} />
       )}

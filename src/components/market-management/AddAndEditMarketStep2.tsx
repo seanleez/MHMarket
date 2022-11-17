@@ -21,11 +21,10 @@ const AddAndEditMarketStep2 = () => {
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
-
 
   useEffect(() => {
     if (isAtEditPage) {
@@ -53,13 +52,10 @@ const AddAndEditMarketStep2 = () => {
   const handleCloseAlertDialog = () => {
     setOpenAlertDialog(false);
   };
-  const handlePublish = () => {
-    console.log('delete');
-  };
 
   return (
-    <div className="form-container">
-      <MarketFormStep2 onPublish={handlePublish} />
+    <div className="container">
+      <MarketFormStep2 />
       <AlertDialog
         openProp={openAlertDialog}
         message={'All classes have to be unique'}

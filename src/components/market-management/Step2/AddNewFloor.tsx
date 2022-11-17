@@ -64,7 +64,6 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
       }
     });
 
-    console.log(payload);
     fetch(`${rootURL}/floors`, {
       method: 'POST',
       credentials: 'same-origin',

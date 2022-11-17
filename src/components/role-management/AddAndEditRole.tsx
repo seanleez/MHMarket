@@ -3,7 +3,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
 import AlertDialog from '../common/dialog/AlertDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import '../Form.scss';
 import RoleForm from './RoleForm';
 
 const AddAndEditRole = () => {
@@ -17,12 +16,11 @@ const AddAndEditRole = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/role/edit');
-  
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
-  const token = currentUser?.access_token;
 
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
+  const token = currentUser?.access_token;
 
   useEffect(() => {
     fetch(`${rootURL}/permissions/categories`, {
@@ -120,7 +118,7 @@ const AddAndEditRole = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="container">
       {currentEditRole && (
         <RoleForm
           errorMes={errorMes}

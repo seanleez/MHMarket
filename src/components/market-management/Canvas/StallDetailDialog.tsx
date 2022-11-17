@@ -24,7 +24,6 @@ interface IStallDetailDialog {
 
 const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
   const { stall, openProp, onCloseDialog, onSubmit } = props;
-  console.log(stall);
   return (
     <div>
       <Dialog open={openProp} onClose={onCloseDialog}>
