@@ -182,3 +182,7 @@ export const LIST_TABLE_NAME = [
   'Market Management',
   'Floor Management',
 ];
+
+const SCROLL_BAR_WIDTH = 15;
+export const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
+export const CONTAINER_HEIGHT = 0.7 * window.innerHeight;

@@ -69,27 +69,31 @@ const FloorInformation: React.FC<any> = (props) => {
     }
   };
 
+  const updateListStalls = () => {
+    fetch(`${rootURL}/floors/${floor.floorplan_id}?draft=true`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_description);
+        } else {
+          if (response && response.stalls) {
+            console.log(response);
+            setListStalls(response.stalls);
+          }
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
   const handleExpandCollapse = () => {
     setExpand((prev) => !prev);
     if (expand === false) {
-      fetch(`${rootURL}/floors/${floor.floorplan_id}?draft=true`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          if (response.error_code) {
-            throw new Error(response.error_description);
-          } else {
-            if (response && response.stalls) {
-              console.log(response);
-              setListStalls(response.stalls);
-            }
-          }
-        })
-        .catch((err) => console.error(err));
+      updateListStalls();
     }
   };
 
@@ -103,18 +107,7 @@ const FloorInformation: React.FC<any> = (props) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        fetch(`${rootURL}/markets/${marketId}/floors?draft=true`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data && data.floors) {
-              floorContext.setListFloors(data.floors);
-            }
-          });
+        floorContext.updateListFloors();
       })
       .catch((err) => setOpenErrorDialog(true));
   };
@@ -139,7 +132,6 @@ const FloorInformation: React.FC<any> = (props) => {
       }
     });
 
-    console.log(payload.current);
     fetch(`${rootURL}/floors/${floor.floorplan_id}`, {
       method: 'PUT',
       credentials: 'same-origin',
@@ -154,19 +146,7 @@ const FloorInformation: React.FC<any> = (props) => {
           // setErrorMes(response.error_description);
           console.log(response);
         } else {
-          fetch(`${rootURL}/markets/${params.id}/floors?draft=true`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data && data.floors) {
-                floorContext.setListFloors(data.floors);
-                setIsDisplayMode(true);
-              }
-            });
+          floorContext.updateListFloors();
         }
       })
       .catch((err) => console.error(err));
@@ -218,7 +198,8 @@ const FloorInformation: React.FC<any> = (props) => {
               return (
                 <Box
                   key={i}
-                  style={{ width: column.width, textAlign: column.align }}>
+                  style={{ width: column.width, textAlign: column.align }}
+                  sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {getContent(column)}
                 </Box>
               );
@@ -284,6 +265,7 @@ const FloorInformation: React.FC<any> = (props) => {
             imgBackground={floor.image_url}
             floorId={floor.floorplan_id}
             listStalls={listStalls}
+            updateListStalls={updateListStalls}
           />
         </Paper>
       </Collapse>

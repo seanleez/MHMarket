@@ -9,9 +9,9 @@ import CircularLoading from '../../common/loading/CircularLoading';
 interface IAddNewFloor {
   onCancel: () => void;
 }
-const currentUser = localStorage.getItem('currentUser') ? 
-  JSON.parse(localStorage.getItem('currentUser') as string) : 
-  null;
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
 const token = currentUser?.access_token;
 
 const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
@@ -50,6 +50,7 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
 
   const handleCreateFloor = (e: FormEvent) => {
     e.preventDefault();
+    onCancel();
     const marketId = localStorage.getItem('marketId');
     payload.current['market_id'] = marketId;
 
@@ -75,21 +76,9 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
       .then((res) => res.json())
       .then((response) => {
         if (response.error_code) {
-          console.log(response);
+          throw new Error(response.error_description);
         } else {
-          fetch(`${rootURL}/markets/${marketId}/floors?draft=true`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data && data.floors) {
-                floorContext.setListFloors(data.floors);
-                onCancel();
-              }
-            });
+          floorContext.updateListFloors();
         }
       })
       .catch((err) => console.error(err));
