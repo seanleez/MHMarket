@@ -39,11 +39,7 @@ export default function FloorContextProvider({ children }: any) {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          if (response.floors) {
-            setListFloors(response.floors);
-          } else {
-            throw new Error('Floor is null');
-          }
+          setListFloors(response.floors ?? []);
         }
       })
       .catch((err) => console.error(err));
