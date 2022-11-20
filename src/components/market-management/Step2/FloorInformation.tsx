@@ -29,7 +29,7 @@ const currentUser = localStorage.getItem('currentUser')
   : null;
 const token = currentUser?.access_token;
 
-const marketId = localStorage.getItem('marketId');
+const marketId = localStorage.getItem('marketId') ?? '';
 
 const FloorInformation: React.FC<any> = (props) => {
   const { floor, columns, displayMode } = props;
@@ -42,7 +42,6 @@ const FloorInformation: React.FC<any> = (props) => {
 
   const payload = useRef<any>({});
   const floorContext = useContext(FloorContext);
-  const params = useParams();
   const getContent = (column: any) => {
     switch (column.id) {
       case 'action':
@@ -81,10 +80,7 @@ const FloorInformation: React.FC<any> = (props) => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          if (response && response.stalls) {
-            console.log(response);
-            setListStalls(response.stalls);
-          }
+          setListStalls(response.stalls ?? []);
         }
       })
       .catch((err) => console.error(err));
@@ -143,10 +139,10 @@ const FloorInformation: React.FC<any> = (props) => {
       .then((res) => res.json())
       .then((response) => {
         if (response.error_code) {
-          // setErrorMes(response.error_description);
-          console.log(response);
+          throw new Error(response.error_description);
         } else {
           floorContext.updateListFloors();
+          setIsDisplayMode(true);
         }
       })
       .catch((err) => console.error(err));
@@ -169,12 +165,10 @@ const FloorInformation: React.FC<any> = (props) => {
       .then((res) => res.json())
       .then((response) => {
         if (response.error_code) {
-          // setErrorMes(response.error_description);
-          console.log(response);
+          throw new Error(response.error_description);
         } else {
           payload.current['image_name'] = response?.content;
           payload.current['image_url'] = response?.pre_signed_url;
-          console.log(payload.current);
           setLoading(false);
         }
       })
