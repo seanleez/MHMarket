@@ -1,7 +1,8 @@
 import StoreIcon from '@mui/icons-material/Store';
-import { Box, Divider, MenuItem, TextField, Typography } from '@mui/material';
-import { useLayoutEffect, useState } from 'react';
+import { Box, MenuItem, TextField, Typography } from '@mui/material';
+import { useContext, useLayoutEffect, useState } from 'react';
 import { rootURL } from '../../const/const';
+import { ContainerContext } from '../../context/ContainerRefContext';
 import MarketFloors from './MarketFloors';
 import MarketInformation from './MarketInformation';
 
@@ -16,6 +17,8 @@ const SubmitApplication: React.FC = () => {
   const [floorplanDetail, setFloorplanDetail] = useState();
   const [supervisorInfor, setSupervisorInfor] = useState();
   const [listFloors, setListFloors] = useState([]);
+
+  const containerContext = useContext(ContainerContext);
 
   useLayoutEffect(() => {
     fetch(`${rootURL}/markets/published`, {
@@ -51,6 +54,7 @@ const SubmitApplication: React.FC = () => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
+          console.log(response);
           setFloorplanDetail(response);
         }
       })
@@ -106,7 +110,7 @@ const SubmitApplication: React.FC = () => {
   };
 
   return (
-    <div className="container min-h-500">
+    <div className="container min-h-500" ref={containerContext.containerRef}>
       <span className="title">NEW STALL APPLICATION</span>
       <div className="section-title">PUBLIC MARKET INFORMATION</div>
       <Box sx={{ display: 'flex' }}>

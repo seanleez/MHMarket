@@ -9,8 +9,10 @@ import {
 } from '../../../const/const';
 import Rectangle from './Rectangle';
 // import StallDetailDialog from './StallDetailDialog';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CircleIcon from '@mui/icons-material/Circle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { KonvaEventObject } from 'konva/lib/Node';
+import StallInformation from './StalInformation';
 interface IFloorCanvas {
   floor: any;
 }
@@ -28,6 +30,8 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
   // const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   // const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
   // const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
+  const [openStallInfor, setOpenStallInfor] = useState<boolean>(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [expand, setExpand] = useState<boolean>(false);
   const [image, status] = useImage(floor.image_url ?? '');
 
@@ -54,7 +58,7 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          console.log(response);
+          console.log(response?.stalls);
           setStalls(response?.stalls ?? []);
         }
       })
@@ -68,11 +72,15 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
     const clickedOnEmpty = e.target.getClassName() === 'Image';
     if (clickedOnEmpty) {
       setSelectedId('');
+      setOpenStallInfor(false);
     }
   };
 
-  const handleDoubleClickStall = () => {
-    console.log('dbcl');
+  const handleDoubleClickStall = (e: KonvaEventObject<MouseEvent>) => {
+    console.log(e.evt.x);
+    console.log(e.evt.y);
+    setPosition({ x: e.evt.x, y: e.evt.y });
+    setOpenStallInfor(true);
   };
 
   return (
@@ -147,6 +155,8 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
           </Paper>
         </Collapse>
       </Box>
+      {openStallInfor && <StallInformation position={position} />}
+
       {/* <StallDetailDialog
         stall={rects.find((rect: any) => rect.stall_id === selectedId)}
         openProp={openDetailDialog}

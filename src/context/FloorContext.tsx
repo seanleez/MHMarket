@@ -3,7 +3,6 @@ import { rootURL } from '../const/const';
 
 interface IFloorContext {
   listFloors: any[];
-  setListFloors: Dispatch<SetStateAction<any[]>>;
   updateListFloors: () => void;
 }
 

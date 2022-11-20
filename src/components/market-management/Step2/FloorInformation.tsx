@@ -269,7 +269,7 @@ const FloorInformation: React.FC<any> = (props) => {
           />
         </Paper>
       </Collapse>
-      <CircularLoading loading={loading} message={'Loading File...'} />
+      <CircularLoading loading={loading} />
       <ConfirmDialog
         openProp={openConfirmDialog}
         message={'Are you sure you wanna delete this floor?'}

@@ -1,3 +1,4 @@
+import { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useRef } from 'react';
 import { Rect } from 'react-konva';
 
@@ -5,7 +6,7 @@ interface IRectangle {
   stall: any;
   isSelected: boolean;
   onSelect: () => void;
-  onDoubleClickStall: () => void;
+  onDoubleClickStall: (e: KonvaEventObject<MouseEvent>) => void;
 }
 
 const Rectangle: React.FC<IRectangle> = (props) => {
@@ -14,6 +15,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
 
   const SELECTED_PROPERTIES = {
     stroke: '#e9b666',
+    strokeWidth: 3,
     shadowColor: 'black',
     shadowBlur: 10,
     shadowOpacity: 0.6,
