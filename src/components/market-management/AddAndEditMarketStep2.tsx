@@ -1,55 +1,87 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { Button, Container } from '@mui/material';
+import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FloorContext } from '../../context/FloorContext';
-import AlertDialog from '../common/dialog/AlertDialog';
+import { rootURL } from '../../const/const';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import MarketFormStep2 from './MarketFormStep2';
+import ProgressCirle from '../common/progress-circle/ProgressCircle';
+import FloorList from './Step2/FloorList';
 
-const AddAndEditMarketStep2 = () => {
-  const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
+
+const AddAndEditMarketStep2: React.FC = () => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
 
-  const floorContext = useContext(FloorContext);
-
-  const errorMes = useRef<string>('');
+  const errMess = useRef<string>('asdasd');
 
   const navigate = useNavigate();
   const location = useLocation();
   const isAtEditPage = location.pathname.includes('/market/edit');
 
-  useEffect(() => {
-    if (!isAtEditPage) return;
-    floorContext.updateListFloors();
-  }, []);
-
-  const handleCloseSuccessDialog = () => {
-    setOpenSuccessDialog(false);
-    navigate('/market-management');
-  };
-
-  const handleCloseAlertDialog = () => {
-    setOpenAlertDialog(false);
+  const handlePublish = () => {
+    const marketId = localStorage.getItem('marketId') ?? '';
+    fetch(`${rootURL}/markets/${marketId}/publish`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_description);
+        } else {
+          setOpenSuccessDialog(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(err.message);
+        errMess.current = err.message;
+        setOpenErrorDialog(true);
+      });
   };
 
   return (
     <div className="container">
-      <MarketFormStep2 />
-      <AlertDialog
-        openProp={openAlertDialog}
-        message={'All classes have to be unique'}
-        onCloseDialog={handleCloseAlertDialog}
+      <span className="title">
+        {isAtEditPage ? 'EDIT MARKET' : 'ADD NEW MARKET'}
+      </span>
+      <ProgressCirle step={2} />
+      <div className="section-title">FLOOR PLAN</div>
+
+      <FloorList />
+
+      <Container
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '10px',
+        }}>
+        <Button variant="outlined" size="large" onClick={() => navigate(-1)}>
+          Back
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          onClick={handlePublish}>
+          Publish
+        </Button>
+      </Container>
+      <SuccessDialog
+        openProp={openSuccessDialog}
+        message={'Publish Successfully'}
+        onCloseDialog={() => setOpenSuccessDialog(false)}
       />
       <ErrorDialog
         openProp={openErrorDialog}
-        message={errorMes.current}
+        message={errMess.current}
         onCloseDialog={() => setOpenErrorDialog(false)}
-      />
-      <SuccessDialog
-        openProp={openSuccessDialog}
-        message={`${isAtEditPage ? 'Update' : 'Create'} Successfully!`}
-        onCloseDialog={handleCloseSuccessDialog}
       />
     </div>
   );

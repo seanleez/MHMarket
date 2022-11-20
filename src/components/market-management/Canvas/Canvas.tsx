@@ -1,6 +1,12 @@
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
 import AddNewShape from '../../../assets/icon/add-new-stall-icon.svg';
@@ -31,7 +37,7 @@ const token = currentUser?.access_token;
 
 const Canvas: React.FC<ICanvas> = (props) => {
   const { imgBackground, floorId, listStalls, updateListStalls } = props;
-  const [rects, setRects] = useState(listStalls);
+  const [stalls, setStalls] = useState(listStalls);
   const [selectedId, setSelectedId] = useState<string>('');
   const [canvasWidth, setCanvasWidth] = useState<number>(0);
   const [canvasHeight, setCanvasHeight] = useState<number>(0);
@@ -46,7 +52,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const imgEl = (imageRef.current as any).getAttrs()?.image;
     if (status === 'loaded') {
       setCanvasWidth(imgEl?.width);
@@ -54,8 +60,9 @@ const Canvas: React.FC<ICanvas> = (props) => {
     }
   }, [status]);
 
-  useEffect(() => {
-    setRects(listStalls);
+  useLayoutEffect(() => {
+    console.log(listStalls);
+    setStalls(listStalls);
   }, [listStalls]);
 
   const handleChange = (newAttrs: any) => {
@@ -65,13 +72,13 @@ const Canvas: React.FC<ICanvas> = (props) => {
       ...{ stall_id, x, y, rotation, width, height },
     };
 
-    const newRects = [...rects];
+    const newRects = [...stalls];
     const changedRectIndex = newRects.findIndex(
       (item) => item.stall_id === stall_id
     );
     if (changedRectIndex !== undefined) {
       newRects[changedRectIndex] = newAttrs;
-      setRects(newRects);
+      setStalls(newRects);
     }
 
     fetch(`${rootURL}/stalls/${stall_id}/position`, {
@@ -127,9 +134,9 @@ const Canvas: React.FC<ICanvas> = (props) => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          const newRects = [...rects];
+          const newRects = [...stalls];
           newRects.push(response);
-          setRects(newRects);
+          setStalls(newRects);
           floorContext.updateListFloors();
           enqueueSnackbar('Successfully add new stall', { variant: 'success' });
         }
@@ -140,7 +147,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
   };
 
   const handleOpenConfirmDialog = () => {
-    if (rects.length > 0) {
+    if (stalls.length > 0) {
       setOpenConfirmDialog(true);
     }
   };
@@ -160,8 +167,8 @@ const Canvas: React.FC<ICanvas> = (props) => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          const newRects = [...rects];
-          setRects(
+          const newRects = [...stalls];
+          setStalls(
             newRects.filter((rect: any) => rect.stall_id !== selectedId)
           );
           floorContext.updateListFloors();
@@ -216,14 +223,14 @@ const Canvas: React.FC<ICanvas> = (props) => {
 
   const toggleDragMode = () => {
     setIsDraggable((prev) => !prev);
-    if (rects.length > 0) {
-      const newRects = rects.map((rect: any) => {
+    if (stalls.length > 0) {
+      const newRects = stalls.map((rect: any) => {
         return {
           ...rect,
           draggable: !rect.draggable,
         };
       });
-      setRects(newRects);
+      setStalls(newRects);
     }
   };
 
@@ -272,15 +279,16 @@ const Canvas: React.FC<ICanvas> = (props) => {
           onTouchStart={checkDeselect}>
           <Layer>
             <Image image={image} ref={imageRef} />
-            {rects.length > 0 &&
-              rects.map((rect: any) => (
+            {stalls.length > 0 &&
+              stalls.map((stall: any) => (
                 <Rectangle
-                  key={rect.stall_id}
-                  stall={rect}
+                  key={stall.stall_id}
+                  stall={stall}
                   draggable={isDraggable}
-                  isSelected={rect.stall_id === selectedId}
+                  isSelected={stall.stall_id === selectedId}
                   onSelect={() => {
-                    setSelectedId(rect.stall_id);
+                    console.log(selectedId);
+                    setSelectedId(stall.stall_id);
                   }}
                   onChange={handleChange}
                   onDoubleClickStall={() => setOpenDetailDialog(true)}
@@ -290,7 +298,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
         </Stage>
       </div>
       <StallDetailDialog
-        stall={rects.find((rect: any) => rect.stall_id === selectedId)}
+        stall={stalls.find((stall: any) => stall.stall_id === selectedId)}
         openProp={openDetailDialog}
         onCloseDialog={() => setOpenDetailDialog(false)}
         onSubmit={handleEditDetailStall}
@@ -304,7 +312,10 @@ const Canvas: React.FC<ICanvas> = (props) => {
       <SuccessDialog
         openProp={openSuccessDialog}
         message={'Successfully updated stall metadata'}
-        onCloseDialog={() => setOpenSuccessDialog(false)}
+        onCloseDialog={() => {
+          setOpenSuccessDialog(false);
+          openDetailDialog && setOpenDetailDialog(false);
+        }}
       />
     </>
   );
