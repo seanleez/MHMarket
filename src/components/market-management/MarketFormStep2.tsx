@@ -30,6 +30,7 @@ const MarketFormStep2 = (props: any) => {
       })
       .catch((err) => console.error(err));
   };
+
   return (
     <>
       <span className="title">
