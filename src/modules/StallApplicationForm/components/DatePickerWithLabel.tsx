@@ -17,12 +17,12 @@ const DatePickerWithLabel = ({ label, id, value, onChange, sx, disabled }: IDate
   return (
     <HOCLabel label={label} id={id}>
       <DesktopDatePicker
-          label="Date desktop"
           inputFormat="MM/DD/YYYY"
           value={value}
           onChange={onChange}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField size='small' {...params} />}
           disabled={disabled}
+          
         />
     </HOCLabel>
   );
