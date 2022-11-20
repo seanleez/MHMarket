@@ -6,6 +6,11 @@ import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import MarketFormStep1 from './MarketFormStep1';
 
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
+
 const AddAndEditMarketStep1 = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
   const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
@@ -20,14 +25,9 @@ const AddAndEditMarketStep1 = () => {
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
 
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
-  const token = currentUser?.access_token;
-
   useEffect(() => {
     if (isAtEditPage) {
-      fetch(`${rootURL}/markets/${params.id}`, {
+      fetch(`${rootURL}/markets/${params.id}?draft=true`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

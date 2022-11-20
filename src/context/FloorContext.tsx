@@ -3,15 +3,11 @@ import { rootURL } from '../const/const';
 
 interface IFloorContext {
   listFloors: any[];
-  setListFloors: Dispatch<SetStateAction<any[]>>;
   updateListFloors: () => void;
 }
 
 const initContextObj = {
   listFloors: [],
-  setListFloors: () => {
-    // any
-  },
   updateListFloors: () => {
     // any
   },
@@ -47,7 +43,6 @@ export default function FloorContextProvider({ children }: any) {
 
   const passdownValues = {
     listFloors,
-    setListFloors,
     updateListFloors,
   };
   return (
