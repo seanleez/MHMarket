@@ -1,10 +1,10 @@
-import { Box, Button, Typography } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
-import { IManagementTableFormat } from '../../../const/interface';
-import FloorInformation from './FloorInformation';
 import AddIcon from '@mui/icons-material/Add';
-import AddNewFloor from './AddNewFloor';
+import { Box, Button, Typography } from '@mui/material';
+import { useContext, useLayoutEffect, useState } from 'react';
+import { IManagementTableFormat } from '../../../const/interface';
 import { FloorContext } from '../../../context/FloorContext';
+import AddNewFloor from './AddNewFloor';
+import FloorInformation from './FloorInformation';
 
 const FLOOR_LIST_COLUMN: IManagementTableFormat[] = [
   {
@@ -38,6 +38,10 @@ const FLOOR_LIST_COLUMN: IManagementTableFormat[] = [
 const FloorList: React.FC = () => {
   const [isHaveAddNewRow, setIsHaveAddNewRow] = useState(false);
   const floorContext = useContext(FloorContext);
+
+  useLayoutEffect(() => {
+    floorContext.updateListFloors();
+  }, []);
 
   return (
     <Box sx={{ marginBottom: '40px' }}>

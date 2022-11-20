@@ -26,21 +26,20 @@ const AddAndEditMarketStep1 = () => {
   const isAtEditPage = location.pathname.includes('/market/edit');
 
   useEffect(() => {
-    if (isAtEditPage) {
-      fetch(`${rootURL}/markets/${params.id}?draft=true`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    if (!isAtEditPage) return;
+    fetch(`${rootURL}/markets/${params.id}?draft=true`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        supervisorId.current = data?.supervisor?.supervisor_id ?? '';
+        setCurrentEditMarket(data);
       })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          supervisorId.current = data?.supervisor?.supervisor_id ?? '';
-          setCurrentEditMarket(data);
-        })
-        .catch((err) => console.error(err));
-    }
+      .catch((err) => console.error(err));
   }, []);
 
   const handleCloseSuccessDialog = () => {
@@ -96,13 +95,13 @@ const AddAndEditMarketStep1 = () => {
 
     if (isAtEditPage) {
       payload.supervisor['supervisor_id'] = supervisorId.current;
-      payload['market_id'] = currentEditMarket?.market_id;
+      payload['market_id'] = params.id;
     }
     console.log(payload);
 
     // Call API Add New or Edit
     const fetchURL = isAtEditPage
-      ? `${rootURL}/markets/${currentEditMarket.market_id}`
+      ? `${rootURL}/markets/${params.id}`
       : `${rootURL}/markets`;
 
     fetch(fetchURL, {

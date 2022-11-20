@@ -1,9 +1,7 @@
 import { Box, Button, TextField } from '@mui/material';
 import { FormEvent, useContext, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { rootURL } from '../../../const/const';
 import { FloorContext } from '../../../context/FloorContext';
-import SuccessDialog from '../../common/dialog/SuccessDialog';
 import CircularLoading from '../../common/loading/CircularLoading';
 
 interface IAddNewFloor {
@@ -51,7 +49,7 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
   const handleCreateFloor = (e: FormEvent) => {
     e.preventDefault();
     onCancel();
-    const marketId = localStorage.getItem('marketId');
+    const marketId = localStorage.getItem('marketId') ?? '';
     payload.current['market_id'] = marketId;
 
     const elementsInForm = (e.target as HTMLFormElement).elements;

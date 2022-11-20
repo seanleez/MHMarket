@@ -3,6 +3,7 @@ import {
   DialogContent,
   Divider,
   MenuItem,
+  Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -34,11 +35,11 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
           <Divider />
           <DialogContent>
             <Box className="field-container">
-              <Typography>Stall ID:</Typography>
+              <Typography>Stall ID :</Typography>
               <Typography>{stall?.code}</Typography>
             </Box>
             <Box className="field-container">
-              <Typography>Stall Number:</Typography>
+              <Typography>Stall Number* :</Typography>
               <TextField
                 required
                 size="small"
@@ -48,7 +49,7 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
               />
             </Box>
             <Box className="field-container">
-              <Typography>Stall Type:</Typography>
+              <Typography>Stall Type* :</Typography>
               <TextField
                 required
                 select
@@ -64,7 +65,7 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
               </TextField>
             </Box>
             <Box className="field-container">
-              <Typography>Status:</Typography>
+              <Typography>Status* :</Typography>
               <TextField
                 required
                 select
@@ -80,8 +81,9 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
               </TextField>
             </Box>
             <Box className="field-container">
-              <Typography>Area:</Typography>
+              <Typography>Area* :</Typography>
               <TextField
+                required
                 size="small"
                 name="area"
                 variant="outlined"
@@ -104,7 +106,7 @@ const StallDetailDialog: React.FC<IStallDetailDialog> = (props) => {
                 size="small"
                 name="stall_class"
                 variant="outlined"
-                defaultValue={stall?.stall_class ?? STALL_CLASS[0].value}>
+                defaultValue={stall?.stall_class || STALL_CLASS[0].value}>
                 {STALL_CLASS.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}

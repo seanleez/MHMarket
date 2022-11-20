@@ -63,6 +63,7 @@ const MarketManagement = () => {
     })
       .then((res) => res.json())
       .then((response) => {
+        console.log(response);
         setRows(response.items);
       })
       .catch((err) => console.error(err));

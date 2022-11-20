@@ -36,10 +36,20 @@ const ConfirmDialog: React.FC<IDialog> = (props) => {
             style={{ width: '100px', height: '100px' }}
           />
         </DialogContent>
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: '20px' }}>
+        <DialogTitle
+          sx={{
+            padding: '0 20px 20px',
+            minWidth: '200px',
+            textAlign: 'center',
+          }}>
           {message}
         </DialogTitle>
-        <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            paddingBottom: '20px',
+          }}>
           <Button onClick={onCloseDialog} autoFocus variant="outlined">
             Cancel
           </Button>

@@ -27,7 +27,7 @@ const ErrorDialog: React.FC<IDialog> = (props) => {
             display: 'flex',
             justifyContent: 'center',
             paddingTop: '20px',
-            py: 4,
+            paddingBottom: '0',
           }}>
           <img
             src={ErrorIcon}
@@ -35,11 +35,25 @@ const ErrorDialog: React.FC<IDialog> = (props) => {
             style={{ width: '55px', height: '55px' }}
           />
         </DialogContent>
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: '20px' }}>
+        <DialogTitle
+          sx={{
+            padding: '0 20px 20px',
+            minWidth: '200px',
+            textAlign: 'center',
+          }}>
           {message}
         </DialogTitle>
-        <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button onClick={onCloseDialog} autoFocus variant="contained">
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            paddingBottom: '20px',
+          }}>
+          <Button
+            autoFocus
+            variant="contained"
+            size="medium"
+            onClick={onCloseDialog}>
             OK
           </Button>
         </DialogActions>

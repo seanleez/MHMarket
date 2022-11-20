@@ -16,13 +16,13 @@ const currentUser = localStorage.getItem('currentUser')
   ? JSON.parse(localStorage.getItem('currentUser') as string)
   : null;
 const token = currentUser?.access_token;
-const marketId = localStorage.getItem('marketId');
 
 export const FloorContext = createContext<IFloorContext>(initContextObj);
 export default function FloorContextProvider({ children }: any) {
   const [listFloors, setListFloors] = useState<any[]>([]);
 
   const updateListFloors = () => {
+    const marketId = localStorage.getItem('marketId') ?? '';
     fetch(`${rootURL}/markets/${marketId}/floors?draft=true`, {
       method: 'GET',
       headers: {
