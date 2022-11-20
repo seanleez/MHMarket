@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { MARKET_TYPE, rootURL } from '../../const/const';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FloorContext } from '../../context/FloorContext';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
@@ -18,30 +17,11 @@ const AddAndEditMarketStep2 = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
 
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
-  const token = currentUser?.access_token;
-
   useEffect(() => {
-    if (isAtEditPage) {
-      fetch(`${rootURL}/markets/${params.id}/floors?draft=true`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.floors) {
-            floorContext.setListFloors(data.floors);
-          }
-        })
-        .catch((err) => console.error(err));
-    }
+    if (!isAtEditPage) return;
+    floorContext.updateListFloors();
   }, []);
 
   const handleCloseSuccessDialog = () => {

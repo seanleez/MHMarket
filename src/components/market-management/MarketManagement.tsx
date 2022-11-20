@@ -49,9 +49,9 @@ const MarketManagement = () => {
 
   const navigate = useNavigate();
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
 
   useEffect(() => {
@@ -62,9 +62,8 @@ const MarketManagement = () => {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log('data: ', data);
-        setRows(data.items);
+      .then((response) => {
+        setRows(response.items);
       })
       .catch((err) => console.error(err));
     // When delete a market, fetch this APIGET again to get new data
