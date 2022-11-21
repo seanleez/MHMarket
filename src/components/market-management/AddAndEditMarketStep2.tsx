@@ -39,8 +39,6 @@ const AddAndEditMarketStep2: React.FC = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
-        console.log(err.message);
         errMess.current = err.message;
         setOpenErrorDialog(true);
       });
@@ -76,7 +74,10 @@ const AddAndEditMarketStep2: React.FC = () => {
       <SuccessDialog
         openProp={openSuccessDialog}
         message={'Publish Successfully'}
-        onCloseDialog={() => setOpenSuccessDialog(false)}
+        onCloseDialog={() => {
+          setOpenSuccessDialog(false);
+          navigate('/submit-application');
+        }}
       />
       <ErrorDialog
         openProp={openErrorDialog}

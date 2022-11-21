@@ -37,7 +37,7 @@ const ErrorDialog: React.FC<IDialog> = (props) => {
         </DialogContent>
         <DialogTitle
           sx={{
-            padding: '0 20px 20px',
+            padding: '20px',
             minWidth: '200px',
             textAlign: 'center',
           }}>

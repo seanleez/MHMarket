@@ -16,6 +16,13 @@ import {
 } from '../../const/const';
 import ProgressCirle from '../common/progress-circle/ProgressCircle';
 
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
+
+const marketId = localStorage.getItem('marketId') ?? '';
+
 const MarketFormStep1 = (props: any) => {
   const { currentEditMarket, onSubmit } = props;
   const isAtEditPage = location.pathname.includes('/market/edit');
@@ -31,14 +38,9 @@ const MarketFormStep1 = (props: any) => {
   const [district, setDistrict] = useState<string>('');
 
   const navigate = useNavigate();
-  
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
-  const token = currentUser?.access_token;
 
   useEffect(() => {
-    if (isAtEditPage && currentEditMarket) {
+    if (marketId && currentEditMarket) {
       Promise.all([
         fetch(`${rootURL}/locations/provinces`, {
           method: 'GET',
@@ -111,7 +113,7 @@ const MarketFormStep1 = (props: any) => {
   }, []);
 
   useEffect(() => {
-    if ((isAtEditPage && currentEditMarket) || listWards.length > 0) {
+    if ((marketId && currentEditMarket) || listWards.length > 0) {
       fetch(
         `${rootURL}/locations/query?` +
           new URLSearchParams({
