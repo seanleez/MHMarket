@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import { MARKET_MANAGEMENT, rootURL } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
@@ -109,7 +109,7 @@ const MarketManagement = () => {
   return (
     <>
       <TableManagement
-        name={'MARKET MANAGEMENT'}
+        name={MARKET_MANAGEMENT}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}

@@ -1,5 +1,6 @@
 import {
   FLOOR_MANAGEMENT,
+  LEASE_MANAGEMENT,
   MARKET_MANAGEMENT,
   RATE_MANAGEMENT,
   ROLE_MANAGEMENT,
@@ -25,6 +26,8 @@ export const getIdFieldByName = (name: string) => {
     return 'market_id';
   } else if (name === FLOOR_MANAGEMENT) {
     return 'floor_id';
+  } else if (name === LEASE_MANAGEMENT) {
+    return 'application_id';
   } else {
     //
   }

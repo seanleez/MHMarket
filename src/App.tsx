@@ -13,6 +13,7 @@ import RoleManagement from './components/role-management/RoleManagement';
 import SubmitApplication from './components/submit-application/SubmitApplication';
 import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
+import LeaseManagement from './components/lease-management/LeaseManagement';
 
 function App() {
   const { pathname } = useLocation();
@@ -55,6 +56,8 @@ function App() {
           element={<AddAndEditMarketStep2 />}
         />
         <Route path="/submit-application" element={<SubmitApplication />} />
+
+        <Route path="/lease-management" element={<LeaseManagement />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>
