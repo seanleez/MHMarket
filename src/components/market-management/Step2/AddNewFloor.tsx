@@ -138,7 +138,7 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
           </Button>
         </Box>
       </Box>
-      <CircularLoading loading={loading} message={'Loading File...'} />
+      <CircularLoading loading={loading} />
     </form>
   );
 };

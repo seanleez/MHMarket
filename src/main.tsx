@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import ContainerContextProvider from './context/ContainerRefContext';
 import FloorContextProvider from './context/FloorContext';
 import './index.css';
 
@@ -18,7 +19,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       autoHideDuration={3000}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
       <FloorContextProvider>
-        <App />
+        <ContainerContextProvider>
+          <App />
+        </ContainerContextProvider>
       </FloorContextProvider>
     </SnackbarProvider>
   </BrowserRouter>
