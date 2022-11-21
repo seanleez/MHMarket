@@ -199,6 +199,29 @@ export const STALL_CLASS = [
   },
 ];
 
+export const LEASE_STATUS = [
+  {
+    value: 0,
+    label: 'Waiting',
+  },
+  {
+    value: 1,
+    label: 'Active',
+  },
+  {
+    value: 2,
+    label: 'For Termination',
+  },
+  {
+    value: 3,
+    label: 'Terminated',
+  },
+  {
+    value: 4,
+    label: 'Inactive',
+  },
+];
+
 export const INIT_TABLE_ROWS_NUMBER = 5;
 export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
 export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
@@ -206,13 +229,7 @@ export const ROLE_MANAGEMENT = 'ROLE MANAGEMENT';
 export const USER_MANAGEMENT = 'USER MANAGEMENT';
 export const MARKET_MANAGEMENT = 'MARKET MANAGEMENT';
 export const FLOOR_MANAGEMENT = 'FLOOR MANAGEMENT';
-export const LIST_TABLE_NAME = [
-  'Role Management',
-  'User Management',
-  'Rate Management',
-  'Market Management',
-  'Floor Management',
-];
+export const LEASE_MANAGEMENT = 'LEASE MANAGEMENT';
 
 const SCROLL_BAR_WIDTH = 15;
 export const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;

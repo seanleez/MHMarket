@@ -15,8 +15,14 @@ img.dialog-icon {
   margin: auto;
   border: 3px solid #115272;
   border-radius: 30px;
-  padding: 30px;
+  padding: 50px;
   margin-top: 40px;
+
+  &.nested-table {
+    padding: 0;
+    border: none;
+    width: 100%;
+  }
 
   &.min-h-500 {
     min-height: 500px;
@@ -69,5 +75,74 @@ img.dialog-icon {
   }
   &.text-field-1-4 .MuiTextField-root {
     width: 24%;
+  }
+
+  .table-features {
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+
+    .search-field {
+      display: flex;
+      align-items: center;
+      & > span {
+        vertical-align: super;
+        font-weight: bold;
+        font-size: 18px;
+        padding-right: 10px;
+      }
+      input {
+        padding: 10px;
+      }
+    }
+  }
+
+  table {
+    padding: 50px;
+
+    th {
+      background-color: #0038a8;
+      color: #fff;
+      font-size: 16px;
+
+      button {
+        padding-top: 0;
+      }
+    }
+
+    tr:nth-child(even) {
+      background-color: #e9ebf5;
+    }
+    tr:nth-child(odd) {
+      background-color: #cfd5ea;
+    }
+    svg {
+      margin: 0 5px;
+    }
+    button {
+      padding: 4px;
+    }
+
+    span {
+      font-size: medium;
+    }
+
+    span.status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      height: 30px;
+      color: #fff;
+
+      &.active {
+        background-color: #198754;
+      }
+
+      &.inactive {
+        background-color: #d93939;
+      }
+    }
   }
 }

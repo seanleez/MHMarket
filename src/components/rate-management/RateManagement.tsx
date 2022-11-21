@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RATE_TYPE, rootURL } from '../../const/const';
+import { RATE_MANAGEMENT, RATE_TYPE, rootURL } from '../../const/const';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
@@ -38,11 +38,10 @@ const RateManagement: FC = () => {
     console.log('rows', rows);
   });
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
-
 
   useEffect(() => {
     fetch(`${rootURL}/rates`, {
@@ -92,7 +91,7 @@ const RateManagement: FC = () => {
   return (
     <>
       <TableManagement
-        name={'RATE MANAGEMENT'}
+        name={RATE_MANAGEMENT}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}
