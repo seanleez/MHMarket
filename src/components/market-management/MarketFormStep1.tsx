@@ -40,10 +40,6 @@ const MarketFormStep1 = (props: any) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log();
-  });
-
-  useEffect(() => {
     if (marketId && currentEditMarket) {
       Promise.all([
         fetch(`${rootURL}/locations/provinces`, {
