@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import React from 'react';
-import EditableTable from './EditableTable';
+import EditableDependentTable from './EditableDependentTable';
 
 function FormOwnerDetailInfor() {
   return (
@@ -12,7 +12,7 @@ function FormOwnerDetailInfor() {
         If none, kindly indicate "none" in the textbox.
       </Typography>
       {/* 1st row */}
-      <EditableTable />
+      <EditableDependentTable />
     </Box>
   );
 }
