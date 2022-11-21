@@ -1,12 +1,15 @@
+import CircleIcon from '@mui/icons-material/Circle';
 import {
-  Box,
   Button,
   Card,
   CardActions,
   CardContent,
+  Divider,
+  Paper,
   Typography,
 } from '@mui/material';
 import { useContext } from 'react';
+import { STALL_CLASS, STALL_TYPE } from '../../../const/const';
 import { ContainerContext } from '../../../context/ContainerRefContext';
 
 type TPosition = {
@@ -16,44 +19,85 @@ type TPosition = {
 
 interface IStallInformation {
   position: TPosition;
+  stall: any;
 }
 
-const StallInformation: React.FC<IStallInformation> = ({ position }) => {
+const StallInformation: React.FC<IStallInformation> = ({ position, stall }) => {
   const containerContext = useContext(ContainerContext);
   const clientRect =
     containerContext.containerRef.current?.getBoundingClientRect();
-  console.log(window.scrollY);
-  console.log(containerContext.containerRef.current?.getBoundingClientRect());
   return (
-    <Box
+    <Paper
+      elevation={15}
       sx={{
-        minWidth: 275,
+        minWidth: 300,
         position: 'absolute',
         top: position.y - (clientRect?.y ?? 0),
         left: position.x - (clientRect?.x ?? 0),
       }}>
-      <Card variant="outlined">
-        <CardContent>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Word of the Day
+      <Card variant="outlined" sx={{ padding: 1.5 }}>
+        <CardContent sx={{ padding: 0 }}>
+          <Typography variant="h6" fontWeight="bold">
+            Stall No. {stall?.code}
           </Typography>
-          <Typography variant="h5" component="div">
-            benevolent
+          <Divider sx={{ margin: '10px 0' }} />
+          <Typography variant="subtitle1" component="span" fontWeight="bold">
+            Stall Availability:
           </Typography>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            adjective
+          <Typography variant="subtitle1" component="span">
+            <CircleIcon
+              color={stall?.lease_status === 0 ? 'success' : 'error'}
+              sx={{
+                width: 20,
+                height: 20,
+                marginLeft: '5px',
+                verticalAlign: 'sub',
+              }}
+            />
+            {stall?.lease_status === 0 ? 'Available' : 'Occupied'}
           </Typography>
-          <Typography variant="body2">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
+          <br />
+          <Typography variant="subtitle1" component="span" fontWeight="bold">
+            Type:
+          </Typography>
+          <Typography variant="subtitle1" component="span">
+            {
+              STALL_TYPE.find(
+                (option: any) => option.value === stall?.stall_type
+              )?.label
+            }
+          </Typography>
+          <br />
+          <Typography variant="subtitle1" component="span" fontWeight="bold">
+            Area:
+          </Typography>
+          <Typography variant="subtitle1" component="span">
+            {stall.area}
+          </Typography>
+          <br />
+          <Typography variant="subtitle1" component="span" fontWeight="bold">
+            Local Classification:
+          </Typography>
+          <Typography variant="subtitle1" component="span">
+            {
+              STALL_CLASS.find(
+                (option: any) => option.value === stall?.stall_class
+              )?.label
+            }
+          </Typography>
+          <br />
+          <Typography variant="subtitle1" component="span" fontWeight="bold">
+            Rental Fee (per month ):
+          </Typography>
+          <Typography variant="subtitle1" component="span">
+            {stall.monthly_fee}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button size="small">Learn More</Button>
+        <CardActions sx={{ justifyContent: 'flex-end', padding: '10px 0 0' }}>
+          <Button variant="contained">Apply now</Button>
         </CardActions>
       </Card>
-    </Box>
+    </Paper>
   );
 };
 

@@ -8,7 +8,6 @@ import {
   rootURL,
 } from '../../../const/const';
 import Rectangle from './Rectangle';
-// import StallDetailDialog from './StallDetailDialog';
 import CircleIcon from '@mui/icons-material/Circle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { KonvaEventObject } from 'konva/lib/Node';
@@ -27,15 +26,13 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
   const [selectedId, setSelectedId] = useState<string>('');
   const [canvasWidth, setCanvasWidth] = useState<number>(0);
   const [canvasHeight, setCanvasHeight] = useState<number>(0);
-  // const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
-  // const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
-  // const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [openStallInfor, setOpenStallInfor] = useState<boolean>(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [expand, setExpand] = useState<boolean>(false);
   const [image, status] = useImage(floor.image_url ?? '');
 
   const imageRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const imgEl = (imageRef.current as any).getAttrs()?.image;
@@ -44,6 +41,18 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
       setCanvasHeight(imgEl?.height);
     }
   }, [status]);
+
+  useEffect(() => {
+    containerRef.current?.addEventListener('scroll', handleScroll);
+
+    return () => {
+      containerRef.current?.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleScroll = () => {
+    setOpenStallInfor(false);
+  };
 
   const handleExpand = () => {
     setExpand((prev) => !prev);
@@ -77,8 +86,6 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
   };
 
   const handleDoubleClickStall = (e: KonvaEventObject<MouseEvent>) => {
-    console.log(e.evt.x);
-    console.log(e.evt.y);
     setPosition({ x: e.evt.x, y: e.evt.y });
     setOpenStallInfor(true);
   };
@@ -129,7 +136,8 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
                 width: CONTAINER_WIDTH,
                 height: CONTAINER_HEIGHT,
                 overflow: 'auto',
-              }}>
+              }}
+              ref={containerRef}>
               <Stage
                 width={canvasWidth}
                 height={canvasHeight}
@@ -155,25 +163,12 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
           </Paper>
         </Collapse>
       </Box>
-      {openStallInfor && <StallInformation position={position} />}
-
-      {/* <StallDetailDialog
-        stall={rects.find((rect: any) => rect.stall_id === selectedId)}
-        openProp={openDetailDialog}
-        onCloseDialog={() => setOpenDetailDialog(false)}
-        onSubmit={handleEditDetailStall}
-      />
-      <ConfirmDialog
-        openProp={openConfirmDialog}
-        message={'Are you sure you wanna delete?'}
-        onCloseDialog={() => setOpenConfirmDialog(false)}
-        onAcceptDialog={handleDeleteStall}
-      />
-      <SuccessDialog
-        openProp={openSuccessDialog}
-        message={'Successfully updated stall metadata'}
-        onCloseDialog={() => setOpenSuccessDialog(false)}
-      /> */}
+      {openStallInfor && (
+        <StallInformation
+          position={position}
+          stall={stalls.find((stall: any) => stall.stall_id === selectedId)}
+        />
+      )}
     </>
   );
 };

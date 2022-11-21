@@ -31,7 +31,7 @@ const Rectangle: React.FC<IRectangle> = (props) => {
         width={stall?.width}
         height={stall?.height}
         opacity={0.9}
-        fill={stall.is_updated_detail ? '#007e33' : '#ff4444'}
+        fill={stall.lease_status ? '#ff4444' : '#007e33'}
         ref={shapeRef}
         {...(isSelected ? SELECTED_PROPERTIES : {})}
         onTap={onSelect}
