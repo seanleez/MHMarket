@@ -24,20 +24,21 @@ const AddAndEditMarketStep1 = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
+  const marketId = localStorage.getItem('marketId') ?? '';
 
   useEffect(() => {
-    if (!isAtEditPage) return;
-    fetch(`${rootURL}/markets/${params.id}?draft=true`, {
+    if (!marketId) return;
+    fetch(`${rootURL}/markets/${marketId}?draft=true`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        supervisorId.current = data?.supervisor?.supervisor_id ?? '';
-        setCurrentEditMarket(data);
+      .then((response) => {
+        console.log(response);
+        supervisorId.current = response?.supervisor?.supervisor_id ?? '';
+        setCurrentEditMarket(response);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -93,19 +94,19 @@ const AddAndEditMarketStep1 = () => {
       }
     });
 
-    if (isAtEditPage) {
+    if (marketId) {
       payload.supervisor['supervisor_id'] = supervisorId.current;
-      payload['market_id'] = params.id;
+      payload['market_id'] = marketId;
     }
     console.log(payload);
 
     // Call API Add New or Edit
-    const fetchURL = isAtEditPage
-      ? `${rootURL}/markets/${params.id}`
+    const fetchURL = marketId
+      ? `${rootURL}/markets/${marketId}`
       : `${rootURL}/markets`;
 
     fetch(fetchURL, {
-      method: isAtEditPage ? 'PUT' : 'POST',
+      method: marketId ? 'PUT' : 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +121,7 @@ const AddAndEditMarketStep1 = () => {
           throw new Error(response);
         } else {
           console.log(response);
-          const id = isAtEditPage ? response.market_id : response.id;
+          const id = marketId ? response.market_id : response.id;
           response && localStorage.setItem('marketId', id);
           setOpenSuccessDialog(true);
         }
@@ -151,7 +152,7 @@ const AddAndEditMarketStep1 = () => {
       />
       <SuccessDialog
         openProp={openSuccessDialog}
-        message={`${isAtEditPage ? 'Update' : 'Create'} Successfully!`}
+        message={`${marketId ? 'Update' : 'Create'} Successfully!`}
         onCloseDialog={handleCloseSuccessDialog}
       />
     </div>
