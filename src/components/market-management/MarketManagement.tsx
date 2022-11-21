@@ -91,6 +91,7 @@ const MarketManagement = () => {
   };
 
   const handleAddNew = () => {
+    localStorage.setItem('marketId', '');
     navigate('/market/add-new/step1');
   };
 
@@ -101,6 +102,7 @@ const MarketManagement = () => {
   };
 
   const handleEdit = (id: string) => {
+    localStorage.setItem('marketId', id);
     navigate(`/market/edit/step1/${id}`);
   };
 
