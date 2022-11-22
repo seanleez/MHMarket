@@ -1,5 +1,5 @@
 import { Box, Divider, Typography } from '@mui/material';
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
 
@@ -28,7 +28,7 @@ const currentUser = localStorage.getItem('currentUser')
 const token = currentUser?.access_token;
 
 const ViewMarketLease: React.FC = () => {
-  const [leaseInfor, setLeaseInfor] = useState([]);
+  const [leaseInfor, setLeaseInfor] = useState<any>([]);
   const params = useParams();
 
   useLayoutEffect(() => {
@@ -53,17 +53,19 @@ const ViewMarketLease: React.FC = () => {
       });
   }, []);
 
-  const labelValuePair: TPair[] = [
-    { label: 'Search Id', value: 1 },
-    { label: 'Stallholder Name', value: 1 },
-    { label: 'Market Name', value: 1 },
-    { label: 'Lease Start Date', value: 1 },
-    { label: 'Stall Number', value: 1 },
-    { label: 'Lease End Date', value: 1 },
-  ];
+  const labelValuePair: TPair[] = useMemo(() => {
+    return [
+      { label: 'Search Id', value: leaseInfor?.lease_code },
+      { label: 'Stallholder Name', value: 1 },
+      { label: 'Market Name', value: 1 },
+      { label: 'Lease Start Date', value: 1 },
+      { label: 'Stall Number', value: 1 },
+      { label: 'Lease End Date', value: 1 },
+    ];
+  }, [leaseInfor]);
   return (
     <div className="container">
-      <span className="title">NEW STALL APPLICATION</span>
+      <span className="title">VIEW MARKET LEASE</span>
 
       <Box sx={{ display: 'flex', width: '100%' }}>
         <Box sx={{ width: '33%' }}>
@@ -78,107 +80,15 @@ const ViewMarketLease: React.FC = () => {
       </Box>
 
       <div className="section-title">PUBLIC MARKET INFORMATION</div>
-      <Box
-        sx={{
-          display: 'flex',
-          margin: '30px 30px 0',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-        }}>
-        <Box
-          sx={{
-            width: '45%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            marginBottom: '20px',
-          }}>
-          <Typography
-            sx={{
-              fontSize: '18px',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              color: '#0f4c81',
-            }}>
-            Address
-          </Typography>
-          <Divider />
-          <Typography>City : </Typography>
-          <Typography>Province :</Typography>
-          <Typography>District : </Typography>
-          <Typography>Street : </Typography>
-          <Typography>Zipcode : </Typography>
-          <Typography>Map location </Typography>
+      <Box sx={{ display: 'flex', margin: 'auto' }}>
+        <Box sx={{ width: '33%' }}>
+          {labelValuePair.slice(0, 2).map((pair: TPair) => field(pair))}
         </Box>
-
-        <Box
-          sx={{
-            width: '50%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-          }}>
-          <Typography
-            sx={{
-              fontSize: '18px',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              color: '#0f4c81',
-            }}>
-            Contact Person:
-          </Typography>
-          <Divider />
-          <Box sx={{ display: 'flex' }}>
-            <Box
-              sx={{
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-              }}>
-              <Typography>First Name :</Typography>
-              <Typography>Middle Name:</Typography>
-              <Typography>Last Name : </Typography>
-            </Box>
-            <Box
-              sx={{
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-              }}>
-              <Typography>Position:</Typography>
-              <Typography>Tel No.: </Typography>
-              <Typography>Mobile No. :</Typography>
-              <Typography>Email Address : </Typography>
-            </Box>
-          </Box>
+        <Box sx={{ width: '33%' }}>
+          {labelValuePair.slice(2, 4).map((pair: TPair) => field(pair))}
         </Box>
-
-        <Box
-          sx={{
-            width: '45%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-          }}>
-          <Typography
-            sx={{
-              fontSize: '18px',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              color: '#0f4c81',
-            }}>
-            Floorplan Detail :
-          </Typography>
-          <Divider />
-
-          <Typography>Total number of stalls :</Typography>
-          <Typography>Total number of available stalls :</Typography>
-          <Typography>Total number of occupied stalls :</Typography>
+        <Box sx={{ width: '33%' }}>
+          {labelValuePair.slice(4, 6).map((pair: TPair) => field(pair))}
         </Box>
       </Box>
     </div>
