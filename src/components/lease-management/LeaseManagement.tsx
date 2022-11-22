@@ -2,6 +2,7 @@ import { TextField } from '@mui/material';
 import { useLayoutEffect, useState } from 'react';
 import { LEASE_MANAGEMENT, rootURL } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
 
 const currentUser = localStorage.getItem('currentUser')
@@ -73,6 +74,7 @@ const LeaseManagement: React.FC = () => {
   };
   return (
     <>
+      <SelectSearch />
       <TableManagement
         name={LEASE_MANAGEMENT}
         columns={columns}
