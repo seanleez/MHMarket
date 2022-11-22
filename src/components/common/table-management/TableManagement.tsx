@@ -29,7 +29,6 @@ import {
   sortAscendingly,
   sortDescendingly,
 } from '../../../helper/helperFuncs';
-import SelectSearch from '../select-search/SelectSearch';
 
 interface ITableManagement {
   name: string;
@@ -236,7 +235,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
       <span className="title">{name}</span>
       <div className="table-features">
         {isHaveSelectSearchField ? (
-          <></>
+          <>1</>
         ) : (
           <>
             <Button
