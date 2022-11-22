@@ -1,45 +1,37 @@
-import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Button, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import { Draft } from 'immer';
 import { WritableDraft } from 'immer/dist/internal';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, forwardRef, useEffect, useImperativeHandle } from 'react';
 import { useImmerReducer } from "use-immer";
 import { v4 as uuid } from 'uuid';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 
-// we will use immer to handle the table data
 
-// we only pass the data of table when submitting 
-
-interface IEditableDependentTable {
-  onSync: (data: unknown) => void
-}
+interface IEditableDependentTable {}
 
 type Row = {
   [key: string]: unknown,
   _id: string,
-  index: number,
+  // index: number,
   name: string,
   age: string
 }
 
 type ModifyCase = { _id: string, key: string, value: string }
 
-const reducer = (draft: Draft<Row[]>, action: { type: string, payload: string | ModifyCase }) => {
+const reducer = (draft: Draft<Row[]>, action: { type: string, payload?: string | ModifyCase }) => {
   switch (action.type) {
     case 'ADD':
       draft.push({
         _id: uuid(),
-        index: draft.length + 1,
+        // index: draft.length + 1,
         name: '',
         age: ''
       })
       break;
     
     case 'DEL':
-      console.log('click', draft)
-      draft = draft.filter((row) => row._id !== action.payload)
-      console.log(draft)
-      break;
+      return draft.filter((row) => row._id !== action.payload)
     
     case 'MOD':
       const row = draft.find((row) => row._id === (action.payload as ModifyCase)._id) as WritableDraft<Row>
@@ -54,8 +46,13 @@ const reducer = (draft: Draft<Row[]>, action: { type: string, payload: string | 
 }
 
 const numberOnly = /^[1-9]+[0-9]*$/;
+/* 
+  we will use immer to handle the table data
 
-function EditableDependentTable({ onSync }: IEditableDependentTable) {
+  we only pass the data of table outside (to parent) 
+  when submitting the form WITH the syncDataToParent method 
+*/
+const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) => {
 
   const [data, dispatch] = useImmerReducer(reducer, [{
     _id: uuid(),
@@ -64,6 +61,7 @@ function EditableDependentTable({ onSync }: IEditableDependentTable) {
     age: ''
   }] as Row[])
 
+  // #region table feature methods
   const handleChange = (e: ChangeEvent<HTMLInputElement>, _id: string, key: string) => {
     dispatch({
       type: 'MOD',
@@ -74,6 +72,24 @@ function EditableDependentTable({ onSync }: IEditableDependentTable) {
       }
     })
   } 
+
+  const handleDelete = (id: string) => {
+    dispatch({ type: 'DEL', payload: id })
+  }
+
+  const handleAdd = () => {
+    dispatch({ type: 'ADD' })
+  }
+  // #endregion
+
+  // #region methods for parent 
+  useImperativeHandle(ref, () => ({
+    syncDataToParent(cb: (data: Row[]) => void) {
+      cb(data);
+    }
+  }));
+  // #endregion
+
 
   return (
     <TableContainer>
@@ -89,10 +105,10 @@ function EditableDependentTable({ onSync }: IEditableDependentTable) {
 
         <TableBody>
           { 
-            data.map(row => (
+            data.map((row, index) => (
               <TableRow key={row._id}>
 
-                <TableCell>{ row.index }</TableCell>
+                <TableCell>{ index + 1 }</TableCell>
 
                 <TableCell>
                   <TextField 
@@ -115,7 +131,7 @@ function EditableDependentTable({ onSync }: IEditableDependentTable) {
                 </TableCell>
 
                 <TableCell>
-                  <CancelPresentationIcon sx={{ color: 'red' }} onClick={() => dispatch({ type: 'DEL', payload: row._id })} />
+                  <CancelPresentationIcon sx={{ color: 'red' }} onClick={() => handleDelete(row._id)} />
                 </TableCell>
                 
               </TableRow>
@@ -124,8 +140,9 @@ function EditableDependentTable({ onSync }: IEditableDependentTable) {
         </TableBody>
 
       </Table>
+      <Button size='small' color='primary' variant='contained' onClick={() => handleAdd()} >Add new +</Button>
     </TableContainer>
   );
-}
+})
 
 export default EditableDependentTable;
