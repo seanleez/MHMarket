@@ -181,7 +181,6 @@ const TableManagement: FC<ITableManagement> = (props) => {
       }
 
       case 'action': {
-        console.log(id);
         return getListActionsByTableName(id, name, onEdit, onDelete, onView);
       }
 
@@ -235,7 +234,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
       <span className="title">{name}</span>
       <div className="table-features">
         {isHaveSelectSearchField ? (
-          <>1</>
+          <></>
         ) : (
           <>
             <Button

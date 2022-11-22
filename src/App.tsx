@@ -14,6 +14,7 @@ import SubmitApplication from './components/submit-application/SubmitApplication
 import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
 import LeaseManagement from './components/lease-management/LeaseManagement';
+import ViewMarketLease from './components/lease-management/ViewMarketLease';
 
 function App() {
   const { pathname } = useLocation();
@@ -58,6 +59,10 @@ function App() {
         <Route path="/submit-application" element={<SubmitApplication />} />
 
         <Route path="/lease-management" element={<LeaseManagement />} />
+        <Route
+          path="/lease-management/view/:id"
+          element={<ViewMarketLease />}
+        />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>

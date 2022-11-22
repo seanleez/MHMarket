@@ -1,7 +1,11 @@
 import { TextField } from '@mui/material';
-import { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LEASE_MANAGEMENT, rootURL } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import SelectSearch, {
+  MARKET_LEASE_SEARCH_FIELDS,
+} from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
 
 const currentUser = localStorage.getItem('currentUser')
@@ -46,6 +50,12 @@ const columns: readonly IManagementTableFormat[] = [
 
 const LeaseManagement: React.FC = () => {
   const [rows, setRows] = useState([]);
+  const [selectValue, setSelectValue] = useState<string>(
+    MARKET_LEASE_SEARCH_FIELDS[0].value
+  );
+  const [inputValue, setInputValue] = useState<string>('');
+  const globalRows = useRef([]);
+  const navigate = useNavigate();
 
   useLayoutEffect(() => {
     fetch(`${rootURL}/applications/in-lease`, {
@@ -59,7 +69,7 @@ const LeaseManagement: React.FC = () => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          console.log(response);
+          globalRows.current = response.items ?? [];
           setRows(response.items ?? []);
         }
       })
@@ -68,11 +78,40 @@ const LeaseManagement: React.FC = () => {
       });
   }, []);
 
+  useEffect(() => {
+    if (['first_name', 'last_name'].includes(selectValue)) {
+      setRows(
+        globalRows.current.filter((row: any) =>
+          row?.owner?.[`${selectValue}`].includes(inputValue)
+        )
+      );
+    } else {
+      setRows(
+        globalRows.current.filter((row: any) =>
+          row?.[`${selectValue}`].includes(inputValue)
+        )
+      );
+    }
+  }, [selectValue, inputValue]);
+
   const handleView = (id: string) => {
-    console.log(id);
+    navigate(`/lease-management/view/${id}`);
   };
+
+  const handleChangeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectValue(e.target.value);
+  };
+
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
   return (
     <>
+      <SelectSearch
+        onChangeSelect={handleChangeSelect}
+        onChangeInput={handleChangeInput}
+      />
       <TableManagement
         name={LEASE_MANAGEMENT}
         columns={columns}
