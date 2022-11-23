@@ -1,38 +1,69 @@
+import HomeIcon from '@mui/icons-material/Home';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import PaidIcon from '@mui/icons-material/Paid';
+import SchemaIcon from '@mui/icons-material/Schema';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import PublishIcon from '@mui/icons-material/Publish';
+import ApprovalIcon from '@mui/icons-material/Approval';
+import PaymentIcon from '@mui/icons-material/Payment';
+import LocalConvenienceStoreIcon from '@mui/icons-material/LocalConvenienceStore';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
+
 export const rootURL = 'http://103.162.20.141:8000/api/v2';
 
 export const NAVIGATION_LIST = [
   {
     title: 'Home',
     url: '/home',
+    icon: <HomeIcon />,
   },
   {
     title: 'System Mantenance',
     nestedList: [
-      { title: 'RoleManagement', url: '/role-management' },
-      { title: 'UserManagement', url: '/user-management' },
-      { title: 'Rate Management', url: '/rate-management' },
-      { title: 'Workflow Management', url: '/workflow-management' },
+      {
+        title: 'Role Management',
+        url: '/role-management',
+        icon: <ManageSearchIcon />,
+      },
+      {
+        title: 'User Management',
+        url: '/user-management',
+        icon: <ManageAccountsIcon />,
+      },
+      { title: 'Rate Management', url: '/rate-management', icon: <PaidIcon /> },
+      {
+        title: 'Workflow Management',
+        url: '/workflow-management',
+        icon: <SchemaIcon />,
+      },
     ],
+    icon: <SettingsSuggestIcon />,
   },
   {
     title: 'Submit Application Online',
     url: '/submit-application-online',
+    icon: <PublishIcon />,
   },
   {
     title: 'View Application List',
     url: '/view-application-list',
+    icon: <ApprovalIcon />,
   },
   {
     title: 'Lease Management',
     url: '/lease-management',
+    icon: <PaymentIcon />,
   },
   {
     title: 'Market Management',
     url: '/market-management',
+    icon: <LocalConvenienceStoreIcon />,
   },
   {
     title: 'Analytics and Report',
     url: '/analytics-reports',
+    icon: <SignalCellularAltIcon />,
   },
 ];
 
