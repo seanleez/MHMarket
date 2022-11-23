@@ -41,8 +41,8 @@ export const NAVIGATION_LIST = [
     icon: <SettingsSuggestIcon />,
   },
   {
-    title: 'Submit Application Online',
-    url: '/submit-application-online',
+    title: 'Submit Application',
+    url: '/submit-application',
     icon: <PublishIcon />,
   },
   {
@@ -219,6 +219,36 @@ export const LEASE_STATUS = [
   {
     value: 4,
     label: 'Inactive',
+  },
+];
+
+export const SEX = [
+  {
+    value: 0,
+    label: 'Male',
+  },
+  {
+    value: 1,
+    label: 'Female',
+  },
+];
+
+export const CIVIL_STATUS = [
+  {
+    value: 0,
+    label: 'Single',
+  },
+  {
+    value: 1,
+    label: 'Married',
+  },
+  {
+    value: 2,
+    label: 'Seperated',
+  },
+  {
+    value: 3,
+    label: 'Widow',
   },
 ];
 
