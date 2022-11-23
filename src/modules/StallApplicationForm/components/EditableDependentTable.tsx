@@ -1,7 +1,7 @@
 import { Button, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import { Draft } from 'immer';
 import { WritableDraft } from 'immer/dist/internal';
-import React, { ChangeEvent, forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { ChangeEvent, forwardRef, memo, useEffect, useImperativeHandle } from 'react';
 import { useImmerReducer } from "use-immer";
 import { v4 as uuid } from 'uuid';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
@@ -140,9 +140,9 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
         </TableBody>
 
       </Table>
-      <Button size='small' color='primary' variant='contained' onClick={() => handleAdd()} >Add new +</Button>
+      <Button size='small' color='primary' variant='contained' sx={{ marginTop: '30px' }} onClick={() => handleAdd()} >Add new +</Button>
     </TableContainer>
   );
 })
 
-export default EditableDependentTable;
+export default memo(EditableDependentTable);

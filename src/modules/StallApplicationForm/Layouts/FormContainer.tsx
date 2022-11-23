@@ -25,7 +25,7 @@ const FormContainer = ({
   // 
   return (
     <Layout>
-      <Box sx={{ padding: '100px 20px 20px 20px' }}>
+      <Box sx={{ padding: '100px 20px 0px 20px' }}>
         <FormCommonInfor 
           status={status} 
           dateSubmitted={dateSubmitted} 
