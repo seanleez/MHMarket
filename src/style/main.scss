@@ -12,11 +12,10 @@ img.dialog-icon {
 .container {
   position: relative;
   width: 90%;
-  margin: auto;
   border: 3px solid #115272;
   border-radius: 30px;
   padding: 50px;
-  margin-top: 40px;
+  margin: 40px auto;
 
   &.nested-table {
     padding: 0;

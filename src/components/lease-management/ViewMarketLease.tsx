@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CIVIL_STATUS, rootURL, SEX } from '../../const/const';
 import ChildrenTable from './ChildrenTable';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -39,9 +39,9 @@ const convertDateFormat = (originDate: string | number) => {
   return `${m}/${d}/${y}`;
 };
 
-const field = (pair: TPair) => {
+const field = (pair: TPair, i: number) => {
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} key={i}>
       <Typography variant="subtitle1" sx={{ minWidth: '200px' }}>
         {pair.label}
       </Typography>
@@ -62,12 +62,14 @@ const ViewMarketLease: React.FC = () => {
   const [dateValue, setDateValue] = useState<Dayjs | null>(dayjs(new Date()));
   const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
   const [openErrorDialog, setOpenErrorDialog] = useState(false);
+  const [existTermination, setExistTermination] = useState(false);
+
   const reasonInputRef = useRef<HTMLInputElement>(null);
   const params = useParams();
   const errMess = useRef('');
+  const navigate = useNavigate();
 
   useLayoutEffect(() => {
-    console.log();
     fetch(`${rootURL}/applications/in-lease/${params.id}`, {
       method: 'GET',
       headers: {
@@ -79,19 +81,45 @@ const ViewMarketLease: React.FC = () => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
-          console.log(response);
           setLeaseInfor(response ?? {});
         }
       })
       .catch((err) => {
-        console.error(err);
+        errMess.current = err.message;
+        setOpenErrorDialog(true);
       });
   }, []);
 
+  useLayoutEffect(() => {
+    getTermination();
+  }, []);
+
+  function getTermination() {
+    fetch(`${rootURL}/applications/${params.id}/termination`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_description);
+        } else {
+          localStorage.setItem(
+            'terminationId',
+            response?.termination?.termination_id ?? ''
+          );
+          setExistTermination(response?.exist ?? false);
+        }
+      })
+      .catch((err) => {
+        errMess.current = err.message;
+        setOpenErrorDialog(true);
+      });
+  }
+
   const handleChange = (newValue: Dayjs | null) => {
-    console.log(reasonInputRef.current?.value);
-    console.log(newValue);
-    console.log(dayjs(newValue).format('YYYY-MM-DDTHH:mm:ssZ'));
     setDateValue(newValue);
   };
 
@@ -123,7 +151,30 @@ const ViewMarketLease: React.FC = () => {
       });
   };
 
-  const handleCancelTermination = () => {};
+  const handleCancelTermination = () => {
+    const terminationId = localStorage.getItem('terminationId');
+    fetch(`${rootURL}/applications/${params.id}/termination/${terminationId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        termination_id: terminationId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.error_code) {
+          throw new Error(response.error_description);
+        } else {
+          setOpenSuccessDialog(true);
+        }
+      })
+      .catch((err) => {
+        errMess.current = err.message;
+        setOpenErrorDialog(true);
+      });
+  };
 
   const labelValuePair: TPair[] = useMemo(() => {
     return [
@@ -178,13 +229,19 @@ const ViewMarketLease: React.FC = () => {
 
       <Box sx={{ display: 'flex', width: '100%' }}>
         <Box sx={{ width: '33%' }}>
-          {labelValuePair.slice(0, 2).map((pair: TPair) => field(pair))}
+          {labelValuePair
+            .slice(0, 2)
+            .map((pair: TPair, i: number) => field(pair, i))}
         </Box>
         <Box sx={{ width: '33%' }}>
-          {labelValuePair.slice(2, 4).map((pair: TPair) => field(pair))}
+          {labelValuePair
+            .slice(2, 4)
+            .map((pair: TPair, i: number) => field(pair, i))}
         </Box>
         <Box sx={{ width: '33%' }}>
-          {labelValuePair.slice(4, 6).map((pair: TPair) => field(pair))}
+          {labelValuePair
+            .slice(4, 6)
+            .map((pair: TPair, i: number) => field(pair, i))}
         </Box>
       </Box>
 
@@ -218,19 +275,27 @@ const ViewMarketLease: React.FC = () => {
                 Overall
               </div>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair.slice(6, 12).map((pair: TPair) => field(pair))}
+                {labelValuePair
+                  .slice(6, 12)
+                  .map((pair: TPair, i: number) => field(pair, i))}
               </Box>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair.slice(12, 16).map((pair: TPair) => field(pair))}
+                {labelValuePair
+                  .slice(12, 16)
+                  .map((pair: TPair, i: number) => field(pair, i))}
               </Box>
               <div className="section-subtitle" style={{ width: '100%' }}>
                 Address
               </div>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair.slice(16, 20).map((pair: TPair) => field(pair))}
+                {labelValuePair
+                  .slice(16, 20)
+                  .map((pair: TPair, i: number) => field(pair, i))}
               </Box>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair.slice(20, 23).map((pair: TPair) => field(pair))}
+                {labelValuePair
+                  .slice(20, 23)
+                  .map((pair: TPair, i: number) => field(pair, i))}
               </Box>
 
               <div className="section-subtitle" style={{ width: '100%' }}>
@@ -242,7 +307,9 @@ const ViewMarketLease: React.FC = () => {
                 Payment details
               </div>
               <Box sx={{ width: '100%' }}>
-                {labelValuePair.slice(23, 24).map((pair: TPair) => field(pair))}
+                {labelValuePair
+                  .slice(23, 24)
+                  .map((pair: TPair, i: number) => field(pair, i))}
               </Box>
               <Box sx={{ width: '32%', marginTop: '10px' }}>
                 <ImagePopupPreview
@@ -256,6 +323,7 @@ const ViewMarketLease: React.FC = () => {
             </Box>
           </AccordionDetails>
         </Accordion>
+
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -351,23 +419,28 @@ const ViewMarketLease: React.FC = () => {
                 />
               </LocalizationProvider>
 
-              <Box sx={{ width: '45%' }}>
-                <Button
-                  size="large"
-                  color="primary"
-                  variant="contained"
-                  sx={{ marginRight: '20px' }}
-                  onClick={handleTerminate}>
-                  Terminate
-                </Button>
-                <Button
-                  size="large"
-                  color="primary"
-                  variant="contained"
-                  onClick={handleCancelTermination}>
-                  Cancel Termination
-                </Button>
-              </Box>
+              {![3, 4].includes(leaseInfor?.lease_status) && (
+                <Box sx={{ width: '45%' }}>
+                  {existTermination ? (
+                    <Button
+                      size="large"
+                      color="primary"
+                      variant="contained"
+                      onClick={handleCancelTermination}>
+                      Cancel Termination
+                    </Button>
+                  ) : (
+                    <Button
+                      size="large"
+                      color="primary"
+                      variant="contained"
+                      sx={{ marginRight: '20px' }}
+                      onClick={handleTerminate}>
+                      Terminate
+                    </Button>
+                  )}
+                </Box>
+              )}
               <Box sx={{ width: '45%' }}></Box>
             </Box>
           </AccordionDetails>
@@ -377,14 +450,24 @@ const ViewMarketLease: React.FC = () => {
         size="large"
         color="primary"
         variant="outlined"
-        sx={{ display: 'block', margin: '20px auto 0' }}>
+        sx={{ display: 'block', margin: '20px auto 0' }}
+        onClick={() => navigate('/lease-management')}>
         Close
       </Button>
 
       <SuccessDialog
         openProp={openSuccesDialog}
-        message="Terminate Successfully"
-        onCloseDialog={() => setOpenSuccessDialog(false)}
+        message={`${
+          existTermination ? 'Cancel Termination' : 'Terminate'
+        } Successfully`}
+        onCloseDialog={() => {
+          if (reasonInputRef.current) {
+            reasonInputRef.current.value = '';
+          }
+          setDateValue(dayjs(new Date()));
+          getTermination();
+          setOpenSuccessDialog(false);
+        }}
       />
       <ErrorDialog
         openProp={openErrorDialog}

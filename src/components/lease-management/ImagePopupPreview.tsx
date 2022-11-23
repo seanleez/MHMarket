@@ -37,7 +37,9 @@ const ImagePopupPreview: React.FC<IImagePopupPreview> = ({
         borderRadius: '10px',
         minHeight: '180px',
       }}>
-      <Typography variant="subtitle1">{title}</Typography>
+      <Typography variant="subtitle1" fontWeight="bold">
+        {title}
+      </Typography>
       <img
         src={imgUrl}
         alt="image"
