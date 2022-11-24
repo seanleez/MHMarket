@@ -1,26 +1,26 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
   Button,
-  Divider,
-  MenuItem,
   TextField,
   Typography,
 } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs, { Dayjs } from 'dayjs';
+import { useSnackbar } from 'notistack';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CIVIL_STATUS, rootURL, SEX } from '../../const/const';
-import ChildrenTable from './ChildrenTable';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ImagePopupPreview from './ImagePopupPreview';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
-import SuccessDialog from '../common/dialog/SuccessDialog';
+import leaseApis from '../../services/leaseApis';
 import ErrorDialog from '../common/dialog/ErrorDialog';
+import SuccessDialog from '../common/dialog/SuccessDialog';
+import ChildrenTable from './ChildrenTable';
+import ImagePopupPreview from './ImagePopupPreview';
 type TPair = {
   label: string;
   value: string | number;
@@ -68,26 +68,17 @@ const ViewMarketLease: React.FC = () => {
   const params = useParams();
   const errMess = useRef('');
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/applications/in-lease/${params.id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setLeaseInfor(response ?? {});
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    (async () => {
+      try {
+        const res = await leaseApis.getLease(params.id);
+        setLeaseInfor(res ?? {});
+      } catch (err) {
+        enqueueSnackbar((err as any).message, { variant: 'error' });
+      }
+    })();
   }, []);
 
   useLayoutEffect(() => {
@@ -95,28 +86,18 @@ const ViewMarketLease: React.FC = () => {
   }, []);
 
   function getTermination() {
-    fetch(`${rootURL}/applications/${params.id}/termination`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          localStorage.setItem(
-            'terminationId',
-            response?.termination?.termination_id ?? ''
-          );
-          setExistTermination(response?.exist ?? false);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    (async () => {
+      try {
+        const res = await leaseApis.getTermination(params.id);
+        localStorage.setItem(
+          'terminationId',
+          (res as any)?.termination?.termination_id ?? ''
+        );
+        setExistTermination((res as any)?.exist ?? false);
+      } catch (err) {
+        enqueueSnackbar((err as any).message, { variant: 'error' });
+      }
+    })();
   }
 
   const handleChange = (newValue: Dayjs | null) => {
@@ -129,26 +110,15 @@ const ViewMarketLease: React.FC = () => {
       end_date: dayjs(dateValue).format('YYYY-MM-DDTHH:mm:ssZ'),
       reason: reasonInputRef.current?.value,
     };
-    console.log(payload);
-    fetch(`${rootURL}/applications/${params.id}/termination`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+
+    (async () => {
+      try {
+        const res = await leaseApis.postTermination(params.id, payload);
+        setOpenSuccessDialog(true);
+      } catch (err) {
+        enqueueSnackbar((err as any).message, { variant: 'error' });
+      }
+    })();
   };
 
   const handleCancelTermination = () => {

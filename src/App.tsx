@@ -15,6 +15,16 @@ import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
 import LeaseManagement from './components/lease-management/LeaseManagement';
 import ViewMarketLease from './components/lease-management/ViewMarketLease';
+import axiosClient from './services/axiosClients';
+
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
+
+axiosClient.defaults.headers.common = {
+  Authorization: `Bearer ${token}`,
+};
 
 function App() {
   const { pathname } = useLocation();
