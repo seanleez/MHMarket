@@ -179,47 +179,51 @@ const ViewMarketLease: React.FC = () => {
   const labelValuePair: TPair[] = useMemo(() => {
     return [
       { label: 'Search Id', value: leaseInfor?.lease_code },
-      { label: 'Stallholder Name', value: 1 },
-      { label: 'Market Name', value: 1 },
+      { label: 'Stallholder Name', value: leaseInfor?.owner?.full_name },
+      { label: 'Market Name', value: leaseInfor?.market_name },
       {
         label: 'Lease Start Date',
         value: leaseInfor?.lease_start_date,
         isDateField: true,
       },
-      { label: 'Stall Number', value: 1 },
+      { label: 'Stall Number', value: leaseInfor?.stall_name },
       {
         label: 'Lease End Date',
         value: leaseInfor?.lease_end_date,
         isDateField: true,
       },
-      { label: 'Email', value: 1 },
-      { label: 'Full Name', value: 1 },
+      { label: 'Email', value: leaseInfor?.owner?.email },
+      { label: 'Full Name', value: leaseInfor?.owner?.full_name },
       {
         label: 'Status',
         value: CIVIL_STATUS.find(
-          (item: any) => item.value === leaseInfor?.owner?.marital_status
+          (item: any) => item.value === leaseInfor?.owner?.sex
         )?.label,
       },
-      { label: 'Date of Birth', value: 1 },
-      { label: 'Age', value: 1 },
-      { label: 'Place of Birth', value: 1 },
-      { label: "Father's Name", value: 1 },
-      { label: "Mother's Name", value: 1 },
+      {
+        label: 'Date of Birth',
+        value: leaseInfor?.owner?.date_of_birth,
+        isDateField: true,
+      },
+      { label: 'Age', value: leaseInfor?.owner?.age },
+      { label: 'Place of Birth', value: leaseInfor?.owner?.place_of_birth },
+      { label: "Father's Name", value: leaseInfor?.owner?.farther_name },
+      { label: "Mother's Name", value: leaseInfor?.owner?.mother_name },
       {
         label: 'Sex',
         value: SEX.find(
           (item: any) => item.value === leaseInfor?.owner?.marital_status
         )?.label,
       },
-      { label: 'Telephone', value: 1 },
-      { label: 'House Number', value: 1 },
-      { label: 'Street', value: 1 },
-      { label: 'Province', value: 1 },
-      { label: 'Zipcode', value: 1 },
-      { label: 'City', value: 1 },
-      { label: 'District', value: 1 },
-      { label: 'Ward', value: 1 },
-      { label: 'Appication Fee Paid', value: 1 },
+      { label: 'Telephone', value: leaseInfor?.owner?.telephone },
+      { label: 'House Number', value: leaseInfor?.owner?.house_number },
+      { label: 'Street', value: leaseInfor?.owner?.street },
+      { label: 'Province', value: leaseInfor?.owner?.province },
+      { label: 'Zipcode', value: leaseInfor?.owner?.zipcode },
+      { label: 'City', value: leaseInfor?.owner?.city },
+      { label: 'District', value: leaseInfor?.owner?.district },
+      { label: 'Ward', value: leaseInfor?.owner?.ward },
+      { label: 'Appication Fee Paid', value: leaseInfor?.initial_fee },
     ];
   }, [leaseInfor]);
 
@@ -404,6 +408,7 @@ const ViewMarketLease: React.FC = () => {
                 label="Reason"
                 name="area"
                 variant="outlined"
+                disabled={existTermination}
                 inputRef={reasonInputRef}
                 sx={{ width: '45%' }}
               />
@@ -412,6 +417,7 @@ const ViewMarketLease: React.FC = () => {
                   label="End Day"
                   inputFormat="MM/DD/YYYY"
                   value={dateValue}
+                  disabled={existTermination}
                   onChange={handleChange}
                   renderInput={(params: any) => (
                     <TextField {...params} sx={{ width: '45%' }} />
