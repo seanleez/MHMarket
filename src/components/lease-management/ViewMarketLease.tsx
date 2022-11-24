@@ -15,12 +15,12 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CIVIL_STATUS, rootURL, SEX } from '../../const/const';
+import { CIVIL_STATUS, SEX } from '../../const/const';
 import leaseApis from '../../services/leaseApis';
-import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import ChildrenTable from './ChildrenTable';
 import ImagePopupPreview from './ImagePopupPreview';
+
 type TPair = {
   label: string;
   value: string | number;
@@ -52,21 +52,14 @@ const field = (pair: TPair, i: number) => {
   );
 };
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const ViewMarketLease: React.FC = () => {
   const [leaseInfor, setLeaseInfor] = useState<any>([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(dayjs(new Date()));
   const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [existTermination, setExistTermination] = useState(false);
 
   const reasonInputRef = useRef<HTMLInputElement>(null);
   const params = useParams();
-  const errMess = useRef('');
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -110,7 +103,6 @@ const ViewMarketLease: React.FC = () => {
       end_date: dayjs(dateValue).format('YYYY-MM-DDTHH:mm:ssZ'),
       reason: reasonInputRef.current?.value,
     };
-
     (async () => {
       try {
         const res = await leaseApis.postTermination(params.id, payload);
@@ -123,27 +115,17 @@ const ViewMarketLease: React.FC = () => {
 
   const handleCancelTermination = () => {
     const terminationId = localStorage.getItem('terminationId');
-    fetch(`${rootURL}/applications/${params.id}/termination/${terminationId}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        termination_id: terminationId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    const payload = {
+      termination_id: terminationId,
+    };
+    (async () => {
+      try {
+        await leaseApis.putCancelTermination(params.id, terminationId, payload);
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        enqueueSnackbar((error as any).message, { variant: 'error' });
+      }
+    })();
   };
 
   const labelValuePair: TPair[] = useMemo(() => {
@@ -444,11 +426,6 @@ const ViewMarketLease: React.FC = () => {
           getTermination();
           setOpenSuccessDialog(false);
         }}
-      />
-      <ErrorDialog
-        openProp={openErrorDialog}
-        message={errMess.current}
-        onCloseDialog={() => setOpenErrorDialog(false)}
       />
     </div>
   );

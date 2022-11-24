@@ -4,46 +4,37 @@ import { useNavigate } from 'react-router-dom';
 import EmailIcon from '../../assets/icon/email-icon.svg';
 import PasswordIcon from '../../assets/icon/password-icon.svg';
 import loginBg from '../../assets/images/login-bg.png';
-import { rootURL } from '../../const/const';
+import authApis from '../../services/authApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import './Login.scss';
 
 const Login: FC = () => {
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openAlertDialog, setOpenAlertDialog] = useState(false);
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-
+  const errMess = useRef('');
   const navigate = useNavigate();
 
   const handleCloseDialog = () => {
-    setOpenDialog(false);
+    setOpenAlertDialog(false);
   };
 
   const handleLogin = () => {
-    fetch(`${rootURL}/login`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: usernameRef.current?.value,
-        password: passwordRef.current?.value,
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          setOpenDialog(true);
-          throw new Error(`💥💥💥 Problem with URL ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((user) => {
-        localStorage.setItem('currentUser', JSON.stringify(user));
+    const payload = {
+      username: usernameRef.current?.value,
+      password: passwordRef.current?.value,
+    };
+    (async () => {
+      try {
+        const res = await authApis.postLogin(payload);
+        localStorage.setItem('currentUser', JSON.stringify(res));
         navigate('/home');
-      })
-      .catch((err) => console.error(err));
+      } catch (error) {
+        errMess.current = (error as any).message;
+        setOpenAlertDialog(true);
+      }
+    })();
   };
 
   return (
@@ -82,8 +73,8 @@ const Login: FC = () => {
           LOGIN
         </Button>
         <AlertDialog
-          openProp={openDialog}
-          message={'Incorrect Username or Password!!!'}
+          openProp={openAlertDialog}
+          message={errMess.current}
           onCloseDialog={handleCloseDialog}
         />
       </div>
