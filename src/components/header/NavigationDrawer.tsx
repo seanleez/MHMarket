@@ -18,11 +18,9 @@ import { NAVIGATION_LIST } from '../../const/const';
 import NestedList from './NestedList';
 
 const NavigationDrawer: React.FC = () => {
-  const [state, setState] = React.useState(false);
+  const [openDrawer, setOpenDrawer] = React.useState(false);
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
-    console.log('click');
-
     if (
       event &&
       event.type === 'keydown' &&
@@ -32,7 +30,7 @@ const NavigationDrawer: React.FC = () => {
       return;
     }
 
-    setState(!state);
+    setOpenDrawer(!openDrawer);
   };
 
   const navigationList = () => (
@@ -80,7 +78,7 @@ const NavigationDrawer: React.FC = () => {
         </Button>
         <SwipeableDrawer
           anchor={'left'}
-          open={state}
+          open={openDrawer}
           onClose={toggleDrawer}
           onOpen={toggleDrawer}>
           {navigationList()}

@@ -99,10 +99,10 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             backgroundColor: '#5c9090',
-            padding: '5px 20px',
+            padding: '10px 20px',
           }}>
           <Typography sx={{ fontSize: '18px' }}>{floor.floor_name}</Typography>
-          <IconButton onClick={handleExpand} sx={{ padding: '15px' }}>
+          <IconButton onClick={handleExpand} sx={{ padding: '10px' }}>
             <ExpandMoreIcon
               style={expand ? { transform: 'scale(1,-1)' } : {}}
             />
