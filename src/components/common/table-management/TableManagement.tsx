@@ -12,25 +12,23 @@ import {
   TextField,
 } from '@mui/material';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import DeleteIcon from '../../../assets/icon/delete-icon.svg';
-import EditIcon from '../../../assets/icon/edit-icon.svg';
 import SortIcon from '../../../assets/icon/sort-icon.svg';
 import {
-  ROWS_PER_PAGE_OPTION,
   INIT_TABLE_ROWS_NUMBER,
-  OTHER_RATE_DETAIL,
-  RATE_TYPE,
-  RATE_MANAGEMENT,
+  LEASE_STATUS,
   MARKET_TYPE,
-  LIST_TABLE_NAME,
+  OTHER_RATE_DETAIL,
+  RATE_MANAGEMENT,
+  RATE_TYPE,
+  ROWS_PER_PAGE_OPTION,
 } from '../../../const/const';
+import getListActionsByTableName from '../../../helper/getListActionsByTableName';
 import {
   getIdFieldByName,
   getSearchField,
   sortAscendingly,
   sortDescendingly,
 } from '../../../helper/helperFuncs';
-import './TableManagement.scss';
 
 interface ITableManagement {
   name: string;
@@ -38,25 +36,29 @@ interface ITableManagement {
   rows?: any;
   dontHaveSearchField?: boolean;
   dontHavePagination?: boolean;
+  isHaveSelectSearchField?: boolean;
   isNestedTable?: boolean;
   isDisableAddNewBtn?: boolean;
   onAddNew?: () => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onView?: (id: string) => void;
 }
 
 const TableManagement: FC<ITableManagement> = (props) => {
   const {
     name,
-    dontHaveSearchField,
-    dontHavePagination,
-    isNestedTable,
-    isDisableAddNewBtn,
     columns,
     rows,
+    dontHaveSearchField,
+    dontHavePagination,
+    isHaveSelectSearchField,
+    isNestedTable,
+    isDisableAddNewBtn,
     onAddNew,
     onEdit,
     onDelete,
+    onView,
   } = props;
 
   const [page, setPage] = useState<number>(0);
@@ -72,22 +74,6 @@ const TableManagement: FC<ITableManagement> = (props) => {
   }, [rows]);
 
   let toggleSorting = useRef<boolean>(true);
-
-  const LIST_ACTION_ICON_BY_NAME = LIST_TABLE_NAME.map((title: string) => {
-    return {
-      name: title,
-      icons: [
-        {
-          name: EditIcon,
-          onClick: onEdit,
-        },
-        {
-          name: DeleteIcon,
-          onClick: onDelete,
-        },
-      ],
-    };
-  });
 
   const getTableCellContent = (
     name: string,
@@ -175,20 +161,27 @@ const TableManagement: FC<ITableManagement> = (props) => {
         );
       }
 
-      case 'action': {
+      // LEASE MANAGEMENT
+      case 'owner_first_name': {
+        return <span>{row?.owner?.['first_name']}</span>;
+      }
+      case 'owner_last_name': {
+        return <span>{row?.owner?.['last_name']}</span>;
+      }
+      case 'lease_status': {
         return (
-          <>
-            {LIST_ACTION_ICON_BY_NAME.find(
-              (item) => item.name.toUpperCase() === name
-            )?.icons.map((icon: any, index: number) => {
-              return (
-                <IconButton key={index} onClick={() => icon.onClick(id)}>
-                  <img src={icon.name} alt={`${icon}`} />
-                </IconButton>
-              );
-            })}
-          </>
+          <span>
+            {
+              LEASE_STATUS.find(
+                (option: any) => option.value === rowValueByColId
+              )?.label
+            }
+          </span>
         );
+      }
+
+      case 'action': {
+        return getListActionsByTableName(id, name, onEdit, onDelete, onView);
       }
 
       default: {
@@ -237,28 +230,31 @@ const TableManagement: FC<ITableManagement> = (props) => {
   };
 
   return (
-    <div
-      className={`table-management-container ${
-        isNestedTable ? 'nested-table' : ''
-      }`}>
-      <span className="table-management-title">{name}</span>
-      <div className="table-management-features">
-        <Button
-          variant="contained"
-          disabled={isDisableAddNewBtn}
-          onClick={onAddNew}>
-          Add New
-          <AddIcon />
-        </Button>
-        {!dontHaveSearchField && (
-          <div className="search-field">
-            <span>Search:</span>
-            <TextField
-              inputRef={searchInputRef}
-              onChange={handleSearchValue}
-              sx={{ flex: 1 }}
-            />
-          </div>
+    <div className={`container ${isNestedTable ? 'nested-table' : ''}`}>
+      <span className="title">{name}</span>
+      <div className="table-features">
+        {isHaveSelectSearchField ? (
+          <></>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              disabled={isDisableAddNewBtn}
+              onClick={onAddNew}>
+              Add New
+              <AddIcon />
+            </Button>
+            {!dontHaveSearchField && (
+              <div className="search-field">
+                <span>Search:</span>
+                <TextField
+                  inputRef={searchInputRef}
+                  onChange={handleSearchValue}
+                  sx={{ flex: 1 }}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
       <TableContainer>

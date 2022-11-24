@@ -5,6 +5,10 @@ import SignOutIcon from '../../assets/icon/signout-icon.svg';
 import './Header.scss';
 import NavigationDrawer from './NavigationDrawer';
 
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+
 const Header: FC = () => {
   const navigate = useNavigate();
   const handleLogOut = () => {
@@ -12,17 +16,12 @@ const Header: FC = () => {
     navigate('/');
   };
 
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
-
   return (
     <>
       <div className="header-container">
         <div className="left-content">
-          {/* <NavigationMenu /> */}
           <NavigationDrawer />
-          <Link to="/">
+          <Link to="/home">
             <span className="app-name">MH-Market</span>
           </Link>
         </div>

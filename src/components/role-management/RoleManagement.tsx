@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import { ROLE_MANAGEMENT, rootURL } from '../../const/const';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
@@ -36,11 +36,10 @@ const RoleManagement: FC = () => {
 
   const navigate = useNavigate();
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
-
 
   useEffect(() => {
     fetch(`${rootURL}/roles`, {
@@ -83,14 +82,14 @@ const RoleManagement: FC = () => {
   };
 
   const handleEdit = (id: string) => {
+    console.log(id);
     navigate(`/role/edit/${id}`);
-    console.log('edit');
   };
 
   return (
     <>
       <TableManagement
-        name={'ROLE MANAGEMENT'}
+        name={ROLE_MANAGEMENT}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}

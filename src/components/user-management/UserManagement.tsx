@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import { rootURL, USER_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
@@ -45,9 +45,9 @@ const UserManagement = () => {
     console.log(rows);
   });
 
-  const currentUser = localStorage.getItem('currentUser') ? 
-    JSON.parse(localStorage.getItem('currentUser') as string) : 
-    null;
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const token = currentUser?.access_token;
 
   useEffect(() => {
@@ -96,7 +96,7 @@ const UserManagement = () => {
   return (
     <>
       <TableManagement
-        name={'USER MANAGEMENT'}
+        name={USER_MANAGEMENT}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}
