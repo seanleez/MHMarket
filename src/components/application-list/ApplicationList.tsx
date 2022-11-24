@@ -5,6 +5,8 @@ import { IManagementTableFormat } from '../../const/interface';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
+import ConfirmDialog from "../common/dialog/ConfirmDialog";
+import ErrorDialog from "../common/dialog/ErrorDialog";
 
 const APPLICATION_LIST_SEARCH_FIELDS = [
   {
@@ -67,10 +69,15 @@ const ApplicationList: React.FC = () => {
   const [selectValue, setSelectValue] = useState(
     APPLICATION_LIST_SEARCH_FIELDS[0].value
   );
+
   const [inputValue, setInputValue] = useState('');
-  const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
   const globalRows = useRef([]);
   const navigate = useNavigate();
+  const currentID = useRef<string>('');
+  const errMess = useRef<string>('');
 
   useLayoutEffect(() => {
     fetch(`${rootURL}/applications`, {
@@ -110,6 +117,26 @@ const ApplicationList: React.FC = () => {
     }
   }, [selectValue, inputValue]);
 
+  const handleDeleteApplication = () => {
+    fetch(`${rootURL}/applications/${currentID.current}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+        .then((res) => res.json())
+        .then((response) => {
+          setOpenConfirmDialog(false);
+          if (response.error_code) {
+            errMess.current = response.error_description;
+            setOpenErrorDialog(true);
+          } else {
+            setOpenSuccessDialog(true);
+          }
+        })
+        .catch((err) => console.error(err));
+  };
+
   const handleChangeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectValue(e.target.value);
   };
@@ -124,6 +151,8 @@ const ApplicationList: React.FC = () => {
 
   const handleDelete = (id: string) => {
     console.log(id);
+    currentID.current = id;
+    setOpenConfirmDialog(true);
   };
 
   const handleEdit = (id: string) => {
@@ -146,10 +175,21 @@ const ApplicationList: React.FC = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+      <ConfirmDialog
+          openProp={openConfirmDialog}
+          message={`Are you sure you want to delete this application?`}
+          onCloseDialog={() => setOpenConfirmDialog(false)}
+          onAcceptDialog={handleDeleteApplication}
+      />
       <SuccessDialog
-        openProp={openSuccesDialog}
+        openProp={openSuccessDialog}
         message="Delete Successfully"
         onCloseDialog={() => setOpenSuccessDialog(false)}
+      />
+      <ErrorDialog
+          openProp={openErrorDialog}
+          message={errMess.current}
+          onCloseDialog={() => setOpenErrorDialog(false)}
       />
     </>
   );
