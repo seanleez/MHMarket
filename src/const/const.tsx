@@ -47,7 +47,7 @@ export const NAVIGATION_LIST = [
   },
   {
     title: 'View Application List',
-    url: '/view-application-list',
+    url: '/application-list',
     icon: <ApprovalIcon />,
   },
   {
@@ -222,6 +222,33 @@ export const LEASE_STATUS = [
   },
 ];
 
+export const APPLICATION_STATUS = [
+  {
+    value: 0,
+    label: 'New',
+  },
+  {
+    value: 1,
+    label: 'In Progress',
+  },
+  {
+    value: 2,
+    label: 'Payment Infor Requested',
+  },
+  {
+    value: 3,
+    label: 'For Payment Verification',
+  },
+  {
+    value: 4,
+    label: 'Approved',
+  },
+  {
+    value: 5,
+    label: 'Disapproved',
+  },
+];
+
 export const SEX = [
   {
     value: 0,
@@ -260,6 +287,7 @@ export const USER_MANAGEMENT = 'USER MANAGEMENT';
 export const MARKET_MANAGEMENT = 'MARKET MANAGEMENT';
 export const FLOOR_MANAGEMENT = 'FLOOR MANAGEMENT';
 export const LEASE_MANAGEMENT = 'LEASE MANAGEMENT';
+export const VIEW_APPLICATION_LIST = 'VIEW APPLICATION LIST';
 
 const SCROLL_BAR_WIDTH = 15;
 export const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;

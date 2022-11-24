@@ -2,12 +2,11 @@ import { Box } from '@mui/material';
 
 const ChildrenTable: React.FC<any> = ({ members }) => {
   return (
-    <Box sx={{ width: '100%' }}>
+    <>
       <Box
         sx={{
           display: 'flex',
-          width: '50%',
-          backgroundColor: '#cfd5ea',
+          backgroundColor: '#E9EBF5',
           fontWeight: 'bold',
           padding: '15px 0',
         }}>
@@ -19,8 +18,7 @@ const ChildrenTable: React.FC<any> = ({ members }) => {
           key={index}
           sx={{
             display: 'flex',
-            width: '50%',
-            backgroundColor: '#E9EBF5',
+            backgroundColor: '#FAFAFA',
             padding: '10px 0',
             borderTop: '2px solid white',
           }}>
@@ -28,7 +26,7 @@ const ChildrenTable: React.FC<any> = ({ members }) => {
           <Box sx={{ width: '50%', textAlign: 'center' }}>{member?.age}</Box>
         </Box>
       ))}
-    </Box>
+    </>
   );
 };
 

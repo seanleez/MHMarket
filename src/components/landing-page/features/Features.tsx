@@ -12,7 +12,9 @@ const Features: FC = () => {
           <p>Manage Market Information here:</p>
         </div>
         <div className="feature-go-to">
-          <Button variant="outlined">View Application Status</Button>
+          <Link to="/application-list" style={{ textDecoration: 'none' }}>
+            <Button variant="outlined">View Application Status</Button>
+          </Link>
         </div>
       </div>
       <div className="feature-container">

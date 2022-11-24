@@ -1,19 +1,15 @@
-import { TextField } from '@mui/material';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LEASE_MANAGEMENT, rootURL } from '../../const/const';
+import { rootURL, VIEW_APPLICATION_LIST } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import SuccessDialog from '../common/dialog/SuccessDialog';
 import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
 
-const MARKET_LEASE_SEARCH_FIELDS = [
+const APPLICATION_LIST_SEARCH_FIELDS = [
   {
-    value: 'lease_code',
-    label: 'Lease ID',
-  },
-  {
-    value: 'market_name',
-    label: 'Market Name',
+    value: 'code',
+    label: 'Application Id',
   },
   {
     value: 'first_name',
@@ -25,15 +21,10 @@ const MARKET_LEASE_SEARCH_FIELDS = [
   },
 ];
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const columns: readonly IManagementTableFormat[] = [
   {
-    id: 'lease_code',
-    label: 'LEASE ID',
+    id: 'code',
+    label: 'APPLICATION ID',
     width: '15%',
     align: 'left',
   },
@@ -57,25 +48,32 @@ const columns: readonly IManagementTableFormat[] = [
     align: 'left',
   },
   {
-    id: 'lease_status',
-    label: 'LEASE STATUS',
+    id: 'status',
+    label: 'STATUS',
     width: '15%',
     align: 'center',
+    isHaveSortIcon: true,
   },
   { id: 'action', label: 'ACTION', width: '10%', align: 'center' },
 ];
 
-const LeaseManagement: React.FC = () => {
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
+
+const ApplicationList: React.FC = () => {
   const [rows, setRows] = useState([]);
-  const [selectValue, setSelectValue] = useState<string>(
-    MARKET_LEASE_SEARCH_FIELDS[0].value
+  const [selectValue, setSelectValue] = useState(
+    APPLICATION_LIST_SEARCH_FIELDS[0].value
   );
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState('');
+  const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
   const globalRows = useRef([]);
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/applications/in-lease`, {
+    fetch(`${rootURL}/applications`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -86,6 +84,7 @@ const LeaseManagement: React.FC = () => {
         if (response.error_code) {
           throw new Error(response.error_description);
         } else {
+          // use globalRow.current for storing original rows
           globalRows.current = response.items ?? [];
           setRows(response.items ?? []);
         }
@@ -111,10 +110,6 @@ const LeaseManagement: React.FC = () => {
     }
   }, [selectValue, inputValue]);
 
-  const handleView = (id: string) => {
-    navigate(`/lease-management/view/${id}`);
-  };
-
   const handleChangeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectValue(e.target.value);
   };
@@ -123,22 +118,41 @@ const LeaseManagement: React.FC = () => {
     setInputValue(e.target.value);
   };
 
+  const handleView = (id: string) => {
+    navigate(`/application/view/${id}`);
+  };
+
+  const handleDelete = (id: string) => {
+    console.log(id);
+  };
+
+  const handleEdit = (id: string) => {
+    console.log(id);
+  };
+
   return (
     <>
       <SelectSearch
-        searchFields={MARKET_LEASE_SEARCH_FIELDS}
+        searchFields={APPLICATION_LIST_SEARCH_FIELDS}
         onChangeSelect={handleChangeSelect}
         onChangeInput={handleChangeInput}
       />
       <TableManagement
-        name={LEASE_MANAGEMENT}
+        name={VIEW_APPLICATION_LIST}
         columns={columns}
         rows={rows}
         isHaveSelectSearchField={true}
         onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+      <SuccessDialog
+        openProp={openSuccesDialog}
+        message="Delete Successfully"
+        onCloseDialog={() => setOpenSuccessDialog(false)}
       />
     </>
   );
 };
 
-export default LeaseManagement;
+export default ApplicationList;
