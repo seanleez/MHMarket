@@ -1,21 +1,22 @@
 import { Box, Button } from '@mui/material';
 import React from 'react';
-import { FormCommonInfor, FormOwnerDetailInfor, FormOwnerGeneralInfor } from '../components';
+import { RequiredDocument } from '../components';
 import FormContainer from '../layouts';
 
-const BlankInfomationStallForm = () => {
+
+const ClientIdentifyForm = () => {
   return (
     <FormContainer
       status='New'
       dateSubmitted='12/10/2022'
       formNumber='022'
       shouldGray={false}
-      step={0}
-    >
-      <FormOwnerGeneralInfor />
-      <FormOwnerDetailInfor />
 
-      <Box 
+      step={1}
+    >
+      <RequiredDocument />
+
+      <Box
         sx={{
           margin: '100px 0 20px 0',
           display: 'flex',
@@ -35,4 +36,4 @@ const BlankInfomationStallForm = () => {
   );
 };
 
-export default BlankInfomationStallForm;
+export default ClientIdentifyForm;

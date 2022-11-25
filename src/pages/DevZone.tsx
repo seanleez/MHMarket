@@ -1,10 +1,14 @@
 import React from 'react';
-import { BlankInfomationStallForm } from '@modules/index';
+import { BlankInfomationStallForm, ClientIdentifyForm } from '@modules/index';
 
 const DevZone = () => {
   return (
     <div>
-      <BlankInfomationStallForm />
+      {/* step 1 */}
+      {/* <BlankInfomationStallForm />  */}
+
+      {/* step 2 */}
+      <ClientIdentifyForm />
     </div>
   );
 };

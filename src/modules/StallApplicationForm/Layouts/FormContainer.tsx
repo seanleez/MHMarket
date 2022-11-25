@@ -4,8 +4,10 @@ import React, { ReactNode } from 'react';
 import { FormCommonInfor, IFormCommonInfor } from '../components';
 import Layout from './Layout';
 
+
 type IFormContainer  = {
   children: ReactNode;
+  step: number
 } & IFormCommonInfor
 
 const steps = [
@@ -19,7 +21,8 @@ const FormContainer = ({
   status, 
   formNumber, 
   shouldGray, 
-  dateSubmitted 
+  dateSubmitted,
+  step
 }: IFormContainer) => {
 
   // 
@@ -35,7 +38,7 @@ const FormContainer = ({
         <Divider />
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '10px 0 20px 0' }}>
           <Box sx={{ maxWidth: 'max-content' }}>
-            <Stepper activeStep={1} alternativeLabel>
+            <Stepper activeStep={step} alternativeLabel>
               {steps.map((label) => (
                 <Step key={label}>
                   <StepLabel>{label}</StepLabel>
