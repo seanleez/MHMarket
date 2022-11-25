@@ -5,3 +5,9 @@ export interface IManagementTableFormat {
   align?: 'left' | 'center';
   isHaveSortIcon?: boolean;
 }
+
+export type TPair = {
+  label: string;
+  value: string | number;
+  isDateField?: boolean;
+};

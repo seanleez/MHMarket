@@ -8,30 +8,13 @@ import {
 } from '@mui/material';
 
 interface ISelectSearch {
+  searchFields: any;
   onChangeSelect?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const MARKET_LEASE_SEARCH_FIELDS = [
-  {
-    value: 'lease_code',
-    label: 'Lease ID',
-  },
-  {
-    value: 'market_name',
-    label: 'Market Name',
-  },
-  {
-    value: 'first_name',
-    label: 'First Name',
-  },
-  {
-    value: 'last_name',
-    label: 'Last Name',
-  },
-];
-
 const SelectSearch: React.FC<ISelectSearch> = ({
+  searchFields,
   onChangeSelect,
   onChangeInput,
 }) => {
@@ -53,10 +36,10 @@ const SelectSearch: React.FC<ISelectSearch> = ({
           size="small"
           name="stall_class"
           variant="outlined"
-          defaultValue={MARKET_LEASE_SEARCH_FIELDS[0].value}
+          defaultValue={searchFields[0].value}
           sx={{ minWidth: '150px', backgroundColor: 'white' }}
           onChange={onChangeSelect}>
-          {MARKET_LEASE_SEARCH_FIELDS.map((option: any) => (
+          {searchFields.map((option: any) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>

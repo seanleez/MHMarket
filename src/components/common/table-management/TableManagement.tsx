@@ -14,6 +14,7 @@ import {
 import React, { FC, useEffect, useRef, useState } from 'react';
 import SortIcon from '../../../assets/icon/sort-icon.svg';
 import {
+  APPLICATION_STATUS,
   INIT_TABLE_ROWS_NUMBER,
   LEASE_STATUS,
   MARKET_TYPE,
@@ -21,6 +22,7 @@ import {
   RATE_MANAGEMENT,
   RATE_TYPE,
   ROWS_PER_PAGE_OPTION,
+  VIEW_APPLICATION_LIST,
 } from '../../../const/const';
 import getListActionsByTableName from '../../../helper/getListActionsByTableName';
 import {
@@ -93,10 +95,22 @@ const TableManagement: FC<ITableManagement> = (props) => {
       case 'status': {
         return (
           <>
-            <span
-              className={`status ${row.status === 1 ? 'active' : 'inactive'}`}>
-              {row.status === 1 ? 'active' : 'inactive'}
-            </span>
+            {name === VIEW_APPLICATION_LIST ? (
+              <span>
+                {
+                  APPLICATION_STATUS.find(
+                    (option: any) => option.value === rowValueByColId
+                  )?.label
+                }
+              </span>
+            ) : (
+              <span
+                className={`status ${
+                  row.status === 1 ? 'active' : 'inactive'
+                }`}>
+                {row.status === 1 ? 'active' : 'inactive'}
+              </span>
+            )}
           </>
         );
       }

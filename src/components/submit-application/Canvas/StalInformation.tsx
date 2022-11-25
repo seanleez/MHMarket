@@ -35,8 +35,8 @@ const StallInformation: React.FC<IStallInformation> = ({ position, stall }) => {
         top: position.y - (clientRect?.y ?? 0),
         left: position.x - (clientRect?.x ?? 0),
       }}>
-      <Card variant="outlined" sx={{ padding: 1.5 }}>
-        <CardContent sx={{ padding: 0 }}>
+      {stall?.is_updated_detail === true && <Card variant="outlined" sx={{padding: 1.5}}>
+        <CardContent sx={{padding: 0}}>
           <Typography variant="h6" fontWeight="bold">
             Stall No. {stall?.code}
           </Typography>
@@ -93,10 +93,10 @@ const StallInformation: React.FC<IStallInformation> = ({ position, stall }) => {
             {stall.monthly_fee}
           </Typography>
         </CardContent>
-        <CardActions sx={{ justifyContent: 'flex-end', padding: '10px 0 0' }}>
+        {stall?.lease_status === 0 && <CardActions sx={{justifyContent: 'flex-end', padding: '10px 0 0'}}>
           <Button variant="contained">Apply now</Button>
-        </CardActions>
-      </Card>
+        </CardActions>}
+      </Card>}
     </Paper>
   );
 };
