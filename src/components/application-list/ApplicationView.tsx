@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CIVIL_STATUS, rootURL, SEX } from '../../const/const';
+import {APPLICATION_STATUS, APPLICATION_TYPE, CIVIL_STATUS, rootURL, SEX} from '../../const/const';
 import { TPair } from '../../const/interface';
 import ChildrenTable from '../common/lease-and-application/ChildrenTable';
 import CustomField from '../common/lease-and-application/CustomField';
@@ -50,33 +50,40 @@ const ApplicationView: React.FC = () => {
 
   const labelValuePair: TPair[] = useMemo(() => {
     return [
-      { label: 'Application Type', value: infor?.lease_code },
+      { label: 'Application Type',
+        value: APPLICATION_TYPE.find(
+            (item: any) => item.value === infor?.type
+        )?.label,},
       {
         label: 'Application Status',
-        value: infor?.owner?.full_name,
+        value: APPLICATION_STATUS.find(
+            (item: any) => item.value === infor?.status
+        )?.label,
       },
-      { label: 'Date Submitted', value: infor?.market_name },
-      {
-        label: 'Application Form Number',
-        value: infor?.lease_start_date,
-      },
-      { label: 'Market Name', value: infor?.stall_name },
-      {
-        label: 'Stall Number',
-        value: infor?.lease_end_date,
+      { label: 'Date Submitted',
+        value: infor?.created_at,
         isDateField: true,
       },
-      { label: 'Stall Size', value: infor?.owner?.email },
-      { label: 'Email', value: infor?.owner?.full_name },
+      {
+        label: 'Application Form Number',
+        value: infor?.code,
+      },
+      { label: 'Market Name', value: infor?.market_name },
+      {
+        label: 'Stall Number',
+        value: infor?.stall_name,
+      },
+      { label: 'Stall Size', value: infor?.stall_area },
+      { label: 'Email', value: infor?.owner?.email },
       {
         label: 'Full Name',
-        value: CIVIL_STATUS.find(
-          (item: any) => item.value === infor?.owner?.sex
-        )?.label,
+        value: infor?.owner?.full_name
       },
       {
         label: 'Status',
-        value: infor?.owner?.date_of_birth,
+        value: CIVIL_STATUS.find(
+            (item: any) => item.value === infor?.owner?.marital_status
+        )?.label,
       },
       {
         label: 'Date of Birth',
@@ -93,7 +100,7 @@ const ApplicationView: React.FC = () => {
       {
         label: 'Sex',
         value: SEX.find(
-          (item: any) => item.value === infor?.owner?.marital_status
+          (item: any) => item.value === infor?.owner?.sex
         )?.label,
       },
       { label: 'Telephone', value: infor?.owner?.telephone },
@@ -104,66 +111,64 @@ const ApplicationView: React.FC = () => {
       { label: 'City', value: infor?.owner?.city },
       { label: 'District', value: infor?.owner?.district },
       { label: 'Ward', value: infor?.owner?.ward },
-      { label: 'Date', value: infor?.owner?.ward },
-      { label: 'Market Name', value: infor?.owner?.ward },
-      { label: 'Stall Number', value: infor?.owner?.ward },
-      { label: 'Name', value: infor?.owner?.ward },
-      { label: 'Total Amount Due', value: infor?.owner?.ward },
+      { label: 'Date', value: infor?.approved_date,
+        isDateField: true,
+      },
+      { label: 'Market Name', value: infor?.market_name },
+      { label: 'Stall Number', value: infor?.stall_name },
+      { label: 'Name', value: infor?.owner?.full_name },
+      { label: 'Total Amount Due', value: infor?.initial_fee },
     ];
   }, [infor]);
 
   const questions = useMemo(() => {
     return [
       {
-        question: 'Other occupation or source of income',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
-      },
-      {
         question: 'Did you own a stall in any City-owned Market previously?',
-        answer: infor?.pay_tax_previous ? 'Yes' : 'No',
-        ...(infor?.pay_tax_previous
+        answer: infor?.owned_any_stall ? 'Yes' : 'No',
+        ...(infor?.owned_any_stall
           ? {
               subquestion: {
                 question:
                   'If yes, please indicate the City-owned Market and the stall number/section.',
-                answer: '1',
+                answer: infor?.owned_stall_info,
               },
             }
           : {}),
       },
       {
         question: 'Were you able to pay tax in your previous stall?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
+        answer: infor?.pay_tax_previous ? 'Yes' : 'No',
         ...(infor?.pay_tax_previous
           ? {
               subquestion: {
                 question: 'If not, please indicate the reason why?',
-                answer: '1',
+                answer: infor?.pay_tax_previous_reason,
               },
             }
           : {}),
       },
       {
         question: 'Were you forced to terminate your previous lease?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
-        ...(infor?.pay_tax_previous
+        answer: infor?.forced_terminate_previous ? 'Yes' : 'No',
+        ...(infor?.forced_terminate_previous
           ? {
               subquestion: {
                 question: 'If yes, please explain.',
-                answer: '1',
+                answer: infor?.forced_terminate_reason,
               },
             }
           : {}),
       },
       {
         question:
-          'Did you pay to someone in exchage for a chance to rent for a stall?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
-        ...(infor?.pay_tax_previous
+          'Did you pay to someone in exchange for a chance to rent for a stall?',
+        answer: infor?.exchange_rent_stall ? 'Yes' : 'No',
+        ...(infor?.exchange_rent_stall
           ? {
               subquestion: {
                 question: 'If yes, please indicate the name.',
-                answer: '1',
+                answer: infor?.exchange_rent_stall_name,
               },
             }
           : {}),
@@ -171,35 +176,35 @@ const ApplicationView: React.FC = () => {
       {
         question:
           'Have you been convicted of violating a law, ordinance or rule?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
-        ...(infor?.pay_tax_previous
+        answer: infor?.convicted_violate_law ? 'Yes' : 'No',
+        ...(infor?.convicted_violate_law
           ? {
               subquestion: {
                 question: 'If yes, please explain.',
-                answer: '1',
+                answer: infor?.convicted_violate_law_reason,
               },
             }
           : {}),
       },
       {
         question: 'Do you have a current administrative or criminal case?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
-        ...(infor?.pay_tax_previous
+        answer: infor?.administrative_criminal ? 'Yes' : 'No',
+        ...(infor?.administrative_criminal
           ? {
               subquestion: {
                 question: 'If yes, please explain.',
-                answer: '1',
+                answer: infor?.administrative_criminal_reason,
               },
             }
           : {}),
       },
       {
         question: 'How much is your capital?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
+        answer: infor?.source_of_capital,
       },
       {
         question: 'What are you going to sell in your stall?',
-        answer: infor?.owned_any_stall ? 'Yes' : 'No',
+        answer: infor?.capital,
       },
     ];
   }, [infor]);
@@ -372,7 +377,7 @@ const ApplicationView: React.FC = () => {
                       }}>
                       Proof of transfer
                     </Typography>
-                    <ImagePopupPreview imgUrl={infor?.identification} />
+                    <ImagePopupPreview imgUrl={infor?.proof_of_transfer} />
                   </Box>
                 </Box>
               </Box>

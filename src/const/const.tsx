@@ -279,6 +279,17 @@ export const CIVIL_STATUS = [
   },
 ];
 
+export const APPLICATION_TYPE = [
+  {
+    value: 0,
+    label: 'New Stall Application',
+  },
+  {
+    value: 1,
+    label: 'Renewal of Stall Application',
+  },
+];
+
 export const INIT_TABLE_ROWS_NUMBER = 5;
 export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
 export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
