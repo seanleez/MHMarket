@@ -5,8 +5,8 @@ import { IManagementTableFormat } from '../../const/interface';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
-import ConfirmDialog from "../common/dialog/ConfirmDialog";
-import ErrorDialog from "../common/dialog/ErrorDialog";
+import ConfirmDialog from '../common/dialog/ConfirmDialog';
+import ErrorDialog from '../common/dialog/ErrorDialog';
 
 const APPLICATION_LIST_SEARCH_FIELDS = [
   {
@@ -92,6 +92,7 @@ const ApplicationList: React.FC = () => {
           throw new Error(response.error_description);
         } else {
           // use globalRow.current for storing original rows
+          console.log(response);
           globalRows.current = response.items ?? [];
           setRows(response.items ?? []);
         }
@@ -124,17 +125,21 @@ const ApplicationList: React.FC = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-        .then((res) => res.json())
-        .then((response) => {
-          setOpenConfirmDialog(false);
-          if (response.error_code) {
-            errMess.current = response.error_description;
-            setOpenErrorDialog(true);
-          } else {
-            setOpenSuccessDialog(true);
-          }
-        })
-        .catch((err) => console.error(err));
+      .then((res) => res.json())
+      .then((response) => {
+        setOpenConfirmDialog(false);
+        if (response.error_code) {
+          errMess.current = response.error_description;
+          setOpenErrorDialog(true);
+        } else {
+          globalRows.current = rows.filter(
+            (row: any) => row.application_id !== currentID.current
+          );
+          setOpenSuccessDialog(true);
+          setRows(globalRows.current);
+        }
+      })
+      .catch((err) => console.error(err));
   };
 
   const handleChangeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,7 +155,6 @@ const ApplicationList: React.FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    console.log(id);
     currentID.current = id;
     setOpenConfirmDialog(true);
   };
@@ -176,10 +180,10 @@ const ApplicationList: React.FC = () => {
         onDelete={handleDelete}
       />
       <ConfirmDialog
-          openProp={openConfirmDialog}
-          message={`Are you sure you want to delete this application?`}
-          onCloseDialog={() => setOpenConfirmDialog(false)}
-          onAcceptDialog={handleDeleteApplication}
+        openProp={openConfirmDialog}
+        message={`Are you sure you want to delete this application?`}
+        onCloseDialog={() => setOpenConfirmDialog(false)}
+        onAcceptDialog={handleDeleteApplication}
       />
       <SuccessDialog
         openProp={openSuccessDialog}
@@ -187,9 +191,9 @@ const ApplicationList: React.FC = () => {
         onCloseDialog={() => setOpenSuccessDialog(false)}
       />
       <ErrorDialog
-          openProp={openErrorDialog}
-          message={errMess.current}
-          onCloseDialog={() => setOpenErrorDialog(false)}
+        openProp={openErrorDialog}
+        message={errMess.current}
+        onCloseDialog={() => setOpenErrorDialog(false)}
       />
     </>
   );
