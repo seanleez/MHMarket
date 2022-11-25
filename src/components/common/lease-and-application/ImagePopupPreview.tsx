@@ -2,9 +2,9 @@ import { Box, Modal, Typography } from '@mui/material';
 import { useState } from 'react';
 
 interface IImagePopupPreview {
-  title: string;
+  title?: string;
   imgUrl: string;
-  imgName: string;
+  imgName?: string;
 }
 
 const style = {
@@ -33,13 +33,14 @@ const ImagePopupPreview: React.FC<IImagePopupPreview> = ({
         width: '100%',
         p: '10px 0',
         textAlign: 'center',
-        bgcolor: '#E9EBF5',
+        bgcolor: '#F0F0F0',
         borderRadius: '10px',
-        minHeight: '180px',
       }}>
-      <Typography variant="subtitle1" fontWeight="bold">
-        {title}
-      </Typography>
+      {title && (
+        <Typography variant="subtitle1" fontWeight="bold">
+          {title}
+        </Typography>
+      )}
       <img
         src={imgUrl}
         alt="image"
@@ -52,7 +53,7 @@ const ImagePopupPreview: React.FC<IImagePopupPreview> = ({
         }}
         onClick={handleOpen}
       />
-      <Typography variant="subtitle1">{imgName}</Typography>
+      {imgName && <Typography variant="subtitle1">{imgName}</Typography>}
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <img

@@ -15,6 +15,8 @@ import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
 import LeaseManagement from './components/lease-management/LeaseManagement';
 import ViewMarketLease from './components/lease-management/ViewMarketLease';
+import ApplicationList from './components/application-list/ApplicationList';
+import ApplicationView from './components/application-list/ApplicationView';
 
 function App() {
   const { pathname } = useLocation();
@@ -63,6 +65,8 @@ function App() {
           path="/lease-management/view/:id"
           element={<ViewMarketLease />}
         />
+        <Route path="/application-list" element={<ApplicationList />} />
+        <Route path="/application/view/:id" element={<ApplicationView />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>
