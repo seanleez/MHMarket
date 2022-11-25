@@ -1,6 +1,8 @@
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
+import roleApis from '../../services/roleApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import RoleForm from './RoleForm';
@@ -16,41 +18,29 @@ const AddAndEditRole = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/role/edit');
-
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
-  const token = currentUser?.access_token;
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    fetch(`${rootURL}/permissions/categories`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setPmsCategories(data.items);
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        const res = await roleApis.getPermissionCategories();
+        setPmsCategories((res as any).items);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   useEffect(() => {
-    if (isAtEditPage) {
-      fetch(`${rootURL}/roles/${params.id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setCurrentEditRole(data);
-          console.log(data);
-        })
-        .catch((err) => console.error(err));
-    }
+    if (!isAtEditPage) return;
+    (async () => {
+      try {
+        const res = await roleApis.getRole(params.id);
+        setCurrentEditRole(res);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   const handleCloseSuccessDialog = () => {
@@ -89,32 +79,20 @@ const AddAndEditRole = () => {
 
     payload['permission_ids'] = permissionIds;
 
-    // Call API Add New
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-    const token = currentUser?.access_token;
-
-    const fetchURL = isAtEditPage
-      ? `${rootURL}/roles/${currentEditRole.role_id}`
-      : `${rootURL}/roles`;
-
-    fetch(fetchURL, {
-      method: isAtEditPage ? 'PUT' : 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          setErrorMes(response.error_description);
+    // Call API add new or update
+    (async () => {
+      try {
+        let res;
+        if (isAtEditPage) {
+          res = await roleApis.updateRole(currentEditRole.role_id, payload);
         } else {
-          setOpenSuccessDialog(true);
+          res = await roleApis.createRole(payload);
         }
-      })
-      .catch((err) => console.error(err));
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   return (

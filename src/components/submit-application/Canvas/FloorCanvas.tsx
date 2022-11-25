@@ -12,6 +12,8 @@ import CircleIcon from '@mui/icons-material/Circle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { KonvaEventObject } from 'konva/lib/Node';
 import StallInformation from './StalInformation';
+import submitAppApis from '../../../services/submitAppApis';
+import { useSnackbar } from 'notistack';
 interface IFloorCanvas {
   floor: any;
 }
@@ -33,6 +35,7 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
 
   const imageRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const imgEl = (imageRef.current as any).getAttrs()?.image;
@@ -56,24 +59,14 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
 
   const handleExpand = () => {
     setExpand((prev) => !prev);
-    fetch(`${rootURL}/floors/${floor.floorplan_id}/published`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          console.log(response?.stalls);
-          setStalls(response?.stalls ?? []);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    (async () => {
+      try {
+        const res = await submitAppApis.getPublishedFloor(floor.floorplan_id);
+        setStalls((res as any)?.stalls ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const checkDeselect = (e: any) => {

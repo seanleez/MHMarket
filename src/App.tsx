@@ -31,7 +31,6 @@ function App() {
 
   return (
     <div className="App">
-      {/* <Canvas /> */}
       {pathname !== '/' && <Header />}
       <Routes>
         <Route path="/" element={<Login />} />

@@ -61,7 +61,7 @@ const LeaseManagement: React.FC = () => {
         globalRows.current = (res as any).items ?? [];
         setRows((res as any).items ?? []);
       } catch (err) {
-        enqueueSnackbar((err as any).message, { variant: 'error' });
+        enqueueSnackbar(err as string);
       }
     })();
   }, []);

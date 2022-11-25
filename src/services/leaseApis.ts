@@ -1,6 +1,5 @@
+import { TId } from '../const/interface';
 import axiosClient from './axiosClients';
-
-type TId = string | undefined | null;
 
 const leaseApis = {
   getLeases: () => axiosClient.get('/applications/in-lease'),

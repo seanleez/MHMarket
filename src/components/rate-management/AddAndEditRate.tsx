@@ -1,6 +1,8 @@
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { rootURL } from '../../const/const';
+import rateApis from '../../services/rateApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
@@ -18,27 +20,17 @@ const AddAndEditRate = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/rate/edit');
-
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
-  const token = currentUser?.access_token;
-
+  const { enqueueSnackbar } = useSnackbar();
   useLayoutEffect(() => {
-    if (isAtEditPage) {
-      fetch(`${rootURL}/rates/${params.id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setCurrentEditRate(data);
-        })
-        .catch((err) => console.error(err));
-    }
+    if (!isAtEditPage) return;
+    (async () => {
+      try {
+        const response = await rateApis.getRate(params.id);
+        setCurrentEditRate(response as any);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   const handleCloseSuccessDialog = () => {
@@ -135,35 +127,20 @@ const AddAndEditRate = () => {
     console.log(payload);
 
     // Call API Add New or Edit
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-    const token = currentUser?.access_token;
-
-    const fetchURL = isAtEditPage
-      ? `${rootURL}/rates/${currentEditRate.rate_id}`
-      : `${rootURL}/rates`;
-
-    fetch(fetchURL, {
-      method: isAtEditPage ? 'PUT' : 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          errorMes.current = response?.errors?.type ?? 'Error';
-          throw new Error(response);
+    (async () => {
+      try {
+        let res;
+        if (isAtEditPage) {
+          res = await rateApis.updateRate(currentEditRate.rate_id, payload);
         } else {
-          setOpenSuccessDialog(true);
+          res = await rateApis.createRate(payload);
         }
-      })
-      .catch((err) => {
-        console.dir(err);
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        errorMes.current = error as string;
         setOpenErrorDialog(true);
-      });
+      }
+    })();
   };
 
   return (

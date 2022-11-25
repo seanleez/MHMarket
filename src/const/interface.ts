@@ -5,3 +5,5 @@ export interface IManagementTableFormat {
   align?: 'left' | 'center';
   isHaveSortIcon?: boolean;
 }
+
+export type TId = string | undefined | null;

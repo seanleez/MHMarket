@@ -1,15 +1,12 @@
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { MARKET_TYPE, rootURL } from '../../const/const';
+import { MARKET_TYPE } from '../../const/const';
+import marketApis from '../../services/marketApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import MarketFormStep1 from './MarketFormStep1';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const AddAndEditMarketStep1 = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
@@ -25,22 +22,19 @@ const AddAndEditMarketStep1 = () => {
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/market/edit');
   const marketId = localStorage.getItem('marketId') ?? '';
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!marketId) return;
-    fetch(`${rootURL}/markets/${marketId}?draft=true`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        console.log(response);
-        supervisorId.current = response?.supervisor?.supervisor_id ?? '';
-        setCurrentEditMarket(response);
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        const res = await marketApis.getMarket(marketId);
+        supervisorId.current = (res as any)?.supervisor?.supervisor_id ?? '';
+        setCurrentEditMarket(res);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   const handleCloseSuccessDialog = () => {
@@ -98,37 +92,24 @@ const AddAndEditMarketStep1 = () => {
       payload.supervisor['supervisor_id'] = supervisorId.current;
       payload['market_id'] = marketId;
     }
-    console.log(payload);
 
     // Call API Add New or Edit
-    const fetchURL = marketId
-      ? `${rootURL}/markets/${marketId}`
-      : `${rootURL}/markets`;
-
-    fetch(fetchURL, {
-      method: marketId ? 'PUT' : 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          errorMes.current = response?.errors?.type ?? 'Error';
-          throw new Error(response);
+    (async () => {
+      try {
+        let res;
+        if (marketId) {
+          res = await marketApis.editMarket(marketId, payload);
         } else {
-          console.log(response);
-          const id = marketId ? response.market_id : response.id;
-          response && localStorage.setItem('marketId', id);
-          setOpenSuccessDialog(true);
+          res = await marketApis.createMarket(payload);
         }
-      })
-      .catch((err) => {
+        const id = marketId ? (res as any).market_id : (res as any).id;
+        res && localStorage.setItem('marketId', id);
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        errorMes.current = error as string;
         setOpenErrorDialog(true);
-      });
+      }
+    })();
   };
 
   return (

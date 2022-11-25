@@ -69,7 +69,7 @@ const ViewMarketLease: React.FC = () => {
         const res = await leaseApis.getLease(params.id);
         setLeaseInfor(res ?? {});
       } catch (err) {
-        enqueueSnackbar((err as any).message, { variant: 'error' });
+        enqueueSnackbar(err as string);
       }
     })();
   }, []);
@@ -88,7 +88,7 @@ const ViewMarketLease: React.FC = () => {
         );
         setExistTermination((res as any)?.exist ?? false);
       } catch (err) {
-        enqueueSnackbar((err as any).message, { variant: 'error' });
+        enqueueSnackbar(err as string);
       }
     })();
   }
@@ -108,7 +108,7 @@ const ViewMarketLease: React.FC = () => {
         const res = await leaseApis.postTermination(params.id, payload);
         setOpenSuccessDialog(true);
       } catch (err) {
-        enqueueSnackbar((err as any).message, { variant: 'error' });
+        enqueueSnackbar(err as string);
       }
     })();
   };
@@ -122,8 +122,8 @@ const ViewMarketLease: React.FC = () => {
       try {
         await leaseApis.putCancelTermination(params.id, terminationId, payload);
         setOpenSuccessDialog(true);
-      } catch (error) {
-        enqueueSnackbar((error as any).message, { variant: 'error' });
+      } catch (err) {
+        enqueueSnackbar(err as string);
       }
     })();
   };
