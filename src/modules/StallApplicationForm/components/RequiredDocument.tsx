@@ -15,7 +15,7 @@ const RequiredDocument = () => {
         }}
       >required document</Box>
       
-      <ImageUploader />
+      <ImageUploader max={3} />
 
     </Box>
   );

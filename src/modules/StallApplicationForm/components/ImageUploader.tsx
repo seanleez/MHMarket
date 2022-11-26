@@ -1,6 +1,7 @@
-import React, { useState, useEffect, DragEvent, useRef, ChangeEvent, MouseEvent } from 'react';
-import { Box } from '@mui/material';
-import { Stack } from '@mui/system';
+import React, { useState, useEffect, DragEvent, useRef, ChangeEvent, MouseEvent, useCallback, memo } from 'react';
+import { Box, Stack } from '@mui/material';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { v4 as uuid } from 'uuid';
 
 interface IImageUploader {
   max?: number;  // the maximum file number.
@@ -14,9 +15,11 @@ const toBase64 = (file: File) => new Promise((resolve, reject) => {
   reader.onerror = error => reject(error);
 });
 
+type StoredFile = { data: string, name: string, id: string }
+
 const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IImageUploader) => {
 
-  const [list, setList] = useState<string[]>([]);
+  const [list, setList] = useState<StoredFile[]>([]);
   const [shouldActive, setShouldActive] = useState(false);
   const input = useRef<null | HTMLInputElement>(null);
 
@@ -45,7 +48,14 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
       if(base64Data === null) {
         throw 'Something went wrong'
       }
-      setList(prev => [...prev, base64Data as string]);
+      setList(prev => [
+        ...prev, 
+        { 
+          data: base64Data as string, 
+          name: file.name, 
+          id: uuid()
+        }
+      ]);
     } catch (e) {
       console.log(e)
     }
@@ -82,6 +92,12 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
     console.log(list)
   }, [list]);
 
+  const handleDelete = useCallback((id: string) => {
+    setList(prev => {
+      return prev.filter(file => file.id !== id);
+    })
+  }, []);
+
   return (
     <Box  sx={{
       width: '250px',
@@ -90,11 +106,11 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
       <div 
         style={{ 
           position: 'relative',
-          width: '100%',
           height: '120px',
           backgroundColor: shouldActive ? '#edf7ff' :'#FAFAFA',
           border: '2px dotted #909090',
-          borderRadius: '5px'
+          borderRadius: '5px',
+          marginBottom: '10px'
         }}
         
         // handle active
@@ -136,19 +152,60 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
           accept={whiteList.join(',')}
         />
 
-        <Stack spacing={1}>
-          {/* {
-            list.map(data => (
-              <></>
-            ))
-          } */}
-        </Stack>
 
       </div>
+      <Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: '150px', overflowY: 'auto' }}>
+        {
+          list.map(file => (
+            // <React.Fragment >
+              <PreviewRow key={file.id} { ...file } handleDelete={handleDelete} />
+            // </React.Fragment>
+          ))
+        }
+      </Box>
     </Box>
   );
 };
 
-// const 
+const PreviewRow = memo(
+(
+  { 
+    data, 
+    name, 
+    id, 
+    handleDelete 
+  }: StoredFile & { handleDelete: (id: string) => void }
+) => {
+  return (
+    <Box sx={{
+      display: 'flex',
+      alignItems: 'center',
+      padding: '8px',
+      border: '2px solid #edf7ff',
+      borderRadius: '5px'
+    }}>
+      <img src={data} style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+      <Box sx={{ 
+        minWidth: 0,
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        fontSize: '14px', 
+        color: 'blue', 
+        fontWeight: 600, 
+        flexGrow: 1, 
+        padding: '0 10px',
+      }}>{name}</Box>
+      <DeleteOutlineIcon 
+        sx={{
+          fontSize: '16px',
+          color: 'red',
+          cursor: 'pointer'
+        }}
+        onClick={() => handleDelete(id)} 
+      />
+    </Box>
+  )
+})
 
 export default ImageUploader;
