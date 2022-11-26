@@ -2,16 +2,10 @@ import StoreIcon from '@mui/icons-material/Store';
 import { Box, MenuItem, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useContext, useLayoutEffect, useState } from 'react';
-import { rootURL } from '../../const/const';
 import { ContainerContext } from '../../context/ContainerRefContext';
 import submitAppApis from '../../services/submitAppApis';
 import MarketFloors from './MarketFloors';
 import MarketInformation from './MarketInformation';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const SubmitApplication: React.FC = () => {
   const [listPublicMarkets, setListPublicMarkets] = useState([]);

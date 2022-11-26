@@ -9,6 +9,20 @@ const marketApis = {
   editMarket: (id: TId, payload: any) =>
     axiosClient.put(`/markets/${id}`, payload),
   publishMarket: (id: TId) => axiosClient.post(`/markets/${id}/publish`),
+
+  getProvinces: () => axiosClient.get('/locations/provinces'),
+  getCities: (params: any) =>
+    axiosClient.get('/locations/cities', {
+      params: params,
+    }),
+  getWards: (params: any) =>
+    axiosClient.get('/locations/wards', {
+      params: params,
+    }),
+  getLocation: (params: any) =>
+    axiosClient.get('/locations/query', {
+      params: params,
+    }),
 };
 
 export default marketApis;

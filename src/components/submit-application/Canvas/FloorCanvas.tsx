@@ -18,11 +18,6 @@ interface IFloorCanvas {
   floor: any;
 }
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
   const [stalls, setStalls] = useState([]);
   const [selectedId, setSelectedId] = useState<string>('');
