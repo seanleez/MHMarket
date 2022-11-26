@@ -1,7 +1,6 @@
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { rootURL } from '../../const/const';
 import roleApis from '../../services/roleApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
@@ -90,7 +89,7 @@ const AddAndEditRole = () => {
         }
         setOpenSuccessDialog(true);
       } catch (error) {
-        enqueueSnackbar(error as string);
+        setErrorMes(error as string);
       }
     })();
   };

@@ -1,13 +1,14 @@
 import axios from 'axios';
-import { rootURL } from '../const/const';
-// import queryString from "query-string";
+
+// for local
+const baseURL = 'http://103.162.20.141:8000/api/v2';
 
 const axiosClient = axios.create({
-  baseURL: rootURL,
+  // baseURL: process.env.REACT_APP_BASE_URL,
+  baseURL: baseURL,
   headers: {
     'content-type': 'application/json',
   },
-  // paramsSerializer: (params: any) => queryString.stringify(params),
 });
 
 axiosClient.interceptors.request.use(

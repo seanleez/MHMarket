@@ -1,7 +1,7 @@
 import { useSnackbar } from 'notistack';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MARKET_MANAGEMENT, rootURL } from '../../const/const';
+import { MARKET_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
 import marketApis from '../../services/marketApis';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';

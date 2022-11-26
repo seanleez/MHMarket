@@ -1,7 +1,6 @@
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { rootURL } from '../../const/const';
 import rateApis from '../../services/rateApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';

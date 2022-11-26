@@ -6,10 +6,12 @@ import PasswordIcon from '../../assets/icon/password-icon.svg';
 import loginBg from '../../assets/images/login-bg.png';
 import authApis from '../../services/authApis';
 import AlertDialog from '../common/dialog/AlertDialog';
+import SuccessDialog from '../common/dialog/SuccessDialog';
 import './Login.scss';
 
 const Login: FC = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -29,7 +31,7 @@ const Login: FC = () => {
       try {
         const res = await authApis.postLogin(payload);
         localStorage.setItem('currentUser', JSON.stringify(res));
-        navigate('/home');
+        setOpenSuccessDialog(true);
       } catch (error) {
         errMess.current = (error as any).message;
         setOpenAlertDialog(true);
@@ -76,6 +78,11 @@ const Login: FC = () => {
           openProp={openAlertDialog}
           message={errMess.current}
           onCloseDialog={handleCloseDialog}
+        />
+        <SuccessDialog
+          openProp={openSuccessDialog}
+          message={'Login Successfully'}
+          onCloseDialog={() => navigate('/home')}
         />
       </div>
     </div>

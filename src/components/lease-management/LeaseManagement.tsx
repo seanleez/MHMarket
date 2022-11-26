@@ -1,13 +1,13 @@
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LEASE_MANAGEMENT, rootURL } from '../../const/const';
+import { LEASE_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import leaseApis from '../../services/leaseApis';
 import SelectSearch, {
   MARKET_LEASE_SEARCH_FIELDS,
 } from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
-import leaseApis from '../../services/leaseApis';
-import { useSnackbar } from 'notistack';
 
 const columns: readonly IManagementTableFormat[] = [
   {

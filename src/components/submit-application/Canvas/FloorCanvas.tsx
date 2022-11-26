@@ -1,19 +1,15 @@
+import CircleIcon from '@mui/icons-material/Circle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, Collapse, IconButton, Paper, Typography } from '@mui/material';
+import { KonvaEventObject } from 'konva/lib/Node';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
-import {
-  CONTAINER_HEIGHT,
-  CONTAINER_WIDTH,
-  rootURL,
-} from '../../../const/const';
-import Rectangle from './Rectangle';
-import CircleIcon from '@mui/icons-material/Circle';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { KonvaEventObject } from 'konva/lib/Node';
-import StallInformation from './StalInformation';
+import { CONTAINER_HEIGHT, CONTAINER_WIDTH } from '../../../const/const';
 import submitAppApis from '../../../services/submitAppApis';
-import { useSnackbar } from 'notistack';
+import Rectangle from './Rectangle';
+import StallInformation from './StalInformation';
 interface IFloorCanvas {
   floor: any;
 }
