@@ -1,16 +1,11 @@
 import { Button, Container } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import marketApis from '../../services/marketApis';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import ProgressCirle from '../common/progress-circle/ProgressCircle';
 import FloorList from './Step2/FloorList';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const AddAndEditMarketStep2: React.FC = () => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
@@ -24,24 +19,15 @@ const AddAndEditMarketStep2: React.FC = () => {
 
   const handlePublish = () => {
     const marketId = localStorage.getItem('marketId') ?? '';
-    fetch(`${rootURL}/markets/${marketId}/publish`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
+    (async () => {
+      try {
+        await marketApis.publishMarket(marketId);
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        errMess.current = error as string;
         setOpenErrorDialog(true);
-      });
+      }
+    })();
   };
 
   return (

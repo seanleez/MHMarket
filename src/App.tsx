@@ -1,7 +1,8 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
-import './style/main.scss';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
+import LeaseManagement from './components/lease-management/LeaseManagement';
+import ViewMarketLease from './components/lease-management/ViewMarketLease';
 import Login from './components/login/Login';
 import AddAndEditMarketStep1 from './components/market-management/AddAndEditMarketStep1';
 import AddAndEditMarketStep2 from './components/market-management/AddAndEditMarketStep2';
@@ -13,17 +14,15 @@ import RoleManagement from './components/role-management/RoleManagement';
 import SubmitApplication from './components/submit-application/SubmitApplication';
 import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
-import LeaseManagement from './components/lease-management/LeaseManagement';
-import ViewMarketLease from './components/lease-management/ViewMarketLease';
 import ApplicationList from './components/application-list/ApplicationList';
 import ApplicationView from './components/application-list/ApplicationView';
+import './style/main.scss';
 
 function App() {
   const { pathname } = useLocation();
 
   return (
     <div className="App">
-      {/* <Canvas /> */}
       {pathname !== '/' && <Header />}
       <Routes>
         <Route path="/" element={<Login />} />

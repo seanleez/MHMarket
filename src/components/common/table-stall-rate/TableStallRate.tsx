@@ -64,8 +64,8 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
   };
 
   return (
-    <div className="table-management-container">
-      <div className="table-management-features">
+    <div className="container">
+      <div className="table-features">
         <Button variant="contained" className="primary" onClick={onAddNew}>
           Add New
           <AddIcon />

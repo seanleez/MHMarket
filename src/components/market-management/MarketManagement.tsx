@@ -1,7 +1,9 @@
+import { useSnackbar } from 'notistack';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MARKET_MANAGEMENT, rootURL } from '../../const/const';
+import { MARKET_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import marketApis from '../../services/marketApis';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
@@ -48,46 +50,32 @@ const MarketManagement = () => {
   const errMess = useRef<string>('');
 
   const navigate = useNavigate();
-
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
-  const token = currentUser?.access_token;
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    fetch(`${rootURL}/markets`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        console.log(response);
-        setRows(response.items);
-      })
-      .catch((err) => console.error(err));
-    // When delete a market, fetch this APIGET again to get new data
+    // When delete a market, call this APIGET again to get new data
+    (async () => {
+      try {
+        const res = await marketApis.getMarkets();
+        setRows((res as any).items ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, [openSuccessDialog]);
 
   const handleDeleteMarket = () => {
-    fetch(`${rootURL}/markets/${currentID.current}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        setOpenConfirmDialog(false);
-        if (response.error_code) {
-          errMess.current = response.error_description;
-          setOpenErrorDialog(true);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => console.error(err));
+    setOpenConfirmDialog(false);
+    (async () => {
+      try {
+        const res = await marketApis.deleteMarket(currentID.current);
+        setOpenSuccessDialog(true);
+        setRows((res as any).items ?? []);
+      } catch (error) {
+        errMess.current = error as string;
+        setOpenErrorDialog(true);
+      }
+    })();
   };
 
   const handleAddNew = () => {

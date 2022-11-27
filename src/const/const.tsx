@@ -10,8 +10,6 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import LocalConvenienceStoreIcon from '@mui/icons-material/LocalConvenienceStore';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 
-export const rootURL = 'http://103.162.20.141:8000/api/v2';
-
 export const NAVIGATION_LIST = [
   {
     title: 'Home',

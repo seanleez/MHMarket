@@ -12,53 +12,37 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
+import { useSnackbar } from 'notistack';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CIVIL_STATUS, rootURL, SEX } from '../../const/const';
-import { convertDateFormat } from '../../helper/helperFuncs';
-import ChildrenTable from '../common/lease-and-application/ChildrenTable';
-import ErrorDialog from '../common/dialog/ErrorDialog';
-import SuccessDialog from '../common/dialog/SuccessDialog';
-import ImagePopupPreview from '../common/lease-and-application/ImagePopupPreview';
-import CustomField from '../common/lease-and-application/CustomField';
+import { CIVIL_STATUS, SEX } from '../../const/const';
 import { TPair } from '../../const/interface';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
+import leaseApis from '../../services/leaseApis';
+import SuccessDialog from '../common/dialog/SuccessDialog';
+import ChildrenTable from '../common/lease-and-application/ChildrenTable';
+import CustomField from '../common/lease-and-application/CustomField';
+import ImagePopupPreview from '../common/lease-and-application/ImagePopupPreview';
 
 const ViewMarketLease: React.FC = () => {
-  const [leaseInfor, setLeaseInfor] = useState<any>([]);
+  const [leaseInfor, setLeaseInfor] = useState<any>();
   const [dateValue, setDateValue] = useState<Dayjs | null>(dayjs(new Date()));
   const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [existTermination, setExistTermination] = useState(false);
 
   const reasonInputRef = useRef<HTMLInputElement>(null);
   const params = useParams();
-  const errMess = useRef('');
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/applications/in-lease/${params.id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setLeaseInfor(response ?? {});
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    (async () => {
+      try {
+        const res = await leaseApis.getLease(params.id);
+        setLeaseInfor(res as any);
+      } catch (err) {
+        enqueueSnackbar(err as string);
+      }
+    })();
   }, []);
 
   useLayoutEffect(() => {
@@ -66,28 +50,18 @@ const ViewMarketLease: React.FC = () => {
   }, []);
 
   function getTermination() {
-    fetch(`${rootURL}/applications/${params.id}/termination`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          localStorage.setItem(
-            'terminationId',
-            response?.termination?.termination_id ?? ''
-          );
-          setExistTermination(response?.exist ?? false);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    (async () => {
+      try {
+        const res = await leaseApis.getTermination(params.id);
+        localStorage.setItem(
+          'terminationId',
+          (res as any)?.termination?.termination_id ?? ''
+        );
+        setExistTermination((res as any)?.exist ?? false);
+      } catch (err) {
+        enqueueSnackbar(err as string);
+      }
+    })();
   }
 
   const handleChange = (newValue: Dayjs | null) => {
@@ -100,51 +74,29 @@ const ViewMarketLease: React.FC = () => {
       end_date: dayjs(dateValue).format('YYYY-MM-DDTHH:mm:ssZ'),
       reason: reasonInputRef.current?.value,
     };
-    console.log(payload);
-    fetch(`${rootURL}/applications/${params.id}/termination`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    (async () => {
+      try {
+        await leaseApis.postTermination(params.id, payload);
+        setOpenSuccessDialog(true);
+      } catch (err) {
+        enqueueSnackbar(err as string);
+      }
+    })();
   };
 
   const handleCancelTermination = () => {
     const terminationId = localStorage.getItem('terminationId');
-    fetch(`${rootURL}/applications/${params.id}/termination/${terminationId}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        termination_id: terminationId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setOpenSuccessDialog(true);
-        }
-      })
-      .catch((err) => {
-        errMess.current = err.message;
-        setOpenErrorDialog(true);
-      });
+    const payload = {
+      termination_id: terminationId,
+    };
+    (async () => {
+      try {
+        await leaseApis.putCancelTermination(params.id, terminationId, payload);
+        setOpenSuccessDialog(true);
+      } catch (err) {
+        enqueueSnackbar(err as string);
+      }
+    })();
   };
 
   const labelValuePair: TPair[] = useMemo(() => {
@@ -437,11 +389,6 @@ const ViewMarketLease: React.FC = () => {
           getTermination();
           setOpenSuccessDialog(false);
         }}
-      />
-      <ErrorDialog
-        openProp={openErrorDialog}
-        message={errMess.current}
-        onCloseDialog={() => setOpenErrorDialog(false)}
       />
     </div>
   );

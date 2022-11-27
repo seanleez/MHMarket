@@ -1,16 +1,13 @@
 import { Box, Button, TextField } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { FormEvent, useContext, useRef, useState } from 'react';
-import { rootURL } from '../../../const/const';
 import { FloorContext } from '../../../context/FloorContext';
+import floorApis from '../../../services/floorApis';
 import CircularLoading from '../../common/loading/CircularLoading';
 
 interface IAddNewFloor {
   onCancel: () => void;
 }
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
   const { onCancel } = props;
@@ -18,6 +15,7 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
 
   const payload = useRef<any>({});
   const floorContext = useContext(FloorContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const imageData = new FormData();
@@ -25,25 +23,16 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
     imageData.append('attachment', e.target.files?.[0]);
 
     setLoading(true);
-    fetch(`${rootURL}/files/upload`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: imageData,
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          console.log(response);
-        } else {
-          payload.current['image_name'] = response?.content;
-          payload.current['image_url'] = response?.pre_signed_url;
-          setLoading(false);
-        }
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        const response = await floorApis.uploadFile(imageData);
+        payload.current['image_name'] = (response as any)?.content;
+        payload.current['image_url'] = (response as any)?.pre_signed_url;
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleCreateFloor = (e: FormEvent) => {
@@ -62,23 +51,14 @@ const AddNewFloor: React.FC<IAddNewFloor> = (props) => {
       }
     });
 
-    fetch(`${rootURL}/floors`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload.current),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          floorContext.updateListFloors();
-        }
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        await floorApis.createFloor(payload.current);
+        floorContext.updateListFloors();
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   return (
