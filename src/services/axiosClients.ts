@@ -1,13 +1,15 @@
 import axios from 'axios';
 
-// for local
-const baseURL = 'http://103.162.20.141:8000/api/v2';
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
+const token = currentUser?.access_token;
 
 const axiosClient = axios.create({
-  // baseURL: process.env.REACT_APP_BASE_URL,
-  baseURL: baseURL,
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     'content-type': 'application/json',
+    Authorization: `Bearer ${token}`,
   },
 });
 
