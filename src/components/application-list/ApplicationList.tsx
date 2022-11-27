@@ -1,12 +1,14 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL, VIEW_APPLICATION_LIST } from '../../const/const';
+import { VIEW_APPLICATION_LIST } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
+import applicationApis from '../../services/applicationsApis';
+import { useSnackbar } from 'notistack';
 
 const APPLICATION_LIST_SEARCH_FIELDS = [
   {
@@ -59,11 +61,6 @@ const columns: readonly IManagementTableFormat[] = [
   { id: 'action', label: 'ACTION', width: '10%', align: 'center' },
 ];
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const ApplicationList: React.FC = () => {
   const [rows, setRows] = useState([]);
   const [selectValue, setSelectValue] = useState(
@@ -78,28 +75,18 @@ const ApplicationList: React.FC = () => {
   const navigate = useNavigate();
   const currentID = useRef<string>('');
   const errMess = useRef<string>('');
+  const { enqueueSnackbar } = useSnackbar();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/applications`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          // use globalRow.current for storing original rows
-          console.log(response);
-          globalRows.current = response.items ?? [];
-          setRows(response.items ?? []);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    (async () => {
+      try {
+        const res = await applicationApis.getApplications();
+        globalRows.current = (res as any).items ?? [];
+        setRows((res as any).items ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -119,27 +106,20 @@ const ApplicationList: React.FC = () => {
   }, [selectValue, inputValue]);
 
   const handleDeleteApplication = () => {
-    fetch(`${rootURL}/applications/${currentID.current}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        setOpenConfirmDialog(false);
-        if (response.error_code) {
-          errMess.current = response.error_description;
-          setOpenErrorDialog(true);
-        } else {
-          globalRows.current = rows.filter(
-            (row: any) => row.application_id !== currentID.current
-          );
-          setOpenSuccessDialog(true);
-          setRows(globalRows.current);
-        }
-      })
-      .catch((err) => console.error(err));
+    setOpenConfirmDialog(false);
+    (async () => {
+      try {
+        await applicationApis.deleteApplication(currentID.current);
+        globalRows.current = rows.filter(
+          (row: any) => row.application_id !== currentID.current
+        );
+        setOpenSuccessDialog(true);
+        setRows(globalRows.current);
+      } catch (error) {
+        errMess.current = error as string;
+        setOpenErrorDialog(true);
+      }
+    })();
   };
 
   const handleChangeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
