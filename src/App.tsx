@@ -14,6 +14,8 @@ import RoleManagement from './components/role-management/RoleManagement';
 import SubmitApplication from './components/submit-application/SubmitApplication';
 import AddAndEditUser from './components/user-management/AddAndEditUser';
 import UserManagement from './components/user-management/UserManagement';
+import ApplicationList from './components/application-list/ApplicationList';
+import ApplicationView from './components/application-list/ApplicationView';
 import './style/main.scss';
 
 function App() {
@@ -62,6 +64,8 @@ function App() {
           path="/lease-management/view/:id"
           element={<ViewMarketLease />}
         />
+        <Route path="/application-list" element={<ApplicationList />} />
+        <Route path="/application/view/:id" element={<ApplicationView />} />
 
         <Route path="*" element={<h1>Page not found !!!</h1>} />
       </Routes>

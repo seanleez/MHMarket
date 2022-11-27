@@ -7,3 +7,8 @@ export interface IManagementTableFormat {
 }
 
 export type TId = string | undefined | null;
+export type TPair = {
+  label: string;
+  value: string | number;
+  isDateField?: boolean;
+};

@@ -16,41 +16,12 @@ import { useSnackbar } from 'notistack';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CIVIL_STATUS, SEX } from '../../const/const';
+import { TPair } from '../../const/interface';
 import leaseApis from '../../services/leaseApis';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import ChildrenTable from './ChildrenTable';
-import ImagePopupPreview from './ImagePopupPreview';
-
-type TPair = {
-  label: string;
-  value: string | number;
-  isDateField?: boolean;
-};
-
-const convertDateFormat = (originDate: string | number) => {
-  const date = new Date(originDate);
-  const d =
-    date.getDate() < 10 ? '0' + String(date.getDate()) : String(date.getDate());
-  const m =
-    date.getMonth() + 1 < 10
-      ? '0' + String(date.getMonth() + 1)
-      : String(date.getMonth() + 1);
-  const y = String(date.getFullYear());
-  return `${m}/${d}/${y}`;
-};
-
-const field = (pair: TPair, i: number) => {
-  return (
-    <Box sx={{ display: 'flex' }} key={i}>
-      <Typography variant="subtitle1" sx={{ minWidth: '200px' }}>
-        {pair.label}
-      </Typography>
-      <Typography variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>
-        {pair.isDateField ? convertDateFormat(pair.value) : pair.value}
-      </Typography>
-    </Box>
-  );
-};
+import ChildrenTable from '../common/lease-and-application/ChildrenTable';
+import CustomField from '../common/lease-and-application/CustomField';
+import ImagePopupPreview from '../common/lease-and-application/ImagePopupPreview';
 
 const ViewMarketLease: React.FC = () => {
   const [leaseInfor, setLeaseInfor] = useState<any>();
@@ -185,19 +156,19 @@ const ViewMarketLease: React.FC = () => {
 
       <Box sx={{ display: 'flex', width: '100%' }}>
         <Box sx={{ width: '33%' }}>
-          {labelValuePair
-            .slice(0, 2)
-            .map((pair: TPair, i: number) => field(pair, i))}
+          {labelValuePair.slice(0, 2).map((pair: TPair, i: number) => (
+            <CustomField key={i} pair={pair} />
+          ))}
         </Box>
         <Box sx={{ width: '33%' }}>
-          {labelValuePair
-            .slice(2, 4)
-            .map((pair: TPair, i: number) => field(pair, i))}
+          {labelValuePair.slice(2, 4).map((pair: TPair, i: number) => (
+            <CustomField key={i} pair={pair} />
+          ))}
         </Box>
         <Box sx={{ width: '33%' }}>
-          {labelValuePair
-            .slice(4, 6)
-            .map((pair: TPair, i: number) => field(pair, i))}
+          {labelValuePair.slice(4, 6).map((pair: TPair, i: number) => (
+            <CustomField key={i} pair={pair} />
+          ))}
         </Box>
       </Box>
 
@@ -225,47 +196,39 @@ const ViewMarketLease: React.FC = () => {
                 padding: '15px 20px',
                 boxSizing: 'border-box',
               }}>
-              <div
-                className="section-subtitle first-subtitle"
-                style={{ width: '100%' }}>
-                Overall
-              </div>
+              <div className="section-subtitle first-subtitle">Overall</div>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair
-                  .slice(6, 12)
-                  .map((pair: TPair, i: number) => field(pair, i))}
+                {labelValuePair.slice(6, 12).map((pair: TPair, i: number) => (
+                  <CustomField key={i} pair={pair} />
+                ))}
               </Box>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair
-                  .slice(12, 16)
-                  .map((pair: TPair, i: number) => field(pair, i))}
+                {labelValuePair.slice(12, 16).map((pair: TPair, i: number) => (
+                  <CustomField key={i} pair={pair} />
+                ))}
               </Box>
-              <div className="section-subtitle" style={{ width: '100%' }}>
-                Address
-              </div>
+              <div className="section-subtitle">Address</div>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair
-                  .slice(16, 20)
-                  .map((pair: TPair, i: number) => field(pair, i))}
+                {labelValuePair.slice(16, 20).map((pair: TPair, i: number) => (
+                  <CustomField key={i} pair={pair} />
+                ))}
               </Box>
               <Box sx={{ width: '50%' }}>
-                {labelValuePair
-                  .slice(20, 23)
-                  .map((pair: TPair, i: number) => field(pair, i))}
+                {labelValuePair.slice(20, 23).map((pair: TPair, i: number) => (
+                  <CustomField key={i} pair={pair} />
+                ))}
               </Box>
 
-              <div className="section-subtitle" style={{ width: '100%' }}>
-                Children and/or dependents
-              </div>
-              <ChildrenTable members={leaseInfor?.members ?? []} />
+              <div className="section-subtitle">Children and/or dependents</div>
+              <Box sx={{ width: '50%' }}>
+                <ChildrenTable members={leaseInfor?.members ?? []} />
+              </Box>
 
-              <div className="section-subtitle" style={{ width: '100%' }}>
-                Payment details
-              </div>
+              <div className="section-subtitle">Payment details</div>
               <Box sx={{ width: '100%' }}>
-                {labelValuePair
-                  .slice(23, 24)
-                  .map((pair: TPair, i: number) => field(pair, i))}
+                {labelValuePair.slice(23, 24).map((pair: TPair, i: number) => (
+                  <CustomField key={i} pair={pair} />
+                ))}
               </Box>
               <Box sx={{ width: '32%', marginTop: '10px' }}>
                 <ImagePopupPreview

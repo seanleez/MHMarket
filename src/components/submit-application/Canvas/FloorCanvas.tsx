@@ -104,6 +104,11 @@ const FloorCanvas: React.FC<IFloorCanvas> = ({ floor }) => {
               <Typography>Number of stalls: {stalls.length}</Typography>
               <Box sx={{ display: 'flex', gap: '40px' }}>
                 <Typography
+                    sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <CircleIcon color="disabled" />
+                  Reserved
+                </Typography>
+                <Typography
                   sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <CircleIcon color="error" />
                   Occupied

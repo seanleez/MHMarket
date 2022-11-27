@@ -4,11 +4,27 @@ import { useNavigate } from 'react-router-dom';
 import { LEASE_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
 import leaseApis from '../../services/leaseApis';
-import SelectSearch, {
-  MARKET_LEASE_SEARCH_FIELDS,
-} from '../common/select-search/SelectSearch';
+import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
 
+const MARKET_LEASE_SEARCH_FIELDS = [
+  {
+    value: 'lease_code',
+    label: 'Lease ID',
+  },
+  {
+    value: 'market_name',
+    label: 'Market Name',
+  },
+  {
+    value: 'first_name',
+    label: 'First Name',
+  },
+  {
+    value: 'last_name',
+    label: 'Last Name',
+  },
+];
 const columns: readonly IManagementTableFormat[] = [
   {
     id: 'lease_code',
@@ -97,6 +113,7 @@ const LeaseManagement: React.FC = () => {
   return (
     <>
       <SelectSearch
+        searchFields={MARKET_LEASE_SEARCH_FIELDS}
         onChangeSelect={handleChangeSelect}
         onChangeInput={handleChangeInput}
       />
