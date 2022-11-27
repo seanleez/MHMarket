@@ -7,63 +7,54 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {APPLICATION_STATUS, APPLICATION_TYPE, CIVIL_STATUS, rootURL, SEX} from '../../const/const';
+import {
+  APPLICATION_STATUS,
+  APPLICATION_TYPE,
+  CIVIL_STATUS,
+  SEX,
+} from '../../const/const';
 import { TPair } from '../../const/interface';
+import applicationApis from '../../services/applicationsApis';
 import ChildrenTable from '../common/lease-and-application/ChildrenTable';
 import CustomField from '../common/lease-and-application/CustomField';
 import ImagePopupPreview from '../common/lease-and-application/ImagePopupPreview';
 import Questionaire from './Questionaire';
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const ApplicationView: React.FC = () => {
-  const [infor, setInfor] = useState<any>([]);
+  const [infor, setInfor] = useState<any>({});
 
   const params = useParams();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/applications/${params.id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          console.log(response);
-          setInfor(response ?? {});
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    (async () => {
+      try {
+        const res = await applicationApis.getApplication(params.id);
+        setInfor((res as any) ?? {});
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   const labelValuePair: TPair[] = useMemo(() => {
     return [
-      { label: 'Application Type',
-        value: APPLICATION_TYPE.find(
-            (item: any) => item.value === infor?.type
-        )?.label,},
+      {
+        label: 'Application Type',
+        value: APPLICATION_TYPE.find((item: any) => item.value === infor?.type)
+          ?.label,
+      },
       {
         label: 'Application Status',
         value: APPLICATION_STATUS.find(
-            (item: any) => item.value === infor?.status
+          (item: any) => item.value === infor?.status
         )?.label,
       },
-      { label: 'Date Submitted',
-        value: infor?.created_at,
-        isDateField: true,
-      },
+      { label: 'Date Submitted', value: infor?.created_at, isDateField: true },
       {
         label: 'Application Form Number',
         value: infor?.code,
@@ -77,12 +68,12 @@ const ApplicationView: React.FC = () => {
       { label: 'Email', value: infor?.owner?.email },
       {
         label: 'Full Name',
-        value: infor?.owner?.full_name
+        value: infor?.owner?.full_name,
       },
       {
         label: 'Status',
         value: CIVIL_STATUS.find(
-            (item: any) => item.value === infor?.owner?.marital_status
+          (item: any) => item.value === infor?.owner?.marital_status
         )?.label,
       },
       {
@@ -99,9 +90,7 @@ const ApplicationView: React.FC = () => {
       { label: "Mother's Name", value: infor?.owner?.mother_name },
       {
         label: 'Sex',
-        value: SEX.find(
-          (item: any) => item.value === infor?.owner?.sex
-        )?.label,
+        value: SEX.find((item: any) => item.value === infor?.owner?.sex)?.label,
       },
       { label: 'Telephone', value: infor?.owner?.telephone },
       { label: 'House Number', value: infor?.owner?.house_number },
@@ -111,9 +100,7 @@ const ApplicationView: React.FC = () => {
       { label: 'City', value: infor?.owner?.city },
       { label: 'District', value: infor?.owner?.district },
       { label: 'Ward', value: infor?.owner?.ward },
-      { label: 'Date', value: infor?.approved_date,
-        isDateField: true,
-      },
+      { label: 'Date', value: infor?.approved_date, isDateField: true },
       { label: 'Market Name', value: infor?.market_name },
       { label: 'Stall Number', value: infor?.stall_name },
       { label: 'Name', value: infor?.owner?.full_name },
