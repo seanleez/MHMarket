@@ -53,7 +53,7 @@ const field = (pair: TPair, i: number) => {
 };
 
 const ViewMarketLease: React.FC = () => {
-  const [leaseInfor, setLeaseInfor] = useState<any>([]);
+  const [leaseInfor, setLeaseInfor] = useState<any>();
   const [dateValue, setDateValue] = useState<Dayjs | null>(dayjs(new Date()));
   const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
   const [existTermination, setExistTermination] = useState(false);
@@ -67,7 +67,7 @@ const ViewMarketLease: React.FC = () => {
     (async () => {
       try {
         const res = await leaseApis.getLease(params.id);
-        setLeaseInfor(res ?? {});
+        setLeaseInfor(res as any);
       } catch (err) {
         enqueueSnackbar(err as string);
       }
@@ -105,7 +105,7 @@ const ViewMarketLease: React.FC = () => {
     };
     (async () => {
       try {
-        const res = await leaseApis.postTermination(params.id, payload);
+        await leaseApis.postTermination(params.id, payload);
         setOpenSuccessDialog(true);
       } catch (err) {
         enqueueSnackbar(err as string);

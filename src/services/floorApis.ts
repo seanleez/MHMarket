@@ -2,6 +2,7 @@ import { TId } from '../const/interface';
 import axiosClient from './axiosClients';
 
 const floorApis = {
+  getFloors: (id: TId) => axiosClient.get(`/markets/${id}/floors?draft=true`),
   createFloor: (payload: any) => axiosClient.post('/floors', payload),
   uploadFile: (payload: any) =>
     axiosClient.post('/files/upload', payload, {
