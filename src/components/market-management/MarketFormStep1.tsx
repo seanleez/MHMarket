@@ -6,20 +6,16 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CLASS_RENTAL_AMOUNT,
   MARKET_TYPE,
-  rootURL,
   STATE_VALUES,
 } from '../../const/const';
+import marketApis from '../../services/marketApis';
 import ProgressCirle from '../common/progress-circle/ProgressCircle';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const marketId = localStorage.getItem('marketId') ?? '';
 
@@ -38,180 +34,99 @@ const MarketFormStep1 = (props: any) => {
   const [district, setDistrict] = useState<string>('');
 
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (marketId && currentEditMarket) {
-      Promise.all([
-        fetch(`${rootURL}/locations/provinces`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        fetch(
-          `${rootURL}/locations/cities?` +
-            new URLSearchParams({
+    (async () => {
+      try {
+        if (marketId && currentEditMarket) {
+          const res = await Promise.all([
+            marketApis.getProvinces(),
+            marketApis.getCities({
               province: currentEditMarket?.location?.province,
             }),
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        ),
-        fetch(
-          `${rootURL}/locations/wards?` +
-            new URLSearchParams({
+            marketApis.getWards({
               province: currentEditMarket?.location?.province,
               city: currentEditMarket?.location?.city,
             }),
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        ),
-      ])
-        .then((resList) => resList.map((res) => res.json()))
-        .then((promises) => {
-          const getData = async (prms: any) => {
-            const result = [];
-            for (const promise of prms) {
-              result.push(await promise);
-            }
-            return result;
-          };
-          return getData(promises);
-        })
-        .then((datas) => {
-          const [{ provinces }, { cities }, { wards }] = datas;
-          setListProvinces(provinces);
+          ]);
+          setListProvinces((res[0] as any).provinces);
+          setListCities((res[1] as any).cities);
+          setListWards((res[2] as any).wards);
+
           setProvinceValue(currentEditMarket?.location?.province ?? '');
-          setListCities(cities);
           setCityValue(currentEditMarket?.location?.city ?? '');
-          setListWards(wards);
           setWardValue(currentEditMarket?.location?.ward ?? '');
-          return { provinces, cities, wards };
-        })
-        .catch((err) => console.error(err));
-    } else {
-      fetch(`${rootURL}/locations/provinces`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          if (response && response.provinces) {
-            setListProvinces(response.provinces);
-          }
-        });
-    }
+        } else {
+          const res = await marketApis.getProvinces();
+          setListProvinces((res as any).provinces);
+        }
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   useEffect(() => {
     if ((marketId && currentEditMarket) || listWards.length > 0) {
-      fetch(
-        `${rootURL}/locations/query?` +
-          new URLSearchParams({
-            province: currentEditMarket?.location?.province ?? '',
-            city: currentEditMarket?.location?.city ?? '',
-            ward: currentEditMarket?.location?.ward ?? '',
-          }),
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          if (data && data.location) {
-            setZipcode(data.location.zipcode);
-            setDistrict(data.location.district);
-          }
-        })
-        .catch((err) => console.error(err));
+      getLocation(
+        currentEditMarket?.location?.province ?? '',
+        currentEditMarket?.location?.city ?? '',
+        currentEditMarket?.location?.ward ?? ''
+      );
     }
   }, []);
 
   const handleChangeProvince = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProvinceValue(e.target.value);
-    fetch(
-      `${rootURL}/locations/cities?` +
-        new URLSearchParams({
+    (async () => {
+      try {
+        const res = await marketApis.getCities({
           province: e.target.value,
-        }),
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        });
+        setListCities((res as any).cities ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
       }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.cities) {
-          setListCities(data.cities);
-        }
-      })
-      .catch((err) => console.error(err));
+    })();
   };
 
   const handleChangeCity = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCityValue(e.target.value);
-    fetch(
-      `${rootURL}/locations/wards?` +
-        new URLSearchParams({
+    (async () => {
+      try {
+        const res = await marketApis.getWards({
           province: provinceValue,
           city: e.target.value,
-        }),
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        });
+        setListWards((res as any).wards ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
       }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.wards) {
-          setListWards(data.wards);
-        }
-      })
-      .catch((err) => console.error(err));
+    })();
   };
 
   const handleChangeWard = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWardValue(e.target.value);
-    fetch(
-      `${rootURL}/locations/query?` +
-        new URLSearchParams({
-          province: provinceValue,
-          city: cityValue,
-          ward: e.target.value,
-        }),
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.location) {
-          setZipcode(data.location.zipcode);
-          setDistrict(data.location.district);
-        }
-      })
-      .catch((err) => console.error(err));
+    getLocation(provinceValue, cityValue, e.target.value);
   };
+
+  function getLocation(pVal: string, cVal: string, wVal: string) {
+    (async () => {
+      try {
+        const res = await marketApis.getLocation({
+          province: pVal,
+          city: cVal,
+          ward: wVal,
+        });
+        if (!(res as any).location) return;
+        setZipcode((res as any).location.zipcode);
+        setDistrict((res as any).location.district);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
+  }
 
   return (
     <>

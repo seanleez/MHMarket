@@ -1,23 +1,14 @@
-import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
 import AddNewShape from '../../../assets/icon/add-new-stall-icon.svg';
 import DeleteStall from '../../../assets/icon/delete-stall-icon.svg';
 import DragArrow from '../../../assets/icon/draggable-arrow-icon.svg';
-import {
-  CONTAINER_HEIGHT,
-  CONTAINER_WIDTH,
-  rootURL,
-} from '../../../const/const';
+import { CONTAINER_HEIGHT, CONTAINER_WIDTH } from '../../../const/const';
 import { FloorContext } from '../../../context/FloorContext';
+import stallApis from '../../../services/stallApis';
 import ConfirmDialog from '../../common/dialog/ConfirmDialog';
 import SuccessDialog from '../../common/dialog/SuccessDialog';
 import Rectangle from './Rectangle';
@@ -29,11 +20,6 @@ interface ICanvas {
   listStalls: any[];
   updateListStalls: () => void;
 }
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const Canvas: React.FC<ICanvas> = (props) => {
   const { imgBackground, floorId, listStalls, updateListStalls } = props;
@@ -81,25 +67,14 @@ const Canvas: React.FC<ICanvas> = (props) => {
       setStalls(newRects);
     }
 
-    fetch(`${rootURL}/stalls/${stall_id}/position`, {
-      method: 'PUT',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          enqueueSnackbar('Successfully update stall', { variant: 'success' });
-        }
-      })
-      .catch((err) => {
-        enqueueSnackbar(err.message, { variant: 'error' });
-      });
+    (async () => {
+      try {
+        await stallApis.updateStall(stall_id, payload);
+        enqueueSnackbar('Successfully update stall', { variant: 'success' });
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
   const checkDeselect = (e: any) => {
     // deselect when clicked on empty area
@@ -121,29 +96,18 @@ const Canvas: React.FC<ICanvas> = (props) => {
     payload['floorplan_id'] = floorId;
 
     // Call API create stall
-    fetch(`${rootURL}/stalls`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          const newRects = [...stalls];
-          newRects.push(response);
-          setStalls(newRects);
-          floorContext.updateListFloors();
-          enqueueSnackbar('Successfully add new stall', { variant: 'success' });
-        }
-      })
-      .catch((err) => {
-        enqueueSnackbar(err.message, { variant: 'error' });
-      });
+    (async () => {
+      try {
+        const response = await stallApis.createStall(payload);
+        const newRects = [...stalls];
+        newRects.push(response);
+        setStalls(newRects);
+        floorContext.updateListFloors();
+        enqueueSnackbar('Successfully add new stall', { variant: 'success' });
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleOpenConfirmDialog = () => {
@@ -154,30 +118,17 @@ const Canvas: React.FC<ICanvas> = (props) => {
 
   const handleDeleteStall = () => {
     setOpenConfirmDialog(false);
-
-    fetch(`${rootURL}/stalls/${selectedId}`, {
-      method: 'DELETE',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          const newRects = [...stalls];
-          setStalls(
-            newRects.filter((rect: any) => rect.stall_id !== selectedId)
-          );
-          floorContext.updateListFloors();
-          enqueueSnackbar('Successfully delete stall', { variant: 'success' });
-        }
-      })
-      .catch((err) => {
-        enqueueSnackbar(err.message, { variant: 'error' });
-      });
+    (async () => {
+      try {
+        await stallApis.deleteStall(selectedId);
+        const newRects = [...stalls];
+        setStalls(newRects.filter((rect: any) => rect.stall_id !== selectedId));
+        floorContext.updateListFloors();
+        enqueueSnackbar('Successfully delete stall', { variant: 'success' });
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleEditDetailStall = (e: React.FormEvent) => {
@@ -199,26 +150,16 @@ const Canvas: React.FC<ICanvas> = (props) => {
     });
     payload['stall_id'] = selectedId;
 
-    fetch(`${rootURL}/stalls/${selectedId}/metadata`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setOpenSuccessDialog(true);
-          floorContext.updateListFloors();
-          updateListStalls();
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    (async () => {
+      try {
+        await stallApis.editDetailStall(selectedId, payload);
+        setOpenSuccessDialog(true);
+        floorContext.updateListFloors();
+        updateListStalls();
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const toggleDragMode = () => {

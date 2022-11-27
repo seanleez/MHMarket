@@ -1,15 +1,11 @@
 import StoreIcon from '@mui/icons-material/Store';
 import { Box, MenuItem, TextField, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useContext, useLayoutEffect, useState } from 'react';
-import { rootURL } from '../../const/const';
 import { ContainerContext } from '../../context/ContainerRefContext';
+import submitAppApis from '../../services/submitAppApis';
 import MarketFloors from './MarketFloors';
 import MarketInformation from './MarketInformation';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const SubmitApplication: React.FC = () => {
   const [listPublicMarkets, setListPublicMarkets] = useState([]);
@@ -19,90 +15,35 @@ const SubmitApplication: React.FC = () => {
   const [listFloors, setListFloors] = useState([]);
 
   const containerContext = useContext(ContainerContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/markets/published`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          console.log(response);
-          setListPublicMarkets(response.items ?? []);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    (async () => {
+      try {
+        const res = await submitAppApis.getPublishedMarkets();
+        setListPublicMarkets((res as any).items ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   useLayoutEffect(() => {
     if (!selectedMarketId) return;
-    fetch(`${rootURL}/markets/${selectedMarketId}/stalls/count`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          console.log(response);
-          setFloorplanDetail(response);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [selectedMarketId]);
-
-  useLayoutEffect(() => {
-    if (!selectedMarketId) return;
-    fetch(`${rootURL}/markets/${selectedMarketId}?draft=false`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setSupervisorInfor(response?.supervisor);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [selectedMarketId]);
-
-  useLayoutEffect(() => {
-    if (!selectedMarketId) return;
-    fetch(`${rootURL}/markets/${selectedMarketId}/floors/published`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setListFloors(response?.floors ?? []);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    (async () => {
+      try {
+        const res = await Promise.all([
+          submitAppApis.getFloorDetail(selectedMarketId),
+          submitAppApis.getMarket(selectedMarketId),
+          submitAppApis.getPublishedMarket(selectedMarketId),
+        ]);
+        setFloorplanDetail((res[0] as any) ?? []);
+        setSupervisorInfor((res[1] as any)?.supervisor);
+        setListFloors((res[2] as any)?.floors ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, [selectedMarketId]);
 
   const handleChangeMarket = (e: React.ChangeEvent<HTMLInputElement>) => {

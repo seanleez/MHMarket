@@ -7,27 +7,17 @@ import {
   Paper,
   TextField,
 } from '@mui/material';
-import React, {
-  FormEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import React, { FormEvent, useContext, useRef, useState } from 'react';
 import DeleteIcon from '../../../assets/icon/delete-icon.svg';
 import EditIcon from '../../../assets/icon/edit-icon.svg';
-import { rootURL } from '../../../const/const';
 import { FloorContext } from '../../../context/FloorContext';
+import floorApis from '../../../services/floorApis';
+import stallApis from '../../../services/stallApis';
 import ConfirmDialog from '../../common/dialog/ConfirmDialog';
 import ErrorDialog from '../../common/dialog/ErrorDialog';
 import CircularLoading from '../../common/loading/CircularLoading';
 import Canvas from '../Canvas/Canvas';
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
 
 const marketId = localStorage.getItem('marketId') ?? '';
 
@@ -42,6 +32,8 @@ const FloorInformation: React.FC<any> = (props) => {
 
   const payload = useRef<any>({});
   const floorContext = useContext(FloorContext);
+  const { enqueueSnackbar } = useSnackbar();
+
   const getContent = (column: any) => {
     switch (column.id) {
       case 'action':
@@ -69,21 +61,14 @@ const FloorInformation: React.FC<any> = (props) => {
   };
 
   const updateListStalls = () => {
-    fetch(`${rootURL}/floors/${floor.floorplan_id}?draft=true`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          setListStalls(response.stalls ?? []);
-        }
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        const response = await stallApis.getListStalls(floor.floorplan_id);
+        setListStalls((response as any).stalls ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleExpandCollapse = () => {
@@ -95,17 +80,14 @@ const FloorInformation: React.FC<any> = (props) => {
 
   const handleDeleteFloor = () => {
     setOpenConfirmDialog(false);
-    fetch(`${rootURL}/floors/${floor.floorplan_id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    (async () => {
+      try {
+        await floorApis.deleteFloor(floor.floorplan_id);
         floorContext.updateListFloors();
-      })
-      .catch((err) => setOpenErrorDialog(true));
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleUpdateFloor = (e: FormEvent) => {
@@ -128,24 +110,15 @@ const FloorInformation: React.FC<any> = (props) => {
       }
     });
 
-    fetch(`${rootURL}/floors/${floor.floorplan_id}`, {
-      method: 'PUT',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload.current),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          floorContext.updateListFloors();
-          setIsDisplayMode(true);
-        }
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        await floorApis.updateFloor(floor.floorplan_id, payload.current);
+        floorContext.updateListFloors();
+        setIsDisplayMode(true);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,25 +127,16 @@ const FloorInformation: React.FC<any> = (props) => {
     imageData.append('attachment', e.target.files?.[0]);
 
     setLoading(true);
-    fetch(`${rootURL}/files/upload`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: imageData,
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          payload.current['image_name'] = response?.content;
-          payload.current['image_url'] = response?.pre_signed_url;
-          setLoading(false);
-        }
-      })
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        const response = await floorApis.uploadFile(imageData);
+        payload.current['image_name'] = (response as any)?.content;
+        payload.current['image_url'] = (response as any)?.pre_signed_url;
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   return (

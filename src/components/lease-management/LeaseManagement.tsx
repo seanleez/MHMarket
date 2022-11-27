@@ -1,8 +1,9 @@
-import { TextField } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LEASE_MANAGEMENT, rootURL } from '../../const/const';
+import { LEASE_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import leaseApis from '../../services/leaseApis';
 import SelectSearch from '../common/select-search/SelectSearch';
 import TableManagement from '../common/table-management/TableManagement';
 
@@ -24,12 +25,6 @@ const MARKET_LEASE_SEARCH_FIELDS = [
     label: 'Last Name',
   },
 ];
-
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const columns: readonly IManagementTableFormat[] = [
   {
     id: 'lease_code',
@@ -73,26 +68,18 @@ const LeaseManagement: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const globalRows = useRef([]);
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useLayoutEffect(() => {
-    fetch(`${rootURL}/applications/in-lease`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_description);
-        } else {
-          globalRows.current = response.items ?? [];
-          setRows(response.items ?? []);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    (async () => {
+      try {
+        const res = await leaseApis.getLeases();
+        globalRows.current = (res as any).items ?? [];
+        setRows((res as any).items ?? []);
+      } catch (err) {
+        enqueueSnackbar(err as string);
+      }
+    })();
   }, []);
 
   useEffect(() => {
