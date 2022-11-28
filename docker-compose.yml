@@ -6,12 +6,16 @@ services:
     environment:
       VITE_BASE_URL: http://103.162.20.141:8000/api/v2
     ports:
-      - "9500:3000"
+      - "9500:80"
     networks:
       - mh-network
     dns:
       - 192.168.200.4
       - 8.8.8.8
+    volumes:
+      - ./:/frontend
+      - /frontend/node_modules
+
 networks:
   mh-network:
     driver: bridge
