@@ -1,10 +1,12 @@
+import { useSnackbar } from 'notistack';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RATE_TYPE, rootURL } from '../../const/const';
+import { RATE_MANAGEMENT, RATE_TYPE } from '../../const/const';
+import { IManagementTableFormat } from '../../const/interface';
+import rateApis from '../../services/rateApis';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
-import { IManagementTableFormat } from '../../const/interface';
 
 // id of columns have to fit with id
 const columns: readonly IManagementTableFormat[] = [
@@ -33,48 +35,38 @@ const RateManagement: FC = () => {
   const currentID = useRef<string>('');
 
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    console.log('rows', rows);
-  });
-
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-  const token = currentUser?.access_token;
-
-  useEffect(() => {
-    fetch(`${rootURL}/rates`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('data', data);
-        setRows(data.items);
-      })
-      .catch((err) => console.error(err));
-    // When delete a role, fetch this APIGET again to get new data
+    // When delete a role, call this APIGET again to get new data
+    (async () => {
+      try {
+        const res = await rateApis.getRates();
+        setRows((res as any).items ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, [openAlertDialog]);
+
+  const handleAcceptDialog = () => {
+    (async () => {
+      try {
+        await rateApis.deleteRate(currentID.current);
+        setOpenConfirmDialog(false);
+        setOpenAlertDialog(true);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
+  };
 
   const handleAddNew = () => {
     navigate('/rate/add-new');
   };
 
-  const handleAcceptDialog = () => {
-    fetch(`${rootURL}/rates/${currentID.current}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setOpenConfirmDialog(false);
-        setOpenAlertDialog(true);
-      })
-      .catch((err) => console.error(err));
+  const handleEdit = (id: string) => {
+    navigate(`/rate/edit/${id}`);
   };
 
   const handleDelete = (id: string) => {
@@ -82,14 +74,10 @@ const RateManagement: FC = () => {
     setOpenConfirmDialog(true);
   };
 
-  const handleEdit = (id: string) => {
-    navigate(`/rate/edit/${id}`);
-  };
-
   return (
     <>
       <TableManagement
-        name={'RATE MANAGEMENT'}
+        name={RATE_MANAGEMENT}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}

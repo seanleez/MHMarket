@@ -12,35 +12,57 @@ import {
   TextField,
 } from '@mui/material';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import DeleteIcon from '../../../assets/icon/delete-icon.svg';
-import EditIcon from '../../../assets/icon/edit-icon.svg';
 import SortIcon from '../../../assets/icon/sort-icon.svg';
 import {
-  ROWS_PER_PAGE_OPTION,
+  APPLICATION_STATUS,
   INIT_TABLE_ROWS_NUMBER,
+  LEASE_STATUS,
+  MARKET_TYPE,
   OTHER_RATE_DETAIL,
-  RATE_TYPE,
   RATE_MANAGEMENT,
+  RATE_TYPE,
+  ROWS_PER_PAGE_OPTION,
+  VIEW_APPLICATION_LIST,
 } from '../../../const/const';
+import getListActionsByTableName from '../../../helper/getListActionsByTableName';
 import {
   getIdFieldByName,
   getSearchField,
   sortAscendingly,
   sortDescendingly,
 } from '../../../helper/helperFuncs';
-import './TableManagement.scss';
 
 interface ITableManagement {
   name: string;
   columns: any;
   rows?: any;
+  dontHaveSearchField?: boolean;
+  dontHavePagination?: boolean;
+  isHaveSelectSearchField?: boolean;
+  isNestedTable?: boolean;
+  isDisableAddNewBtn?: boolean;
   onAddNew?: () => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onView?: (id: string) => void;
 }
 
 const TableManagement: FC<ITableManagement> = (props) => {
-  const { name, columns, rows, onAddNew, onEdit, onDelete } = props;
+  const {
+    name,
+    columns,
+    rows,
+    dontHaveSearchField,
+    dontHavePagination,
+    isHaveSelectSearchField,
+    isNestedTable,
+    isDisableAddNewBtn,
+    onAddNew,
+    onEdit,
+    onDelete,
+    onView,
+  } = props;
+
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(
     INIT_TABLE_ROWS_NUMBER
@@ -53,53 +75,7 @@ const TableManagement: FC<ITableManagement> = (props) => {
     setData(rows);
   }, [rows]);
 
-  useEffect(() => {
-    console.log(rows);
-  }, []);
-
   let toggleSorting = useRef<boolean>(true);
-
-  const listIconActionByName = [
-    {
-      name: 'Role Management',
-      icons: [
-        {
-          name: EditIcon,
-          onClick: onEdit,
-        },
-        {
-          name: DeleteIcon,
-          onClick: onDelete,
-        },
-      ],
-    },
-    {
-      name: 'User Management',
-      icons: [
-        {
-          name: EditIcon,
-          onClick: onEdit,
-        },
-        {
-          name: DeleteIcon,
-          onClick: onDelete,
-        },
-      ],
-    },
-    {
-      name: 'Rate Management',
-      icons: [
-        {
-          name: EditIcon,
-          onClick: onEdit,
-        },
-        {
-          name: DeleteIcon,
-          onClick: onDelete,
-        },
-      ],
-    },
-  ];
 
   const getTableCellContent = (
     name: string,
@@ -116,28 +92,25 @@ const TableManagement: FC<ITableManagement> = (props) => {
       case 'index': {
         return page * rowsPerPage + index + 1;
       }
-      case 'action': {
-        return (
-          <>
-            {listIconActionByName
-              .find((item) => item.name.toUpperCase() === name)
-              ?.icons.map((icon: any, index: number) => {
-                return (
-                  <IconButton key={index} onClick={() => icon.onClick(id)}>
-                    <img src={icon.name} alt={`${icon}`} />
-                  </IconButton>
-                );
-              })}
-          </>
-        );
-      }
       case 'status': {
         return (
           <>
-            <span
-              className={`status ${row.status === 1 ? 'active' : 'inactive'}`}>
-              {row.status === 1 ? 'active' : 'inactive'}
-            </span>
+            {name === VIEW_APPLICATION_LIST ? (
+              <span>
+                {
+                  APPLICATION_STATUS.find(
+                    (option: any) => option.value === rowValueByColId
+                  )?.label
+                }
+              </span>
+            ) : (
+              <span
+                className={`status ${
+                  row.status === 1 ? 'active' : 'inactive'
+                }`}>
+                {row.status === 1 ? 'active' : 'inactive'}
+              </span>
+            )}
           </>
         );
       }
@@ -179,6 +152,50 @@ const TableManagement: FC<ITableManagement> = (props) => {
         ) : (
           <span></span>
         );
+      }
+
+      // MARKET MANAGEMENT
+      case 'market_location': {
+        return row['location'] ? (
+          <span>{`${row['location']['address'] + ',' ?? ''} ${
+            row['location']['district'] ?? ''
+          }`}</span>
+        ) : (
+          <span></span>
+        );
+      }
+
+      case 'market_type': {
+        return row['type'] ? (
+          <span>
+            {MARKET_TYPE.find((item: any) => item.type === row['type'])?.value}
+          </span>
+        ) : (
+          <span></span>
+        );
+      }
+
+      // LEASE MANAGEMENT
+      case 'owner_first_name': {
+        return <span>{row?.owner?.['first_name']}</span>;
+      }
+      case 'owner_last_name': {
+        return <span>{row?.owner?.['last_name']}</span>;
+      }
+      case 'lease_status': {
+        return (
+          <span>
+            {
+              LEASE_STATUS.find(
+                (option: any) => option.value === rowValueByColId
+              )?.label
+            }
+          </span>
+        );
+      }
+
+      case 'action': {
+        return getListActionsByTableName(id, name, onEdit, onDelete, onView);
       }
 
       default: {
@@ -227,21 +244,32 @@ const TableManagement: FC<ITableManagement> = (props) => {
   };
 
   return (
-    <div className="table-management-container">
-      <span className="table-management-title">{name}</span>
-      <div className="table-management-features">
-        <Button variant="contained" className="primary" onClick={onAddNew}>
-          Add New
-          <AddIcon />
-        </Button>
-        <div className="search-field">
-          <span>Search:</span>
-          <TextField
-            inputRef={searchInputRef}
-            onChange={handleSearchValue}
-            sx={{ flex: 1 }}
-          />
-        </div>
+    <div className={`container ${isNestedTable ? 'nested-table' : ''}`}>
+      <span className="title">{name}</span>
+      <div className="table-features">
+        {isHaveSelectSearchField ? (
+          <></>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              disabled={isDisableAddNewBtn}
+              onClick={onAddNew}>
+              Add New
+              <AddIcon />
+            </Button>
+            {!dontHaveSearchField && (
+              <div className="search-field">
+                <span>Search:</span>
+                <TextField
+                  inputRef={searchInputRef}
+                  onChange={handleSearchValue}
+                  sx={{ flex: 1 }}
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
       <TableContainer>
         <Table>
@@ -292,15 +320,17 @@ const TableManagement: FC<ITableManagement> = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={ROWS_PER_PAGE_OPTION}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      {!dontHavePagination && (
+        <TablePagination
+          rowsPerPageOptions={ROWS_PER_PAGE_OPTION}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      )}
     </div>
   );
 };

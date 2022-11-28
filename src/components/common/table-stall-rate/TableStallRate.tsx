@@ -8,17 +8,12 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
 } from '@mui/material';
-import React, { FC, useEffect, useState } from 'react';
-import {
-  CLASS_RENTAL_AMOUNT,
-  INIT_TABLE_ROWS_NUMBER,
-  ROWS_PER_PAGE_OPTION,
-} from '../../../const/const';
+import { FC } from 'react';
 import DeleteIcon from '../../../assets/icon/delete-icon.svg';
+import { CLASS_RENTAL_AMOUNT } from '../../../const/const';
 
 interface ITableStallRate {
   columns: any;
@@ -29,10 +24,6 @@ interface ITableStallRate {
 
 const TableStallRate: FC<ITableStallRate> = (props) => {
   const { columns, rows, onAddNew, onDelete } = props;
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(
-    INIT_TABLE_ROWS_NUMBER
-  );
 
   const getTableCellContent = (row: any, column: any, index: number) => {
     if (column.id === 'clazz') {
@@ -72,20 +63,9 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
     }
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
   return (
-    <div className="table-management-container">
-      <div className="table-management-features">
+    <div className="container">
+      <div className="table-features">
         <Button variant="contained" className="primary" onClick={onAddNew}>
           Add New
           <AddIcon />
@@ -108,33 +88,22 @@ const TableStallRate: FC<ITableStallRate> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row: any, index: number) => {
-                return (
-                  <TableRow key={row.id}>
-                    {columns.map((column: any) => {
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {getTableCellContent(row, column, index)}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {rows.map((row: any, index: number) => {
+              return (
+                <TableRow key={row.id}>
+                  {columns.map((column: any) => {
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {getTableCellContent(row, column, index)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={ROWS_PER_PAGE_OPTION}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </div>
   );
 };

@@ -1,7 +1,9 @@
+import { useSnackbar } from 'notistack';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import { USER_MANAGEMENT } from '../../const/const';
 import { IManagementTableFormat } from '../../const/interface';
+import userApis from '../../services/userApis';
 import ConfirmDialog from '../common/dialog/ConfirmDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import TableManagement from '../common/table-management/TableManagement';
@@ -40,41 +42,30 @@ const UserManagement = () => {
   const currentID = useRef<string>('');
 
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    console.log(rows);
-  });
-
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-  const token = currentUser?.access_token;
-  useEffect(() => {
-    fetch(`${rootURL}/users`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setRows(data.items);
-      })
-      .catch((err) => console.error(err));
-    // When delete a role, fetch this APIGET again to get new data
+    (async () => {
+      try {
+        const res = await userApis.getUsers();
+        setRows((res as any).items ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
+    // When delete a role, call this APIGET again to get new data
   }, [openAlertDialog]);
 
   const handleAcceptDialog = () => {
-    fetch(`${rootURL}/users/${currentID.current}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setOpenConfirmDialog(false);
+    setOpenConfirmDialog(false);
+    (async () => {
+      try {
+        await userApis.deleteUser(currentID.current);
         setOpenAlertDialog(true);
-      })
-      .catch((err) => console.error(err));
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   };
 
   const handleAddNew = () => {
@@ -93,7 +84,7 @@ const UserManagement = () => {
   return (
     <>
       <TableManagement
-        name={'USER MANAGEMENT'}
+        name={USER_MANAGEMENT}
         columns={columns}
         rows={rows}
         onAddNew={handleAddNew}

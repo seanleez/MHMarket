@@ -1,15 +1,33 @@
-@import '../../../variable/variable.scss';
+@import './variable.scss';
 
-.table-management-container {
+button.primary {
+  background-color: $blue-02 !important;
+}
+
+img.dialog-icon {
+  width: 70px;
+  height: 70px;
+}
+
+.container {
   position: relative;
-  width: 80%;
-  margin: auto;
+  width: 90%;
   border: 3px solid #115272;
   border-radius: 30px;
   padding: 50px;
-  margin-top: 50px;
+  margin: 40px auto;
 
-  .table-management-title {
+  &.nested-table {
+    padding: 0;
+    border: none;
+    width: 100%;
+  }
+
+  &.min-h-500 {
+    min-height: 500px;
+  }
+
+  .title {
     position: absolute;
     top: -25px;
     left: 70px;
@@ -18,11 +36,65 @@
     background-color: white;
   }
 
-  .table-management-features {
+  .section-title {
+    background-color: $blue-02;
+    color: white;
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding: 5px;
+
+    &.mt-50 {
+      margin-top: 50px;
+    }
+  }
+
+  .section-subtitle {
+    background-color: #cfd5ea;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 5px;
+    width: 100%;
+
+    &.first-subtitle {
+      margin-top: 0;
+    }
+  }
+
+  .information-fields {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: space-between;
+  }
+
+  .checkbox-group {
+    img {
+      width: 30px;
+      height: 30px;
+    }
+    p {
+      display: inline-block;
+    }
+    .title {
+      display: flex;
+      align-items: center;
+    }
+  }
+  &.text-field-1-3 .MuiTextField-root {
+    width: 33%;
+  }
+  &.text-field-1-4 .MuiTextField-root {
+    width: 24%;
+  }
+
+  .table-features {
     background-color: #f4f4f4;
     display: flex;
     justify-content: space-between;
     padding: 20px;
+    height: 40px;
 
     .search-field {
       display: flex;

@@ -1,38 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import rateApis from '../../services/rateApis';
 import AlertDialog from '../common/dialog/AlertDialog';
+import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import RateForm from './RateForm';
 
 const AddAndEditRate = () => {
-  const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
-  const [openAlertDialog, setOpenAlertDialog] = useState(false);
+  const [openAlertDialog, setOpenAlertDialog] = useState<boolean>(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [currentEditRate, setCurrentEditRate] = useState<any>();
+
+  const errorMes = useRef<string>('');
 
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/rate/edit');
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
-
-  useEffect(() => {
-    if (isAtEditPage) {
-      fetch(`${rootURL}/rates/${params.id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setCurrentEditRate(data);
-        })
-        .catch((err) => console.error(err));
-    }
+  const { enqueueSnackbar } = useSnackbar();
+  useLayoutEffect(() => {
+    if (!isAtEditPage) return;
+    (async () => {
+      try {
+        const response = await rateApis.getRate(params.id);
+        setCurrentEditRate(response as any);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   const handleCloseSuccessDialog = () => {
@@ -49,6 +46,8 @@ const AddAndEditRate = () => {
     const payload: any = {};
     let tempObj: any = {};
     let currentIndex = 0;
+    let flag = false;
+
     // Get value from form and assign them to payload
     let elementsInForm = (e.target as HTMLFormElement).elements;
     [...elementsInForm].forEach((el) => {
@@ -79,6 +78,21 @@ const AddAndEditRate = () => {
                 payload[propertyRate][subPropertyRate].push(tempObj);
               }
             }
+
+            const checkClassArray = payload[propertyRate][subPropertyRate].map(
+              (item: any) => item.clazz
+            );
+            if (checkClassArray.length > 1) {
+              checkClassArray.forEach((element: any) => {
+                const appearTime = checkClassArray.filter(
+                  (item: any) => item === element
+                ).length;
+                if (appearTime > 1) {
+                  flag = true;
+                  setOpenAlertDialog(true);
+                }
+              });
+            }
             break;
 
           case 2:
@@ -107,46 +121,42 @@ const AddAndEditRate = () => {
         }
       }
     });
+
+    if (flag) return;
     console.log(payload);
 
     // Call API Add New or Edit
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-    const token = currentUser?.access_token;
-
-    const fetchURL = isAtEditPage
-      ? `${rootURL}/rates/${currentEditRate.rate_id}`
-      : `${rootURL}/rates`;
-
-    fetch(fetchURL, {
-      method: isAtEditPage ? 'PUT' : 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          throw new Error(response.error_code);
+    (async () => {
+      try {
+        let res;
+        if (isAtEditPage) {
+          res = await rateApis.updateRate(currentEditRate.rate_id, payload);
         } else {
-          setOpenSuccessDialog(true);
+          res = await rateApis.createRate(payload);
         }
-      })
-      .catch((err) => console.error(err));
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        errorMes.current = error as string;
+        setOpenErrorDialog(true);
+      }
+    })();
   };
 
   return (
-    <div className="form-container">
+    <div className="container text-field-1-3">
       {currentEditRate && (
         <RateForm currentEditRate={currentEditRate} onSubmit={handleSubmit} />
       )}
       {!currentEditRate && <RateForm onSubmit={handleSubmit} />}
       <AlertDialog
         openProp={openAlertDialog}
-        message={'Choose at least one permission'}
+        message={'All classes have to be unique'}
         onCloseDialog={handleCloseAlertDialog}
+      />
+      <ErrorDialog
+        openProp={openErrorDialog}
+        message={errorMes.current}
+        onCloseDialog={() => setOpenErrorDialog(false)}
       />
       <SuccessDialog
         openProp={openSuccessDialog}

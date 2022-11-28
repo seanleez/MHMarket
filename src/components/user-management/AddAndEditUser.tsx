@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import React, { useLayoutEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { rootURL } from '../../const/const';
+import userApis from '../../services/userApis';
 import AlertDialog from '../common/dialog/AlertDialog';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
-import '../role-management/AddAndEditForm.scss';
 import UserForm from './UserForm';
 
 const AddAndEditUser = () => {
-  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [userRoles, setUserRoles] = useState<any>([]);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
   const [openErrorDialog, setOpenErrorDialog] = useState(false);
@@ -19,40 +19,30 @@ const AddAndEditUser = () => {
   const location = useLocation();
   const params = useParams();
   const isAtEditPage = location.pathname.includes('/user/edit');
-  const token = JSON.parse(
-    localStorage.getItem('currentUser') ?? ''
-  )?.access_token;
+  const { enqueueSnackbar } = useSnackbar();
 
   // Get roles and pass into select
-  useEffect(() => {
-    fetch(`${rootURL}/roles`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setUserRoles(data.items);
-      })
-      .catch((err) => console.error(err));
+  useLayoutEffect(() => {
+    (async () => {
+      try {
+        const res = await userApis.getUserRoles();
+        setUserRoles((res as any).items ?? []);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
-  useEffect(() => {
-    if (isAtEditPage) {
-      fetch(`${rootURL}/users/${params.id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setCurrentEditUser(data);
-        })
-        .catch((err) => console.error(err));
-    }
+  useLayoutEffect(() => {
+    if (!isAtEditPage) return;
+    (async () => {
+      try {
+        const res = await userApis.getUser(params.id);
+        setCurrentEditUser(res as any);
+      } catch (error) {
+        enqueueSnackbar(error as string);
+      }
+    })();
   }, []);
 
   const handleCloseSuccessDialog = () => {
@@ -87,37 +77,24 @@ const AddAndEditUser = () => {
     payload['role_ids'] = userRoles;
     payload['market_codes'] = [];
 
-    // Call API Add New
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-    const token = currentUser?.access_token;
-
-    const fetchURL = isAtEditPage
-      ? `${rootURL}/users/${currentEditUser.user_id}`
-      : `${rootURL}/users`;
-
-    fetch(fetchURL, {
-      method: isAtEditPage ? 'PUT' : 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.error_code) {
-          setErrMessage(response.error_code);
-          setOpenErrorDialog(true);
+    // Call API add new or update
+    (async () => {
+      try {
+        if (isAtEditPage) {
+          await userApis.updateUser(currentEditUser.user_id, payload);
         } else {
-          setOpenSuccessDialog(true);
+          await userApis.createUser(payload);
         }
-      })
-      .catch((err) => console.error(err));
+        setOpenSuccessDialog(true);
+      } catch (error) {
+        setErrMessage(error as string);
+        setOpenErrorDialog(true);
+      }
+    })();
   };
 
   return (
-    <div className="form-container">
+    <div className="container text-field-1-3">
       {currentEditUser && (
         <UserForm
           currentEditUser={currentEditUser}

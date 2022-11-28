@@ -1,16 +1,21 @@
-FROM node:12 AS builder
+# pull official base image
+FROM node:13.12.0-alpine
 
-# Environment
-
-# # Set the working directory
+# set working directory
 WORKDIR /app
 
-# Copy project specification and dependencies lock files
+# add `/app/node_modules/.bin` to $PATH
+ENV PATH /app/node_modules/.bin:$PATH
+
+# install app dependencies
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --silent
+RUN npm install react-scripts@3.4.1 -g --silent
+
+# add app
 COPY . ./
 
-RUN yarn install --network-timeout 900000
-RUN yarn build
-
-CMD yarn start
-
 EXPOSE 3000
+# start app
+CMD ["npm", "start"]

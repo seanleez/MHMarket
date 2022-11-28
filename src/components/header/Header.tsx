@@ -3,7 +3,11 @@ import { FC, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SignOutIcon from '../../assets/icon/signout-icon.svg';
 import './Header.scss';
-import NavigationMenu from './navigation-list/NavigationMenu';
+import NavigationDrawer from './NavigationDrawer';
+
+const currentUser = localStorage.getItem('currentUser')
+  ? JSON.parse(localStorage.getItem('currentUser') as string)
+  : null;
 
 const Header: FC = () => {
   const navigate = useNavigate();
@@ -12,16 +16,12 @@ const Header: FC = () => {
     navigate('/');
   };
 
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '');
-
   return (
     <>
       <div className="header-container">
         <div className="left-content">
-          <Tooltip title="Menu">
-            <NavigationMenu />
-          </Tooltip>
-          <Link to="/">
+          <NavigationDrawer />
+          <Link to="/home">
             <span className="app-name">MH-Market</span>
           </Link>
         </div>
