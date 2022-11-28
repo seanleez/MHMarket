@@ -1,8 +1,11 @@
 import { Box, Button, Typography } from '@mui/material';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthorContext } from '../../context/AuthorContext';
 
 const InvalidPage: React.FC = () => {
   const navigate = useNavigate();
+  const authorContext = useContext(AuthorContext);
   return (
     <Box
       sx={{
@@ -36,8 +39,10 @@ const InvalidPage: React.FC = () => {
             bgcolor: '#0038a8',
           },
         }}
-        onClick={() => navigate('/home')}>
-        Go to homepage
+        onClick={() => {
+          authorContext?.currentUser ? navigate('/home') : navigate('/');
+        }}>
+        {authorContext?.currentUser ? 'Go To Home Page' : 'Login'}
       </Button>
     </Box>
   );

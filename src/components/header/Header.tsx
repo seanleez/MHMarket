@@ -10,12 +10,9 @@ const Header: FC = () => {
   const navigate = useNavigate();
   const authorContext = useContext(AuthorContext);
 
-  const currentUser = localStorage.getItem('currentUser')
-    ? JSON.parse(localStorage.getItem('currentUser') as string)
-    : null;
   const handleLogOut = () => {
     localStorage.clear();
-    authorContext.updatePermissions('logout', '');
+    authorContext.updateCurrentUser();
     navigate('/');
   };
 
@@ -29,13 +26,17 @@ const Header: FC = () => {
           </Link>
         </div>
         <div className="right-content">
-          <span>Logged in as: </span>
-          <u>
-            <strong>
-              {currentUser &&
-                `${currentUser.user.last_name} ${currentUser.user.first_name}`}
-            </strong>
-          </u>
+          {authorContext.currentUser && (
+            <>
+              <span>Logged in as: </span>
+              <u>
+                <strong>
+                  {`${authorContext.currentUser?.last_name} ${authorContext.currentUser?.first_name}`}
+                </strong>
+              </u>
+            </>
+          )}
+
           <IconButton sx={{ width: 40, height: 40 }} onClick={handleLogOut}>
             <img src={SignOutIcon} alt="SignOutIcon" />
           </IconButton>

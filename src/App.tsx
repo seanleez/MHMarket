@@ -18,7 +18,7 @@ import ApplicationList from './components/application-list/ApplicationList';
 import ApplicationView from './components/application-list/ApplicationView';
 import './style/main.scss';
 import InvalidPage from './components/invalid-page/InvalidPage';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { AuthorContext } from './context/AuthorContext';
 
 function App() {
@@ -27,9 +27,9 @@ function App() {
 
   return (
     <div className="App">
-      {pathname !== '/' && <Header />}
+      {pathname !== '/' && authorContext?.currentUser && <Header />}
       <Routes>
-        {authorContext.permissions !== null ? (
+        {authorContext?.currentUser ? (
           <>
             <Route path="/home" element={<LandingPage />} />
 
@@ -72,16 +72,14 @@ function App() {
             <Route path="/application-list" element={<ApplicationList />} />
             <Route path="/application/view/:id" element={<ApplicationView />} />
             <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="*" element={<InvalidPage />} />
           </>
         ) : (
           <>
             <Route path="/" element={<Login />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}
+        <Route path="*" element={<InvalidPage />} />
       </Routes>
-      {/* {pathname !== '/' && <Footer />} */}
     </div>
   );
 }

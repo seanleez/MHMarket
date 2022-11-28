@@ -30,12 +30,8 @@ const Login: FC = () => {
     (async () => {
       try {
         const res = await authApis.postLogin(payload);
-        localStorage.setItem('currentUser', JSON.stringify(res));
-        const currentUser = localStorage.getItem('currentUser')
-          ? JSON.parse(localStorage.getItem('currentUser') as string)
-          : null;
-        const token = currentUser?.access_token;
-        authorContext.updatePermissions('login', token);
+        localStorage.setItem('accessToken', (res as any)?.access_token);
+        authorContext.updateCurrentUser();
         navigate('/home');
       } catch (error) {
         errMess.current = (error as any).message;

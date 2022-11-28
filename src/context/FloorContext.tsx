@@ -23,7 +23,6 @@ export default function FloorContextProvider({ children }: any) {
     (async () => {
       try {
         const res = await floorApis.getFloors(marketId);
-        console.log(res);
         setListFloors((res as any).floors ?? []);
       } catch (error) {
         enqueueSnackbar(error as string);
