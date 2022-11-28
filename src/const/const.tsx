@@ -2,7 +2,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PaidIcon from '@mui/icons-material/Paid';
-import SchemaIcon from '@mui/icons-material/Schema';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import PublishIcon from '@mui/icons-material/Publish';
 import ApprovalIcon from '@mui/icons-material/Approval';
@@ -30,11 +29,6 @@ export const NAVIGATION_LIST = [
         icon: <ManageAccountsIcon />,
       },
       { title: 'Rate Management', url: '/rate-management', icon: <PaidIcon /> },
-      {
-        title: 'Workflow Management',
-        url: '/workflow-management',
-        icon: <SchemaIcon />,
-      },
     ],
     icon: <SettingsSuggestIcon />,
   },

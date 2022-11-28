@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/header/Header';
 import LandingPage from './components/landing-page/LandingPage';
 import LeaseManagement from './components/lease-management/LeaseManagement';
@@ -17,57 +17,69 @@ import UserManagement from './components/user-management/UserManagement';
 import ApplicationList from './components/application-list/ApplicationList';
 import ApplicationView from './components/application-list/ApplicationView';
 import './style/main.scss';
+import InvalidPage from './components/invalid-page/InvalidPage';
+import { useContext, useEffect, useState } from 'react';
+import { AuthorContext } from './context/AuthorContext';
 
 function App() {
   const { pathname } = useLocation();
+  const authorContext = useContext(AuthorContext);
 
   return (
     <div className="App">
       {pathname !== '/' && <Header />}
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/home" element={<LandingPage />} />
+        {authorContext.permissions !== null ? (
+          <>
+            <Route path="/home" element={<LandingPage />} />
 
-        <Route path="/role-management" element={<RoleManagement />} />
-        <Route path="/role/add-new" element={<AddAndEditRole />} />
-        <Route path="/role/edit/:id" element={<AddAndEditRole />} />
+            <Route path="/role-management" element={<RoleManagement />} />
+            <Route path="/role/add-new" element={<AddAndEditRole />} />
+            <Route path="/role/edit/:id" element={<AddAndEditRole />} />
 
-        <Route path="/user-management" element={<UserManagement />} />
-        <Route path="/user/add-new" element={<AddAndEditUser />} />
-        <Route path="/user/edit/:id" element={<AddAndEditUser />} />
+            <Route path="/user-management" element={<UserManagement />} />
+            <Route path="/user/add-new" element={<AddAndEditUser />} />
+            <Route path="/user/edit/:id" element={<AddAndEditUser />} />
 
-        <Route path="/rate-management" element={<RateManagement />} />
-        <Route path="/rate/add-new" element={<AddAndEditRate />} />
-        <Route path="/rate/edit/:id" element={<AddAndEditRate />} />
+            <Route path="/rate-management" element={<RateManagement />} />
+            <Route path="/rate/add-new" element={<AddAndEditRate />} />
+            <Route path="/rate/edit/:id" element={<AddAndEditRate />} />
 
-        <Route path="/market-management" element={<MarketManagement />} />
-        <Route
-          path="/market/add-new/step1"
-          element={<AddAndEditMarketStep1 />}
-        />
-        <Route
-          path="/market/edit/step1/:id"
-          element={<AddAndEditMarketStep1 />}
-        />
-        <Route
-          path="/market/add-new/step2"
-          element={<AddAndEditMarketStep2 />}
-        />
-        <Route
-          path="/market/edit/step2/:id"
-          element={<AddAndEditMarketStep2 />}
-        />
-        <Route path="/submit-application" element={<SubmitApplication />} />
+            <Route path="/market-management" element={<MarketManagement />} />
+            <Route
+              path="/market/add-new/step1"
+              element={<AddAndEditMarketStep1 />}
+            />
+            <Route
+              path="/market/edit/step1/:id"
+              element={<AddAndEditMarketStep1 />}
+            />
+            <Route
+              path="/market/add-new/step2"
+              element={<AddAndEditMarketStep2 />}
+            />
+            <Route
+              path="/market/edit/step2/:id"
+              element={<AddAndEditMarketStep2 />}
+            />
+            <Route path="/submit-application" element={<SubmitApplication />} />
 
-        <Route path="/lease-management" element={<LeaseManagement />} />
-        <Route
-          path="/lease-management/view/:id"
-          element={<ViewMarketLease />}
-        />
-        <Route path="/application-list" element={<ApplicationList />} />
-        <Route path="/application/view/:id" element={<ApplicationView />} />
-
-        <Route path="*" element={<h1>Page not found !!!</h1>} />
+            <Route path="/lease-management" element={<LeaseManagement />} />
+            <Route
+              path="/lease-management/view/:id"
+              element={<ViewMarketLease />}
+            />
+            <Route path="/application-list" element={<ApplicationList />} />
+            <Route path="/application/view/:id" element={<ApplicationView />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<InvalidPage />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Login />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        )}
       </Routes>
       {/* {pathname !== '/' && <Footer />} */}
     </div>

@@ -1,18 +1,21 @@
 import { IconButton, Tooltip } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { FC, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SignOutIcon from '../../assets/icon/signout-icon.svg';
+import { AuthorContext } from '../../context/AuthorContext';
 import './Header.scss';
 import NavigationDrawer from './NavigationDrawer';
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-
 const Header: FC = () => {
   const navigate = useNavigate();
+  const authorContext = useContext(AuthorContext);
+
+  const currentUser = localStorage.getItem('currentUser')
+    ? JSON.parse(localStorage.getItem('currentUser') as string)
+    : null;
   const handleLogOut = () => {
     localStorage.clear();
+    authorContext.updatePermissions('logout', '');
     navigate('/');
   };
 

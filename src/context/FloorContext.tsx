@@ -19,7 +19,6 @@ export default function FloorContextProvider({ children }: any) {
   const [listFloors, setListFloors] = useState<any[]>([]);
   const { enqueueSnackbar } = useSnackbar();
   const updateListFloors = () => {
-    console.log('hehe');
     const marketId = localStorage.getItem('marketId') ?? '';
     (async () => {
       try {
