@@ -1,4 +1,4 @@
-import React, { useState, useEffect, DragEvent, useRef, ChangeEvent, MouseEvent, useCallback, memo } from 'react';
+import React, { useState, useEffect, DragEvent, useRef, ChangeEvent, MouseEvent, useCallback, memo, forwardRef, useImperativeHandle } from 'react';
 import { Box, Stack } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { v4 as uuid } from 'uuid';
@@ -17,7 +17,7 @@ const toBase64 = (file: File) => new Promise((resolve, reject) => {
 
 type StoredFile = { data: string, name: string, id: string }
 
-const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IImageUploader) => {
+const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IImageUploader, ref) => {
 
   const [list, setList] = useState<StoredFile[]>([]);
   const [shouldActive, setShouldActive] = useState(false);
@@ -88,25 +88,25 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
     e.target.value = ''; // clear value to posible select that file again
   }
 
-  useEffect(() => {
-    console.log(list)
-  }, [list]);
-
   const handleDelete = useCallback((id: string) => {
     setList(prev => {
       return prev.filter(file => file.id !== id);
     })
   }, []);
 
+  useImperativeHandle(ref, () => ({
+    syncDataToParent: () => list,
+  }))
+
   return (
     <Box  sx={{
-      width: '250px',
+      width: '350px',
     }}>
       {/* the drag n drop area */}
       <div 
         style={{ 
           position: 'relative',
-          height: '120px',
+          height: '150px',
           backgroundColor: shouldActive ? '#edf7ff' :'#FAFAFA',
           border: '2px dotted #909090',
           borderRadius: '5px',
@@ -156,6 +156,19 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
       </div>
       <Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: '150px', overflowY: 'auto' }}>
         {
+          list.length === 0 && (
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px',
+              border: '2px solid #edf7ff',
+              borderRadius: '5px'
+            }}>
+              No file chosen
+            </Box>
+          )
+        }
+        {
           list.map(file => (
             // <React.Fragment >
               <PreviewRow key={file.id} { ...file } handleDelete={handleDelete} />
@@ -165,7 +178,7 @@ const ImageUploader = ({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IIm
       </Box>
     </Box>
   );
-};
+});
 
 const PreviewRow = memo(
 (

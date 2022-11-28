@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Divider, Grid } from '@mui/material';
 import React from 'react';
 import ImageUploader from './ImageUploader';
 
@@ -15,7 +15,64 @@ const RequiredDocument = () => {
         }}
       >required document</Box>
       
-      <ImageUploader max={3} />
+      {/* 1st row */}
+      <Grid container spacing={2} sx={{ padding: '20px 0' }}>
+
+        <Grid item xs={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              Proof of Residency:
+            </Grid>
+            <Grid item xs={6}>
+              <ImageUploader max={3} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              Identification:
+            </Grid>
+            <Grid item xs={6}>
+              <ImageUploader max={3} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+      </Grid>
+
+      {/* 2nd row */}
+      <Grid container spacing={2} sx={{ padding: '20px 0' }}>
+
+        <Grid item xs={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              Birth Certificate:
+            </Grid>
+            <Grid item xs={6}>
+              <ImageUploader max={3} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+      </Grid>
+
+      {/* 3rd row */}
+      <Grid container spacing={2} sx={{ padding: '20px 0' }}>
+
+        <Grid item xs={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              2x2 Picture:
+            </Grid>
+            <Grid item xs={6}>
+              <ImageUploader max={3} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+      </Grid>
 
     </Box>
   );

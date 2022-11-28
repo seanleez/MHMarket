@@ -29,7 +29,7 @@ const ClientIdentifyForm = () => {
         }}
       >
         <Button size='small' variant='outlined' >Cancel</Button>
-        <Button size='small' variant='outlined' >Save As Draft</Button>
+        {/* <Button size='small' variant='outlined' >Save As Draft</Button> */}
         <Button size='small' variant='contained' >Submit And Continue</Button>
       </Box>
     </FormContainer>

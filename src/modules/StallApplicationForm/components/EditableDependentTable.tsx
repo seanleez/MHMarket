@@ -84,7 +84,7 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
 
   // #region methods for parent 
   useImperativeHandle(ref, () => ({
-    syncDataToParent(cb: (data: Row[]) => void) {
+    syncDataToParent(cb: (data: Row[]) => void) {  // is callback style ok? or return data directly ok?
       cb(data);
     }
   }));
