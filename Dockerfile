@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . ./
 
-RUN npm install --frozen-lockfile
+RUN npm install --f
 RUN npm run build
 
 EXPOSE 3000
