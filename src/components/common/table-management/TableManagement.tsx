@@ -11,7 +11,7 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import SortIcon from '../../../assets/icon/sort-icon.svg';
 import {
   APPLICATION_STATUS,
@@ -24,6 +24,7 @@ import {
   ROWS_PER_PAGE_OPTION,
   VIEW_APPLICATION_LIST,
 } from '../../../const/const';
+import { AuthorContext } from '../../../context/AuthorContext';
 import getListActionsByTableName from '../../../helper/getListActionsByTableName';
 import {
   getIdFieldByName,
@@ -70,12 +71,13 @@ const TableManagement: FC<ITableManagement> = (props) => {
   const [data, setData] = useState<any>(rows);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const toggleSorting = useRef<boolean>(true);
+  const authorContext = useContext(AuthorContext);
+  const permissions = authorContext.currentUser?.permissions ?? [];
 
   useEffect(() => {
     setData(rows);
   }, [rows]);
-
-  let toggleSorting = useRef<boolean>(true);
 
   const getTableCellContent = (
     name: string,
@@ -195,7 +197,17 @@ const TableManagement: FC<ITableManagement> = (props) => {
       }
 
       case 'action': {
-        return getListActionsByTableName(id, name, onEdit, onDelete, onView);
+        const isHavePmsEdit = permissions.includes('MARKET_ADD_UPDATE');
+        const isHavePmsDelete = permissions.includes('MARKET_DELETE');
+        return getListActionsByTableName(
+          id,
+          name,
+          isHavePmsEdit,
+          isHavePmsDelete,
+          onEdit,
+          onDelete,
+          onView
+        );
       }
 
       default: {
@@ -251,13 +263,15 @@ const TableManagement: FC<ITableManagement> = (props) => {
           <></>
         ) : (
           <>
-            <Button
-              variant="contained"
-              disabled={isDisableAddNewBtn}
-              onClick={onAddNew}>
-              Add New
-              <AddIcon />
-            </Button>
+            {permissions.includes('MARKET_ADD_UPDATE') && (
+              <Button
+                variant="contained"
+                disabled={isDisableAddNewBtn}
+                onClick={onAddNew}>
+                Add New
+                <AddIcon />
+              </Button>
+            )}
             {!dontHaveSearchField && (
               <div className="search-field">
                 <span>Search:</span>

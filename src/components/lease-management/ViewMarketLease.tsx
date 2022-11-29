@@ -13,10 +13,11 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CIVIL_STATUS, SEX } from '../../const/const';
 import { TPair } from '../../const/interface';
+import { AuthorContext } from '../../context/AuthorContext';
 import leaseApis from '../../services/leaseApis';
 import SuccessDialog from '../common/dialog/SuccessDialog';
 import ChildrenTable from '../common/lease-and-application/ChildrenTable';
@@ -28,6 +29,8 @@ const ViewMarketLease: React.FC = () => {
   const [dateValue, setDateValue] = useState<Dayjs | null>(dayjs(new Date()));
   const [openSuccesDialog, setOpenSuccessDialog] = useState(false);
   const [existTermination, setExistTermination] = useState(false);
+  const authorContext = useContext(AuthorContext);
+  const permissions = authorContext?.currentUser?.permissions ?? [];
 
   const reasonInputRef = useRef<HTMLInputElement>(null);
   const params = useParams();
@@ -343,22 +346,30 @@ const ViewMarketLease: React.FC = () => {
               {![3, 4].includes(leaseInfor?.lease_status) && (
                 <Box sx={{ width: '45%' }}>
                   {existTermination ? (
-                    <Button
-                      size="large"
-                      color="primary"
-                      variant="contained"
-                      onClick={handleCancelTermination}>
-                      Cancel Termination
-                    </Button>
+                    <>
+                      {permissions.includes('CANCEL_TERMINATION_REQUEST') && (
+                        <Button
+                          size="large"
+                          color="primary"
+                          variant="contained"
+                          onClick={handleCancelTermination}>
+                          Cancel Termination
+                        </Button>
+                      )}
+                    </>
                   ) : (
-                    <Button
-                      size="large"
-                      color="primary"
-                      variant="contained"
-                      sx={{ marginRight: '20px' }}
-                      onClick={handleTerminate}>
-                      Terminate
-                    </Button>
+                    <>
+                      {permissions.includes('TERMINATE_LEASE') && (
+                        <Button
+                          size="large"
+                          color="primary"
+                          variant="contained"
+                          sx={{ marginRight: '20px' }}
+                          onClick={handleTerminate}>
+                          Terminate
+                        </Button>
+                      )}
+                    </>
                   )}
                 </Box>
               )}

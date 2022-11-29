@@ -32,9 +32,8 @@ const Login: FC = () => {
         const res = await authApis.postLogin(payload);
         localStorage.setItem('accessToken', (res as any)?.access_token);
         authorContext.updateCurrentUser();
-        navigate('/home');
       } catch (error) {
-        errMess.current = (error as any).message;
+        errMess.current = error as any;
         setOpenAlertDialog(true);
       }
     })();
