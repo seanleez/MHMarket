@@ -1,21 +1,21 @@
 import { Button, InputAdornment, TextField } from '@mui/material';
-import { FC, useRef, useState } from 'react';
+import { FC, useContext, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EmailIcon from '../../assets/icon/email-icon.svg';
 import PasswordIcon from '../../assets/icon/password-icon.svg';
 import loginBg from '../../assets/images/login-bg.png';
+import { AuthorContext } from '../../context/AuthorContext';
 import authApis from '../../services/authApis';
 import AlertDialog from '../common/dialog/AlertDialog';
-import SuccessDialog from '../common/dialog/SuccessDialog';
 import './Login.scss';
 
 const Login: FC = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
-  const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const errMess = useRef('');
+  const authorContext = useContext(AuthorContext);
   const navigate = useNavigate();
 
   const handleCloseDialog = () => {
@@ -30,10 +30,10 @@ const Login: FC = () => {
     (async () => {
       try {
         const res = await authApis.postLogin(payload);
-        localStorage.setItem('currentUser', JSON.stringify(res));
-        setOpenSuccessDialog(true);
+        localStorage.setItem('accessToken', (res as any)?.access_token);
+        authorContext.updateCurrentUser();
       } catch (error) {
-        errMess.current = (error as any).message;
+        errMess.current = error as any;
         setOpenAlertDialog(true);
       }
     })();
@@ -78,11 +78,6 @@ const Login: FC = () => {
           openProp={openAlertDialog}
           message={errMess.current}
           onCloseDialog={handleCloseDialog}
-        />
-        <SuccessDialog
-          openProp={openSuccessDialog}
-          message={'Login Successfully'}
-          onCloseDialog={() => navigate('/home')}
         />
       </div>
     </div>

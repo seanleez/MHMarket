@@ -1,6 +1,7 @@
 import { Button, Container } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AuthorContext } from '../../context/AuthorContext';
 import marketApis from '../../services/marketApis';
 import ErrorDialog from '../common/dialog/ErrorDialog';
 import SuccessDialog from '../common/dialog/SuccessDialog';
@@ -10,6 +11,8 @@ import FloorList from './Step2/FloorList';
 const AddAndEditMarketStep2: React.FC = () => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
+  const authorContext = useContext(AuthorContext);
+  const permissions = authorContext.currentUser?.permissions ?? [];
 
   const errMess = useRef<string>('asdasd');
 
@@ -49,13 +52,15 @@ const AddAndEditMarketStep2: React.FC = () => {
         <Button variant="outlined" size="large" onClick={() => navigate(-1)}>
           Back
         </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          onClick={handlePublish}>
-          Publish
-        </Button>
+        {permissions.includes('MARKET_APPROVE_PUBLISH') && (
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            onClick={handlePublish}>
+            Publish
+          </Button>
+        )}
       </Container>
       <SuccessDialog
         openProp={openSuccessDialog}

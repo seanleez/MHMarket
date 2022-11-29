@@ -1,23 +1,19 @@
 import axios from 'axios';
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-const token = currentUser?.access_token;
-
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     'content-type': 'application/json',
-    Authorization: `Bearer ${token}`,
   },
 });
 
-axiosClient.interceptors.request.use(
-  (config) =>
-    // Handle token here ...
-    config
-);
+axiosClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken') ?? '';
+  config.headers = {
+    Authorization: `Bearer ${token}`,
+  };
+  return config;
+});
 
 axiosClient.interceptors.response.use(
   (response) => {
