@@ -1,18 +1,18 @@
 import { IconButton, Tooltip } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { FC, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SignOutIcon from '../../assets/icon/signout-icon.svg';
+import { AuthorContext } from '../../context/AuthorContext';
 import './Header.scss';
 import NavigationDrawer from './NavigationDrawer';
 
-const currentUser = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser') as string)
-  : null;
-
 const Header: FC = () => {
   const navigate = useNavigate();
+  const authorContext = useContext(AuthorContext);
+
   const handleLogOut = () => {
     localStorage.clear();
+    authorContext.updateCurrentUser();
     navigate('/');
   };
 
@@ -26,13 +26,17 @@ const Header: FC = () => {
           </Link>
         </div>
         <div className="right-content">
-          <span>Logged in as: </span>
-          <u>
-            <strong>
-              {currentUser &&
-                `${currentUser.user.last_name} ${currentUser.user.first_name}`}
-            </strong>
-          </u>
+          {authorContext.currentUser && (
+            <>
+              <span>Logged in as: </span>
+              <u>
+                <strong>
+                  {`${authorContext.currentUser?.last_name} ${authorContext.currentUser?.first_name}`}
+                </strong>
+              </u>
+            </>
+          )}
+
           <IconButton sx={{ width: 40, height: 40 }} onClick={handleLogOut}>
             <img src={SignOutIcon} alt="SignOutIcon" />
           </IconButton>
