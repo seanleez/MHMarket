@@ -1,2 +1,5 @@
-export { BlankInfomationStallForm } from './StallApplicationForm/pages';
-export { ClientIdentifyForm } from './StallApplicationForm/pages';
+export { 
+  BlankInfomationStallForm,
+  ClientIdentifyForm,
+  Payment
+} from './StallApplicationForm/pages';

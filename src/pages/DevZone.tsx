@@ -1,5 +1,9 @@
 import React from 'react';
-import { BlankInfomationStallForm, ClientIdentifyForm } from '@modules/index';
+import { 
+  BlankInfomationStallForm, 
+  ClientIdentifyForm, 
+  Payment 
+} from '@modules/index';
 
 const DevZone = () => {
   return (
@@ -8,10 +12,10 @@ const DevZone = () => {
       {/* <BlankInfomationStallForm />  */}
 
       {/* step 2 */}
-      <ClientIdentifyForm />
+      {/* <ClientIdentifyForm /> */}
 
       {/* step 3.1 */}
-      
+      <Payment />
     </div>
   );
 };
