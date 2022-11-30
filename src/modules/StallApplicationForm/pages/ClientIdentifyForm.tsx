@@ -1,18 +1,15 @@
 import { Box, Button } from '@mui/material';
 import React from 'react';
+import { IStallFormShared } from '.';
 import { RequiredDocument } from '../components';
 import FormContainer from '../layouts';
 
 
-const ClientIdentifyForm = () => {
+const ClientIdentifyForm = (props: IStallFormShared) => {
   return (
     <FormContainer
-      status='New'
-      dateSubmitted='12/10/2022'
-      formNumber='022'
+      {...props}
       shouldGray={false}
-
-      step={1}
     >
       <RequiredDocument />
 

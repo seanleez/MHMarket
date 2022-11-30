@@ -140,7 +140,7 @@ const ApplicationList: React.FC = () => {
   };
 
   const handleEdit = (id: string) => {
-    console.log(id);
+    navigate(`/application/edit/${id}`);
   };
 
   return (

@@ -1,3 +1,4 @@
+import { EditStallApplication } from '@modules/index';
 import { useContext, useEffect, useMemo } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ApplicationList from '../components/application-list/ApplicationList';
@@ -132,6 +133,11 @@ const Router: React.FC = () => {
       {
         path: '/application/view/:id',
         element: <ApplicationView />,
+        isPublic: permissions.includes('APPLICATION_VIEW'),
+      },
+      {
+        path: '/application/edit/:id',
+        element: <EditStallApplication />,
         isPublic: permissions.includes('APPLICATION_VIEW'),
       },
     ];

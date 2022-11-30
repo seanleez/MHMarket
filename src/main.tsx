@@ -17,19 +17,21 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   //   </BrowserRouter>
   // </React.StrictMode>
   <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <BrowserRouter>
-      <SnackbarProvider
-        maxSnack={3}
-        autoHideDuration={3000}
-        variant="error"
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <FloorContextProvider>
-          <ContainerContextProvider>
-            <App />
-          </ContainerContextProvider>
-        </FloorContextProvider>
-      </SnackbarProvider>
-    </BrowserRouter>
+    <AuthorContextProvider>
+      <BrowserRouter>
+        <SnackbarProvider
+          maxSnack={3}
+          autoHideDuration={3000}
+          variant="error"
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <FloorContextProvider>
+            <ContainerContextProvider>
+              <App />
+            </ContainerContextProvider>
+          </FloorContextProvider>
+        </SnackbarProvider>
+      </BrowserRouter>
+    </AuthorContextProvider>
   </LocalizationProvider>
 );
