@@ -6,12 +6,12 @@ WORKDIR /app
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
     # Same as npm install
-RUN npm ci
+RUN npm install
+RUN npm build
 COPY . /app
 EXPOSE 3000
 CMD [ "npm", "start" ]
 FROM development AS build
-RUN npm build
     # 2. For Nginx setup
 FROM nginx:alpine
     # Copy config nginx
