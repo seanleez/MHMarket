@@ -11,7 +11,7 @@ COPY . /app
 EXPOSE 3000
 CMD [ "npm", "start" ]
 FROM development AS build
-RUN npm run build
+RUN npm build
     # 2. For Nginx setup
 FROM nginx:alpine
     # Copy config nginx
