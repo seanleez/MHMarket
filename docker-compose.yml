@@ -4,15 +4,16 @@ services:
     image: mhmarket/web:latest
     container_name: market-web
     environment:
-      PORT: 9500
-      API_URL: http://103.162.20.141:8000/api/v2
+      VITE_BASE_URL: http://103.162.20.141:8000/api/v2
     ports:
-      - "9500"
+      - "9500:3000"
     networks:
       - mh-network
     dns:
       - 192.168.200.4
       - 8.8.8.8
+    restart: unless-stopped
+
 networks:
   mh-network:
     driver: bridge
