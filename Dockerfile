@@ -1,7 +1,7 @@
 # build stage
 # pull official base image
 FROM node:12 AS builder
-ENV NODE_ENV production
+ENV PATH /app/node_modules/.bin:$PATH
 
 # set working directory
 WORKDIR /app
