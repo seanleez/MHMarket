@@ -1,22 +1,13 @@
 # build stage
-# pull official base image
-FROM node:12 AS builder
-
-# set working directory
+FROM node:16-alpine as build-stage
 WORKDIR /app
-
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
-
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
+COPY . .
 RUN npm install
-RUN npm build
+RUN npm run build
+## các bạn có thể dùng yarn install .... tuỳ nhu cầu nhé
 
-# add app
-COPY . ./
+# production stage
+FROM nginx:1.17-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
 
-EXPOSE 3000
-# start app
-CMD ["npm", "start"]
