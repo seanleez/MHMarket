@@ -8,12 +8,11 @@ import {
   ListItemText,
 } from '@mui/material';
 import { useState } from 'react';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { Link } from 'react-router-dom';
 
 interface INestedList {
   title: string;
-  icon: any;
+  icon: React.ReactNode;
   nestedList: any;
   toggleDrawer: (event: React.KeyboardEvent | React.MouseEvent) => void;
 }
@@ -37,26 +36,28 @@ const NestedList: React.FC<INestedList> = ({
       </ListItemButton>
       <Collapse in={openCollapse}>
         <List component="div" disablePadding>
-          {nestedList.map((item: any, index: number) => (
-            <ListItem
-              key={index}
-              disablePadding
-              sx={{ ':hover': { backgroundColor: '#d93939' } }}
-              onClick={toggleDrawer}>
-              <Link
-                to={item.url}
-                style={{
-                  textDecoration: 'none',
-                  color: 'black',
-                  width: '100%',
-                }}>
-                <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.title} />
-                </ListItemButton>
-              </Link>
-            </ListItem>
-          ))}
+          {nestedList
+            .filter((link: any) => link?.isPublic)
+            .map((link: any, index: number) => (
+              <ListItem
+                key={index}
+                disablePadding
+                sx={{ ':hover': { backgroundColor: '#d93939' } }}
+                onClick={toggleDrawer}>
+                <Link
+                  to={link.url}
+                  style={{
+                    textDecoration: 'none',
+                    color: 'black',
+                    width: '100%',
+                  }}>
+                  <ListItemButton sx={{ pl: 4 }}>
+                    <ListItemIcon>{link.icon}</ListItemIcon>
+                    <ListItemText primary={link.title} />
+                  </ListItemButton>
+                </Link>
+              </ListItem>
+            ))}
         </List>
       </Collapse>
     </ListItem>

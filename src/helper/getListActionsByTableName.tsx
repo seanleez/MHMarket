@@ -7,6 +7,8 @@ import { LEASE_MANAGEMENT, VIEW_APPLICATION_LIST } from '../const/const';
 export default function getListActionsByTableName(
   id: string,
   tableName: string,
+  isHavePmsEdit: boolean,
+  isHavePmsDelete: boolean,
   onEdit: ((id: string) => void) | undefined,
   onDelete: ((id: string) => void) | undefined,
   onView: ((id: string) => void) | undefined
@@ -39,12 +41,16 @@ export default function getListActionsByTableName(
     default:
       return (
         <>
-          <IconButton onClick={() => onEdit?.(id)}>
-            <img src={EditIcon} alt={EditIcon} />
-          </IconButton>
-          <IconButton onClick={() => onDelete?.(id)}>
-            <img src={DeleteIcon} alt={DeleteIcon} />
-          </IconButton>
+          {isHavePmsEdit && (
+            <IconButton onClick={() => onEdit?.(id)}>
+              <img src={EditIcon} alt={EditIcon} />
+            </IconButton>
+          )}
+          {isHavePmsDelete && (
+            <IconButton onClick={() => onDelete?.(id)}>
+              <img src={DeleteIcon} alt={DeleteIcon} />
+            </IconButton>
+          )}
         </>
       );
   }
