@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "start": "npm run dev -- --host"
+    "start": "npm run dev"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
