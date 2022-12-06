@@ -12,8 +12,7 @@ services:
     dns:
       - 192.168.200.4
       - 8.8.8.8
-    volumes:
-      - ./:/app/
+    restart: unless-stopped
 
 networks:
   mh-network:
