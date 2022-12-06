@@ -1,14 +1,10 @@
-FROM node:12-alpine
+FROM node:alpine
 
-WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
+WORKDIR '/app'
 
-COPY . ./
-
-COPY package.json ./
-COPY package-lock.json ./
+COPY package.json .
 RUN npm install
-RUN npm build
+COPY . .
 
 EXPOSE 3000
 
