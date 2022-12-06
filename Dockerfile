@@ -21,13 +21,15 @@ EXPOSE 3000
 # start app
 CMD ["npm", "start"]
 
+# nginx state for serving content
 FROM nginx:alpine
-    # Copy config nginx
-COPY ./.nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# Set working directory to nginx asset directory
 WORKDIR /usr/share/nginx/html
-    # Remove default nginx static assets
+# Remove default nginx static assets
 RUN rm -rf ./*
-    # Copy static assets from builder stage
-    # Containers run nginx with global directives and daemon off
+# Copy static assets from builder stage
+COPY --from=builder /app/build .
+# Containers run nginx with global directives and daemon off
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
 
