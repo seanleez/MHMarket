@@ -5,7 +5,4 @@ export { default as EditStallApplication } from './EditStallApplication'
 
 export type IStallFormShared = {
   step: number;
-  status: string;
-  dateSubmitted: string
-  formNumber: string
 }

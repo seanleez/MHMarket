@@ -3,8 +3,12 @@ import React from 'react';
 import { IStallFormShared } from '.';
 import { FormCommonInfor, FormOwnerDetailInfor, FormOwnerGeneralInfor } from '../components';
 import FormContainer from '../layouts';
+import { useStallData } from './EditStallApplication';
 
 const BlankInfomationStallForm = (props: IStallFormShared) => {
+
+  const { commonData } = useStallData();
+
   return (
     <FormContainer
       {...props}

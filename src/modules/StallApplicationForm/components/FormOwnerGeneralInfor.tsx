@@ -1,10 +1,16 @@
 import { Box, Divider, Grid, Typography } from '@mui/material';
-import { Dayjs } from 'dayjs';
-import React, { ReactNode, useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import { Draft } from 'immer';
+import React, { ReactNode, useState, ChangeEvent } from 'react';
+import { useStallData } from '../pages/EditStallApplication';
 import DatePickerWithLabel from './DatePickerWithLabel';
 import InputWithLabel from './InputWithLabel';
 import SelectWithLabel from './SelectWithLabel';
+import utc from 'dayjs/plugin/utc'
+import duration from 'dayjs/plugin/duration'
 
+dayjs.extend(utc)
+dayjs.extend(duration)
 
 const sexOptions = {
   '0': 'Male',
@@ -20,7 +26,7 @@ const statusOption = {
 
 const FormOwnerGeneralInfor = () => {
 
-  const [sex, setSex] = useState('-1');
+
   const [status, setStatus] = useState('-1');
   const [dob, setDob] = useState<Dayjs | null>(null)
 
@@ -28,20 +34,32 @@ const FormOwnerGeneralInfor = () => {
   const [city, setCity] = useState('-1');
   const [ward, setWard] = useState('-1');
 
+  const { commonData, setCommonData } = useStallData();
 
+  const handleChange = (name: string, cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+    setCommonData((draft: Draft<any>) => {
+      const vector = name.split(".");
+      const propName = vector.pop();
+
+      if (propName) {
+        draft = vector.reduce((it, prop) => it[prop], draft);
+        draft[propName] = cast ? cast(e.target.value) : e.target.value;
+      }
+    })
+  }
 
   return (
     <Box>
       {/* Stall infor */}
       <Grid container spacing={2} sx={{ margin: '20px 0 20px 0' }}>
         <Grid item xs={4}>
-          <InputWithLabel label='Market Name:' disabled={true} id='market-name' />
+          <InputWithLabel label='Market Name:' disabled={true} id='market-name' value={commonData.market_name} />
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Stall Number:' disabled={true} id='stall-number' />
+          <InputWithLabel label='Stall Number:' disabled={true} id='stall-number' value={commonData.code} />
         </Grid>
         <Grid item xs={2}>
-          <InputWithLabel label='Stall Size:' disabled={true} id='stall-size' />
+          <InputWithLabel label='Stall Size:' disabled={true} id='stall-size' value={commonData.area} />
         </Grid>
       </Grid>
       <Divider />
@@ -53,19 +71,20 @@ const FormOwnerGeneralInfor = () => {
       {/* 1st row */}
       <Grid container spacing={2}>
         <Grid item xs={3}>
-          <InputWithLabel label='Last Name:*' id='last-name'/>
+          <InputWithLabel label='Last Name:*' id='last-name' value={commonData.owner?.last_name} onChange={handleChange('owner.last_name')}/>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='First Name:*' id='first-name'/>
+          <InputWithLabel label='First Name:*' id='first-name'value={commonData.owner?.first_name} onChange={handleChange('owner.first_name')} />
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Middle Name:*' id='middle-name'/>
+          <InputWithLabel label='Middle Name:*' id='middle-name' value={commonData.owner?.middle_name} onChange={handleChange('owner.middle_name')} />
         </Grid>
         <Grid item xs={3}>
           <SelectWithLabel label='Sex:*' id='sex' 
             options={sexOptions} placeHolder='-- Select --' 
-            value={sex} 
-            onChange={(e) => setSex(e.target.value as string)}
+            value={'' + commonData.owner?.sex || "-1"}
+            // @ts-ignore
+            onChange={handleChange('owner.sex', (v: string) => Number(v))}
           />
         </Grid>
       </Grid>
@@ -75,40 +94,46 @@ const FormOwnerGeneralInfor = () => {
         <Grid item xs={3}>
           <SelectWithLabel label='Status:*' id='status' 
             options={statusOption} placeHolder='-- Select --' 
-            value={status} 
-            onChange={(e) => setStatus(e.target.value as string)}
+            value={'' + commonData.owner?.marital_status || "-1"}
+            // @ts-ignore
+            onChange={handleChange('owner.marital_status', (v: string) => Number(v))}
           />
         </Grid>
         <Grid item xs={3}>
           <DatePickerWithLabel label='Date of Birth:*' 
-            id='dob' value={dob} onChange={v => setDob(v)} 
+            id='dob' value={dayjs.utc(commonData.owner?.date_of_birth)} onChange={v => {
+              //@ts-ignore
+              handleChange('owner.date_of_birth')({ target: { value: v?.format() } })
+            }} 
           />
         </Grid>
         <Grid item xs={3}>
           <Grid container>
             <Grid item xs={4}>
-              <InputWithLabel label='Age:' id='age' disabled={true} />
+              <InputWithLabel label='Age:' id='age' disabled={true} value={
+                dayjs.duration(dayjs().diff(dayjs(commonData.owner?.date_of_birth))).years()
+              } />
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Telephone:*' id='tel' />
+          <InputWithLabel label='Telephone:*' id='tel' value={commonData.owner?.telephone} onChange={handleChange('owner.telephone')} />
         </Grid>
       </Grid>
 
       {/* 3rd row */}
       <Grid container spacing={2} sx={{ paddingBottom: '100px' }}>
         <Grid item xs={3}>
-          <InputWithLabel label='Place of Birth:*' id='pob'/>
+          <InputWithLabel label='Place of Birth:*' id='pob' value={commonData.owner?.place_of_birth} onChange={handleChange('owner.place_of_birth')}/>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Email Address:*' id='mail'/>
+          <InputWithLabel label='Email Address:*' id='mail' value={commonData.owner?.email} onChange={handleChange('owner.email')}/>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label="Mother's Name:*" id='mother-name'/>
+          <InputWithLabel label="Mother's Name:*" id='mother-name'value={commonData.owner?.mother_name} onChange={handleChange('owner.mother_name')}/>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label="Father's Name:*" id='father-name'/>
+          <InputWithLabel label="Father's Name:*" id='father-name'value={commonData.owner?.farther_name} onChange={handleChange('owner.farther_name')}/>
         </Grid>
       </Grid>
 

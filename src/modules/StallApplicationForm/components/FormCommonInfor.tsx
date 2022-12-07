@@ -1,11 +1,9 @@
 import { Box, Container, Grid, TextField, Typography } from '@mui/material';
 import React from 'react';
+import { useStallData } from '../pages/EditStallApplication';
 
 export interface IFormCommonInfor {
   shouldGray?: boolean;
-  status?: string;
-  dateSubmitted?: string;
-  formNumber?: string;
 }
 
 const itemCenter = {
@@ -20,8 +18,19 @@ const grayInput = {
   }
 }
 
+const status = [
+  'New',
+  'In Progress',
+  'Payment Info Requested',
+  'For Payment Verification',
+  'Approved',
+  'Disapproved',
+]
 
-const FormCommonInfor = ({ shouldGray, status, dateSubmitted, formNumber }: IFormCommonInfor) => {
+const FormCommonInfor = ({ shouldGray }: IFormCommonInfor) => {
+
+  const { commonData } = useStallData();
+
   return (
     <Box 
       sx={{
@@ -48,7 +57,7 @@ const FormCommonInfor = ({ shouldGray, status, dateSubmitted, formNumber }: IFor
           Application Status:
         </Grid>
         <Grid item xs={7} sx={itemCenter}>
-          <TextField value={status} size='small' disabled sx={shouldGray ? grayInput : {}} />
+          <TextField value={status[commonData.status]} size='small' disabled sx={shouldGray ? grayInput : {}} />
         </Grid>
       </Grid>
 
@@ -60,13 +69,13 @@ const FormCommonInfor = ({ shouldGray, status, dateSubmitted, formNumber }: IFor
           Date Submitted:
         </Grid>
         <Grid item xs={7} sx={itemCenter}>
-          <TextField value={dateSubmitted} size='small' disabled sx={shouldGray ? grayInput : {}} />
+          <TextField value={commonData.created_at} size='small' disabled sx={shouldGray ? grayInput : {}} />
         </Grid>
         <Grid item xs={5} sx={itemCenter}>
           Application Form Number:
         </Grid>
         <Grid item xs={7} sx={itemCenter}>
-          <TextField value={formNumber} size='small' disabled sx={shouldGray ? grayInput : {}} />
+          <TextField value={commonData.code} size='small' disabled sx={shouldGray ? grayInput : {}} />
         </Grid>
       </Grid>
     </Box>

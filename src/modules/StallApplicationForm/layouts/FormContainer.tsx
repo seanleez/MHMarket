@@ -2,6 +2,7 @@ import { Box, Divider, Step, StepLabel, Stepper } from '@mui/material';
 import { Container } from '@mui/system';
 import React, { ReactNode } from 'react';
 import { FormCommonInfor, IFormCommonInfor } from '../components';
+import { useStallData } from '../pages/EditStallApplication';
 import Layout from './Layout';
 
 
@@ -18,21 +19,16 @@ const steps = [
 
 const FormContainer = ({ 
   children, 
-  status, 
-  formNumber, 
-  shouldGray, 
-  dateSubmitted,
-  step
+  step,
+  shouldGray
 }: IFormContainer) => {
 
+  const { commonData } = useStallData();
   // 
   return (
     <Layout>
       <Box sx={{ padding: '100px 20px 0px 20px' }}>
         <FormCommonInfor 
-          status={status} 
-          dateSubmitted={dateSubmitted} 
-          formNumber={formNumber} 
           shouldGray={shouldGray} 
         />
         <Divider />
