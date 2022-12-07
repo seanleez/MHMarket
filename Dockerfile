@@ -2,13 +2,9 @@
 FROM node:16-alpine as build-stage
 WORKDIR /app
 COPY . .
-COPY package.json ./
-COPY package-lock.json ./
 RUN npm install
-RUN npm build
+RUN npm run build
 ## các bạn có thể dùng yarn install .... tuỳ nhu cầu nhé
-# add app
-COPY . ./
 
 # production stage
 FROM nginx:1.17-alpine as production-stage
