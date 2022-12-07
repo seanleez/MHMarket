@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   market-web-dev:
-    image: docker.io/211020/mhmarket-web:latest
+    image: mhmarket/web:latest
     container_name: market-web
     environment:
       VITE_BASE_URL: http://103.162.20.141:8000/api/v2
