@@ -1,13 +1,35 @@
-FROM node AS prod
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-# RUN npm test - if you want to test before to build
+# build stage
+# pull official base image
+FROM node:12 AS builder
 
-FROM nginx:alpine AS prod
+# set working directory
+WORKDIR /app
+
+# add `/app/node_modules/.bin` to $PATH
+ENV PATH /app/node_modules/.bin:$PATH
+
+# install app dependencies
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
+RUN npm build
+
+# add app
+COPY . ./
+
+EXPOSE 3000
+# start app
+CMD ["npm", "start"]
+
+# nginx state for serving content
+FROM nginx:alpine
+# Set working directory to nginx asset directory
 WORKDIR /usr/share/nginx/html
-COPY --from=prod /app/build .
-EXPOSE 80
-# run nginx with global directives and daemon off
+# Remove default nginx static assets
+RUN rm -rf ./*
+# Copy static assets from builder stage
+COPY --from=builder /app/build .
+# Containers run nginx with global directives and daemon off
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+
