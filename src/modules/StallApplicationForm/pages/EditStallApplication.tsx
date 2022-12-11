@@ -148,9 +148,10 @@ const EditStallApplication = () => {
     })()
   }, [])
 
-  useEffect(() => {
-    console.log(commonData);
-  }, [commonData]);
+  // for debugging
+  // useEffect(() => {
+  //   console.log(commonData);
+  // }, [commonData]);
 
   const handleBack = () => {
     if (step === 0) {
