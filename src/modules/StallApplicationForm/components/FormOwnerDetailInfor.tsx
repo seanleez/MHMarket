@@ -31,8 +31,8 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           whenEnableSub={true}
           mainAnswer={commonData.owned_any_stall}
           subAnswer={commonData.owned_stall_info}
-          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.owned_any_stall = ans})}
-          setSubAnswer={(ans: string) => setCommonData(dr => {dr.owned_stall_info = ans})}
+          setMainAnswer={(ans: boolean) => setCommonData((dr: { owned_any_stall: boolean; }) => {dr.owned_any_stall = ans})}
+          setSubAnswer={(ans: string) => setCommonData((dr: { owned_stall_info: string; }) => {dr.owned_stall_info = ans})}
         />
         
         {/*  */}
@@ -42,8 +42,8 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           whenEnableSub={false}
           mainAnswer={commonData.pay_tax_previous}
           subAnswer={commonData.pay_tax_previous_reason}
-          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.pay_tax_previous = ans})}
-          setSubAnswer={(ans: string) => setCommonData(dr => {dr.pay_tax_previous_reason = ans})}
+          setMainAnswer={(ans: boolean) => setCommonData((dr: { pay_tax_previous: boolean; }) => {dr.pay_tax_previous = ans})}
+          setSubAnswer={(ans: string) => setCommonData((dr: { pay_tax_previous_reason: string; }) => {dr.pay_tax_previous_reason = ans})}
         />
         
         {/*  */}
@@ -53,8 +53,8 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           whenEnableSub={true}
           mainAnswer={commonData.forced_terminate_previous}
           subAnswer={commonData.forced_terminate_reason}
-          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.forced_terminate_previous = ans})}
-          setSubAnswer={(ans: string) => setCommonData(dr => {dr.forced_terminate_reason = ans})}
+          setMainAnswer={(ans: boolean) => setCommonData((dr: { forced_terminate_previous: boolean; }) => {dr.forced_terminate_previous = ans})}
+          setSubAnswer={(ans: string) => setCommonData((dr: { forced_terminate_reason: string; }) => {dr.forced_terminate_reason = ans})}
         />
         
         {/*  */}
@@ -64,8 +64,8 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           whenEnableSub={true}
           mainAnswer={commonData.exchange_rent_stall}
           subAnswer={commonData.exchange_rent_stall_name}
-          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.exchange_rent_stall = ans})}
-          setSubAnswer={(ans: string) => setCommonData(dr => {dr.exchange_rent_stall_name = ans})}
+          setMainAnswer={(ans: boolean) => setCommonData((dr: { exchange_rent_stall: boolean; }) => {dr.exchange_rent_stall = ans})}
+          setSubAnswer={(ans: string) => setCommonData((dr: { exchange_rent_stall_name: string; }) => {dr.exchange_rent_stall_name = ans})}
         />
         
         {/*  */}
@@ -75,8 +75,8 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           whenEnableSub={true}
           mainAnswer={commonData.convicted_violate_law}
           subAnswer={commonData.convicted_violate_law_reason}
-          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.convicted_violate_law = ans})}
-          setSubAnswer={(ans: string) => setCommonData(dr => {dr.convicted_violate_law_reason = ans})}
+          setMainAnswer={(ans: boolean) => setCommonData((dr: { convicted_violate_law: boolean; }) => {dr.convicted_violate_law = ans})}
+          setSubAnswer={(ans: string) => setCommonData((dr: { convicted_violate_law_reason: string; }) => {dr.convicted_violate_law_reason = ans})}
         />
 
         {/*  */}
@@ -86,18 +86,18 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           whenEnableSub={true}
           mainAnswer={commonData.administrative_criminal}
           subAnswer={commonData.administrative_criminal_reason}
-          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.administrative_criminal = ans})}
-          setSubAnswer={(ans: string) => setCommonData(dr => {dr.administrative_criminal_reason = ans})}
+          setMainAnswer={(ans: boolean) => setCommonData((dr: { administrative_criminal: boolean; }) => {dr.administrative_criminal = ans})}
+          setSubAnswer={(ans: string) => setCommonData((dr: { administrative_criminal_reason: string; }) => {dr.administrative_criminal_reason = ans})}
         />
       </Box>
       
       {/*  */}
       <Box sx={{ marginTop: '40px' }}>
         <Typography>How much is your capital?</Typography>
-        <TextField size='small' sx={{ width: '100%' }} value={commonData.source_of_capital} onChange={e => setCommonData(dr => {dr.source_of_capital = e.target.value})} />
+        <TextField size='small' sx={{ width: '100%' }} value={commonData.source_of_capital} onChange={e => setCommonData((dr: { source_of_capital: string; }) => {dr.source_of_capital = e.target.value})} />
 
         <Typography sx={{ marginTop: '20px' }} >What are you going to sell in your stall?</Typography>
-        <TextField size='small' sx={{ width: '100%' }} value={commonData.capital} onChange={e => setCommonData(dr => {dr.capital = e.target.value})}/>
+        <TextField size='small' sx={{ width: '100%' }} value={commonData.capital} onChange={e => setCommonData((dr: { capital: string; }) => {dr.capital = e.target.value})}/>
       </Box>
     </Box>
   );

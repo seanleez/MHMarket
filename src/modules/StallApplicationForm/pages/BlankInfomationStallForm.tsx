@@ -1,8 +1,9 @@
 import SuccessDialog from '@components/common/dialog/SuccessDialog';
 import { Box, Button } from '@mui/material';
-import React, { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { IStallFormShared } from '.';
+import { AxiosResponse } from 'axios';
+import React, {useRef, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {IStallFormShared} from '.';
 import applicationApis from '../../../services/applicationsApis';
 import {
   FormCommonInfor,
@@ -10,11 +11,11 @@ import {
   FormOwnerGeneralInfor,
 } from '../components';
 import FormContainer from '../layouts';
-import { useStallData } from './EditStallApplication';
+import {useStallData} from './EditStallApplication';
 
 const BlankInfomationStallForm = (props: IStallFormShared) => {
 
-  const { commonData, setCommonData } = useStallData();
+  const {commonData, setCommonData} = useStallData();
 
   // 
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
       open: false,
       isDraft: false
     })
-    if(isDraft) {
+    if (isDraft) {
       navigate('/application-list')
     } else {
       props.handleNext()
@@ -42,13 +43,14 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
   const submit = (isDraft = false) => {
     (async () => {
       try {
-        let res;
+        let res: AxiosResponse<any, any>;
         if(commonData.application_id){
           res = await applicationApis.updateApplication(commonData, isDraft)
         } else {
           res = await applicationApis.submitApplication(commonData, isDraft)
         }
         if(!isDraft) {
+          // @ts-ignore
           setCommonData(draft => {
             draft = { ...draft, ...res.data }
             return draft;

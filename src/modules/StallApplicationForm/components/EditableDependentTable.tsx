@@ -58,7 +58,7 @@ const numberOnly = /^[1-9]+[0-9]*$/;
   we only pass the data of table outside (to parent) 
   when submitting the form WITH the syncDataToParent method 
 */
-const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable, ref) => {
+const EditableDependentTable = forwardRef((ref) => {
 
   const { commonData, setCommonData } = useStallData();
 
@@ -96,7 +96,7 @@ const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable,
     //     value: e.target.value
     //   }
     // })
-    setCommonData(draft => {
+    setCommonData((draft: { members: any[]; }) => {
       const row = draft.members?.find((row) => row.member_id === _id)
 
       const value = e.target.value;
@@ -111,14 +111,20 @@ const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable,
 
   const handleDelete = (id: string) => {
     // dispatch({ type: 'DEL', payload: id })
-    setCommonData(draft => {
+    setCommonData((draft: { members: any[]; }) => {
       draft.members = draft.members?.filter((row) => row.member_id !== id)
     })
   }
 
   const handleAdd = () => {
     // dispatch({ type: 'ADD' })
-    setCommonData(draft => {
+    setCommonData((draft: {
+            members: {
+                member_id: string;
+                // index: draft.length + 1,
+                name: string; age: string;
+            }[];
+        }) => {
       if(!draft.members) {
         draft.members = [];
       }
@@ -155,7 +161,7 @@ const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable,
 
         <TableBody>
           { 
-            commonData.members?.map((row, index) => (
+            commonData.members?.map((row: { _id: React.Key | null | undefined; member_id: string; name: unknown; age: unknown; }, index: number) => (
               <TableRow key={row._id}>
 
                 <TableCell>{ index + 1 }</TableCell>

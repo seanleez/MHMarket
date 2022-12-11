@@ -82,7 +82,7 @@ const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jp
           id: uuid()
         }
       ]);
-      setCommonData(draft => {
+      setCommonData((draft: { [x: string]: any; }) => {
         // @ts-ignore
         draft[name] = res.pre_signed_url
       });
@@ -122,7 +122,7 @@ const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jp
     setList(prev => {
       return prev.filter(file => file.id !== id);
     })
-    setCommonData(draft => {
+    setCommonData((draft: { [x: string]: string; }) => {
       draft[name] = '';
     })
   }, []);

@@ -167,7 +167,7 @@ const Payment = (props: IStallFormShared) => {
             <Button size="small" variant="outlined" onClick={props.handleBack}>
               Back
             </Button>
-            {commonData?.status === 0 ? (
+            {commonData?.status === 3 ? (
               <>
                 <Button
                   size="small"

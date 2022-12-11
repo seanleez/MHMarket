@@ -39,7 +39,7 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
         const res = await applicationApis.updateApplication(commonData, isDraft)
         
         if(!isDraft) {
-          setCommonData(draft => {
+          setCommonData((draft: any) => {
             draft = { ...draft, ...res.data }
             return draft;
           })
