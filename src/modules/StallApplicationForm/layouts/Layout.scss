@@ -1,0 +1,36 @@
+.stall-modal-layout {
+
+  width: 90%;
+  padding: 30px 10px 0 10px;
+  margin: 20px;
+  border: 2px solid black;
+  border-radius: 20px;
+  position: relative;
+  min-height: 100px;
+
+  .stall-modal-title {
+    position: absolute;
+    top: -18px;
+    left: 40px;
+
+    background-color: white;
+    padding: 0 15px;
+
+    font-size: 24px;
+    text-transform: uppercase;
+  }
+
+  .stall-modal-header {
+    text-align: center;
+    &__company-name {
+      color: #0038A8;
+      font-weight: bold;
+      font-size: 24px;
+    }
+    &__sologan {
+      color:  #212529;
+      font-size: 18px;
+      font-weight: 100;
+    }
+  }
+}

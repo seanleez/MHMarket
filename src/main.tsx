@@ -7,16 +7,24 @@ import AuthorContextProvider from './context/AuthorContext';
 import ContainerContextProvider from './context/ContainerRefContext';
 import FloorContextProvider from './context/FloorContext';
 import './index.css';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  //   <BrowserRouter>
+  //     <App />
+  //   </BrowserRouter>
+  // </React.StrictMode>
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
     <AuthorContextProvider>
       <BrowserRouter>
         <SnackbarProvider
           maxSnack={3}
           autoHideDuration={3000}
+          variant="error"
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          variant="error">
+        >
           <FloorContextProvider>
             <ContainerContextProvider>
               <App />
@@ -25,5 +33,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </SnackbarProvider>
       </BrowserRouter>
     </AuthorContextProvider>
-  </React.StrictMode>
+  </LocalizationProvider>
 );

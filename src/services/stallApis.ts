@@ -9,6 +9,7 @@ const stallApis = {
   deleteStall: (id: TId) => axiosClient.delete(`/stalls/${id}`),
   editDetailStall: (id: TId, payload: any) =>
     axiosClient.put(`/stalls/${id}/metadata`, payload),
+  getStallInfo: (params: Record<any, any>) => axiosClient.get(`/stalls/info`, { params })
 };
 
 export default stallApis;
