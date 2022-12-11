@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  market-web-dev:
+    image: docker.io/211020/mhmarket-web:latest
+    container_name: market-web
+    environment:
+      VITE_BASE_URL: http://103.162.20.141:8000/api/v2
+    ports:
+      - "80:80"
+    networks:
+      - mh-network
+    dns:
+      - 192.168.200.4
+      - 8.8.8.8
+    restart: unless-stopped
+
+networks:
+  mh-network:
+    driver: bridge
