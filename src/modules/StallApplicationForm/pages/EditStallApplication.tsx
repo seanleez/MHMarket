@@ -35,7 +35,9 @@ const EditStallApplication = () => {
             floor_code : res.floor_code,
             stall_code : res.stall_code,
           })
-          setCommonData({ ...res, ...stallRes });
+          //@ts-ignore
+          const { code, ...rest } = stallRes
+          setCommonData({ ...res, ...rest, stall_number: code });
         } catch (error) {
           enqueueSnackbar(error as string);
         }
@@ -133,9 +135,12 @@ const EditStallApplication = () => {
           floor_code : initialData.floor_code,
           stall_code : initialData.stall_code,
         })
+        //@ts-ignore
+        const { code, ...rest } = stallRes
         setCommonData({
           ...initialData,
-          ...stallRes
+          stall_number: code,
+          ...rest
         })
       }
     })()

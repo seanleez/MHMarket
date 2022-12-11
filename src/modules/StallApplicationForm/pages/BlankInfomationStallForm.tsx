@@ -9,15 +9,25 @@ import { useStallData } from './EditStallApplication';
 
 const BlankInfomationStallForm = (props: IStallFormShared) => {
 
-  const { commonData } = useStallData();
+  const { commonData, setCommonData } = useStallData();
 
   const dependentTableRef = useRef<unknown>();
 
   const submit = (isDraft = false) => {
     (async () => {
-      const res = await applicationApis.submitApplication(commonData, isDraft)
-      // next
-      props.handleNext();
+      try {
+        const res = await applicationApis.submitApplication(commonData, isDraft)
+        console.log(res.data)
+        setCommonData(draft => {
+          draft = { ...draft, ...res.data }
+          return draft;
+        })
+        // next
+        props.handleNext();
+
+      } catch (e) {
+        console.log(e)
+      }
     })();
   }
 

@@ -101,7 +101,9 @@ const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable,
 
       const value = e.target.value;
 
-      if(row && (key === 'age' && numberOnly.test(value)) || key === 'name' || value === '') {
+      if(row && (key === 'age' && numberOnly.test(value))) {
+        row[key] = Number(value);
+      } else if (row && (key === 'name' || value === '')) {
         row[key] = value;
       }
     })
@@ -117,6 +119,9 @@ const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable,
   const handleAdd = () => {
     // dispatch({ type: 'ADD' })
     setCommonData(draft => {
+      if(!draft.members) {
+        draft.members = [];
+      }
       draft.members?.push({
         member_id: uuid(),
         // index: draft.length + 1,

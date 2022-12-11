@@ -127,7 +127,7 @@ const FormOwnerGeneralInfor = () => {
           <InputWithLabel label='Market Name:' disabled={true} id='market-name' value={commonData.market_name} />
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Stall Number:' disabled={true} id='stall-number' value={commonData.code} />
+          <InputWithLabel label='Stall Number:' disabled={true} id='stall-number' value={commonData.stall_number} />
         </Grid>
         <Grid item xs={2}>
           <InputWithLabel label='Stall Size:' disabled={true} id='stall-size' value={commonData.area} />

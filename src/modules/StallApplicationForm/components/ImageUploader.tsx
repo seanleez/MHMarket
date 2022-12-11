@@ -47,15 +47,17 @@ const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jp
   }
 
   useEffect(() => {
-    setList([
-      {
-        // @ts-ignore
-        data: commonData[name] as string, 
-        // @ts-ignore
-        name: commonData[name], 
-        id: uuid()
-      }
-    ])
+    if(commonData[name]){
+      setList([
+        {
+          // @ts-ignore
+          data: commonData[name] as string, 
+          // @ts-ignore
+          name: commonData[name], 
+          id: uuid()
+        }
+      ])
+    }
   }, []);
 
   //
