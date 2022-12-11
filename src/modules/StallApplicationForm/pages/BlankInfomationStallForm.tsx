@@ -20,7 +20,12 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
   const submit = (isDraft = false) => {
     (async () => {
       try {
-        const res = await applicationApis.submitApplication(commonData, isDraft)
+        let res;
+        if(commonData.application_id){
+          res = await applicationApis.updateApplication(commonData, isDraft)
+        } else {
+          res = await applicationApis.submitApplication(commonData, isDraft)
+        }
         console.log(res.data)
         setCommonData(draft => {
           draft = { ...draft, ...res.data }
