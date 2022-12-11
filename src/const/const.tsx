@@ -221,6 +221,17 @@ export const APPLICATION_TYPE = [
   },
 ];
 
+export const PAYMENT_METHODS = [
+  {
+    value: 1,
+    label: 'Manual',
+  },
+  {
+    value: 2,
+    label: 'Online',
+  },
+];
+
 export const INIT_TABLE_ROWS_NUMBER = 5;
 export const ROWS_PER_PAGE_OPTION = [INIT_TABLE_ROWS_NUMBER, 10, 20];
 export const RATE_MANAGEMENT = 'RATE MANAGEMENT';
