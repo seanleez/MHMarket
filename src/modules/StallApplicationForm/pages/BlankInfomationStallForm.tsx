@@ -1,6 +1,8 @@
 import { Box, Button } from '@mui/material';
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IStallFormShared } from '.';
+import applicationApis from '../../../services/applicationsApis';
 import { FormCommonInfor, FormOwnerDetailInfor, FormOwnerGeneralInfor } from '../components';
 import FormContainer from '../layouts';
 import { useStallData } from './EditStallApplication';
@@ -10,6 +12,14 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
   const { commonData } = useStallData();
 
   const dependentTableRef = useRef<unknown>();
+
+  const submit = (isDraft = false) => {
+    (async () => {
+      const res = await applicationApis.submitApplication(commonData, isDraft)
+      // next
+      props.handleNext();
+    })();
+  }
 
   return (
     <FormContainer
@@ -31,9 +41,9 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
           }
         }}
       >
-        <Button size='small' variant='outlined' >Cancel</Button>
-        {/* <Button size='small' variant='outlined' >Save As Draft</Button> */}
-        <Button size='small' variant='contained' >Submit And Continue</Button>
+        <Button size='small' variant='outlined' onClick={() => props.handleBack()} >Cancel</Button>
+        <Button size='small' variant='outlined' onClick={() => submit(true)} >Save As Draft</Button>
+        <Button size='small' variant='contained' onClick={() => submit()} >Submit And Continue</Button>
       </Box>
     </FormContainer>
   );

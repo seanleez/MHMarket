@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { STALL_CLASS, STALL_TYPE } from '../../../const/const';
 import { ContainerContext } from '../../../context/ContainerRefContext';
 
@@ -26,6 +27,12 @@ const StallInformation: React.FC<IStallInformation> = ({ position, stall }) => {
   const containerContext = useContext(ContainerContext);
   const clientRect =
     containerContext.containerRef.current?.getBoundingClientRect();
+
+  const navigate = useNavigate()
+  const apply = () => {
+    navigate(`/application/create?stall_code=${stall.code}&stall_type=${stall.stall_type}&stall_class=${stall.stall_class}&stall_area=${stall.area}&market_code=${stall.market_code}&market_type=${stall.market_type}&market_class=${stall.market_class}&floor_code=${stall.floor_code}`)
+  }
+
   return (
     <Paper
       elevation={15}
@@ -94,7 +101,7 @@ const StallInformation: React.FC<IStallInformation> = ({ position, stall }) => {
           </Typography>
         </CardContent>
         {stall?.lease_status === 0 && <CardActions sx={{justifyContent: 'flex-end', padding: '10px 0 0'}}>
-          <Button variant="contained">Apply now</Button>
+          <Button variant="contained" onClick={apply}>Apply now</Button>
         </CardActions>}
       </Card>}
     </Paper>

@@ -61,11 +61,15 @@ const EditStallApplication = () => {
       {step === 0 && 
         <BlankInfomationStallForm 
           step={step}
+          handleBack={handleBack}
+          handleNext={handleNext}
         />
       }
       {step === 1 && 
         <ClientIdentifyForm 
           step={step}
+          handleBack={handleBack}
+          handleNext={handleNext}
         />
       }
 

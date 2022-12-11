@@ -140,6 +140,11 @@ const Router: React.FC = () => {
         element: <EditStallApplication />,
         isPublic: permissions.includes('APPLICATION_VIEW'),
       },
+      {
+        path: '/application/create',
+        element: <EditStallApplication />,
+        isPublic: permissions.includes('APPLICATION_VIEW'),
+      },
     ];
   }, [authorContext?.currentUser]);
 

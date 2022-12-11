@@ -59,10 +59,10 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           mainQuestion='Did you own a stall in any Public Market previously?'
           subQuestion='If yes, please indicate the public market and the stall number/section'
           whenEnableSub={true}
-          mainAnswer={stallQuestion.mainAnswer}
-          subAnswer={stallQuestion.subAnswer}
-          setMainAnswer={(ans: boolean) => setStallQuestion(prev => ({ ...prev, mainAnswer: ans }))}
-          setSubAnswer={(ans: string) => setStallQuestion(prev => ({ ...prev, subAnswer: ans }))}
+          mainAnswer={commonData.owned_any_stall}
+          subAnswer={commonData.owned_stall_info}
+          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.owned_any_stall = ans})}
+          setSubAnswer={(ans: string) => setCommonData(dr => {dr.owned_stall_info = ans})}
         />
         
         {/*  */}
@@ -70,10 +70,10 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           mainQuestion='Were you able to pay tax in your previous stall?'
           subQuestion='If not, please indicate the reason why?'
           whenEnableSub={false}
-          mainAnswer={taxQuestion.mainAnswer}
-          subAnswer={taxQuestion.subAnswer}
-          setMainAnswer={(ans: boolean) => setTaxQuestion(prev => ({ ...prev, mainAnswer: ans }))}
-          setSubAnswer={(ans: string) => setTaxQuestion(prev => ({ ...prev, subAnswer: ans }))}
+          mainAnswer={commonData.pay_tax_previous}
+          subAnswer={commonData.pay_tax_previous_reason}
+          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.pay_tax_previous = ans})}
+          setSubAnswer={(ans: string) => setCommonData(dr => {dr.pay_tax_previous_reason = ans})}
         />
         
         {/*  */}
@@ -81,10 +81,10 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           mainQuestion='Were you forced to terminate your previous lease?'
           subQuestion='If yes, please explain.'
           whenEnableSub={true}
-          mainAnswer={leaseQuestion.mainAnswer}
-          subAnswer={leaseQuestion.subAnswer}
-          setMainAnswer={(ans: boolean) => setLeaseQuestion(prev => ({ ...prev, mainAnswer: ans }))}
-          setSubAnswer={(ans: string) => setLeaseQuestion(prev => ({ ...prev, subAnswer: ans }))}
+          mainAnswer={commonData.forced_terminate_previous}
+          subAnswer={commonData.forced_terminate_reason}
+          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.forced_terminate_previous = ans})}
+          setSubAnswer={(ans: string) => setCommonData(dr => {dr.forced_terminate_reason = ans})}
         />
         
         {/*  */}
@@ -92,10 +92,10 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           mainQuestion='Did you pay to someone in exchage for a chance to rent for a stall?'
           subQuestion='If yes, please indicate the name'
           whenEnableSub={true}
-          mainAnswer={rentQuestion.mainAnswer}
-          subAnswer={rentQuestion.subAnswer}
-          setMainAnswer={(ans: boolean) => setRentQuestion(prev => ({ ...prev, mainAnswer: ans }))}
-          setSubAnswer={(ans: string) => setRentQuestion(prev => ({ ...prev, subAnswer: ans }))}
+          mainAnswer={commonData.exchange_rent_stall}
+          subAnswer={commonData.exchange_rent_stall_name}
+          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.exchange_rent_stall = ans})}
+          setSubAnswer={(ans: string) => setCommonData(dr => {dr.exchange_rent_stall_name = ans})}
         />
         
         {/*  */}
@@ -103,10 +103,10 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           mainQuestion='Have you been convicted of violating a law, ordinance or rule?'
           subQuestion='If so, please explain'
           whenEnableSub={true}
-          mainAnswer={violateQuestion.mainAnswer}
-          subAnswer={violateQuestion.subAnswer}
-          setMainAnswer={(ans: boolean) => setViolateQuestion(prev => ({ ...prev, mainAnswer: ans }))}
-          setSubAnswer={(ans: string) => setViolateQuestion(prev => ({ ...prev, subAnswer: ans }))}
+          mainAnswer={commonData.convicted_violate_law}
+          subAnswer={commonData.convicted_violate_law_reason}
+          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.convicted_violate_law = ans})}
+          setSubAnswer={(ans: string) => setCommonData(dr => {dr.convicted_violate_law_reason = ans})}
         />
 
         {/*  */}
@@ -114,20 +114,20 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
           mainQuestion='Do you have a current administrative or criminal case?'
           subQuestion='If so, please explain'
           whenEnableSub={true}
-          mainAnswer={criminalQuestion.mainAnswer}
-          subAnswer={criminalQuestion.subAnswer}
-          setMainAnswer={(ans: boolean) => setCriminalQuestion(prev => ({ ...prev, mainAnswer: ans }))}
-          setSubAnswer={(ans: string) => setCriminalQuestion(prev => ({ ...prev, subAnswer: ans }))}
+          mainAnswer={commonData.administrative_criminal}
+          subAnswer={commonData.administrative_criminal_reason}
+          setMainAnswer={(ans: boolean) => setCommonData(dr => {dr.administrative_criminal = ans})}
+          setSubAnswer={(ans: string) => setCommonData(dr => {dr.administrative_criminal_reason = ans})}
         />
       </Box>
       
       {/*  */}
       <Box sx={{ marginTop: '40px' }}>
         <Typography>How much is your capital?</Typography>
-        <TextField size='small' sx={{ width: '100%' }} />
+        <TextField size='small' sx={{ width: '100%' }} value={commonData.source_of_capital} onChange={e => setCommonData(dr => {dr.source_of_capital = e.target.value})} />
 
         <Typography sx={{ marginTop: '20px' }} >What are you going to sell in your stall?</Typography>
-        <TextField size='small' sx={{ width: '100%' }} />
+        <TextField size='small' sx={{ width: '100%' }} value={commonData.capital} onChange={e => setCommonData(dr => {dr.capital = e.target.value})}/>
       </Box>
     </Box>
   );

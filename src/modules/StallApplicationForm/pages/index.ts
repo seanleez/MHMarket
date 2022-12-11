@@ -5,4 +5,6 @@ export { default as EditStallApplication } from './EditStallApplication'
 
 export type IStallFormShared = {
   step: number;
+  handleBack: () => void;
+  handleNext: () => void;
 }
