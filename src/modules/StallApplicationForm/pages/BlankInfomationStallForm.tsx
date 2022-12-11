@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import React from 'react';
+import React, { useRef } from 'react';
 import { IStallFormShared } from '.';
 import { FormCommonInfor, FormOwnerDetailInfor, FormOwnerGeneralInfor } from '../components';
 import FormContainer from '../layouts';
@@ -9,13 +9,15 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
 
   const { commonData } = useStallData();
 
+  const dependentTableRef = useRef<unknown>();
+
   return (
     <FormContainer
       {...props}
       shouldGray={false}
     >
       <FormOwnerGeneralInfor />
-      <FormOwnerDetailInfor />
+      <FormOwnerDetailInfor tableRef={dependentTableRef} />
 
       <Box 
         sx={{

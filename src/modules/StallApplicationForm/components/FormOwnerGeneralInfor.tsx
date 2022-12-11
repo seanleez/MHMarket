@@ -1,13 +1,14 @@
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { Draft } from 'immer';
-import React, { ReactNode, useState, ChangeEvent } from 'react';
+import React, { ReactNode, useState, ChangeEvent, useEffect } from 'react';
 import { useStallData } from '../pages/EditStallApplication';
 import DatePickerWithLabel from './DatePickerWithLabel';
 import InputWithLabel from './InputWithLabel';
 import SelectWithLabel from './SelectWithLabel';
 import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
+import marketApis from '../../../services/marketApis';
 
 dayjs.extend(utc)
 dayjs.extend(duration)
@@ -25,16 +26,86 @@ const statusOption = {
 }
 
 const FormOwnerGeneralInfor = () => {
-
+  
+  const { commonData, setCommonData } = useStallData();
 
   const [status, setStatus] = useState('-1');
   const [dob, setDob] = useState<Dayjs | null>(null)
 
-  const [province, setProvince] = useState('-1');
-  const [city, setCity] = useState('-1');
-  const [ward, setWard] = useState('-1');
+  const [provinceList, setProvinceList] = useState<any[]>([])
+  const [cityList, setCityList] = useState<any[]>([])
+  const [wardList, setWardList] = useState<any[]>([])
 
-  const { commonData, setCommonData } = useStallData();
+  useEffect(() => {
+    (async () => {
+      const res = await marketApis.getProvinces();
+      //@ts-ignore
+      setProvinceList(res.provinces);
+      setCommonData(drf => {
+        if(drf.owner) {
+          drf.owner.city = '';
+          drf.owner.ward = '';
+        }
+      })
+    })()
+  }, []);
+
+  useEffect(() => {
+    if(commonData.owner?.province) {
+
+      (async () => {
+        const res = await marketApis.getCities({
+          province: commonData.owner?.province
+        });
+        //@ts-ignore
+        setCityList(res.cities || []);
+        setCommonData(drf => {
+          if(drf.owner){
+            drf.owner.ward = '';
+          }
+        })
+      })()
+    }
+  }, [commonData.owner?.province])
+
+  useEffect(() => {
+    if(commonData.owner?.province && commonData.owner?.city) {
+
+      (async () => {
+        const res = await marketApis.getWards({
+          province: commonData.owner?.province,
+          city: commonData.owner?.city,
+        });
+        //@ts-ignore
+        setWardList(res.wards || []);
+      })()
+    }
+  }, [commonData.owner?.province, commonData.owner?.city])
+  
+  useEffect(() => {
+    if(commonData.owner?.province && commonData.owner?.city && commonData.owner?.ward) {
+
+      (async () => {
+        const res = await marketApis.getLocation({
+          province: commonData.owner?.province,
+          city: commonData.owner?.city,
+          ward: commonData.owner?.ward,
+        });
+        if(res && res.location) {
+
+          setCommonData(draft => {
+            //@ts-ignore
+            draft.owner.zipcode = res.location.zipcode;
+            //@ts-ignore
+            draft.owner.district = res.location.district;
+          });
+        }
+      })()
+    }
+  }, [commonData.owner?.province, commonData.owner?.city, commonData.owner?.ward])
+
+  
+
 
   const handleChange = (name: string, cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
     setCommonData((draft: Draft<any>) => {
@@ -145,23 +216,24 @@ const FormOwnerGeneralInfor = () => {
       {/* 1st row */}
       <Grid container spacing={2}>
         <Grid item xs={3}>
-          <InputWithLabel label='House Number:' id='house-number'/>
+          <InputWithLabel label='House Number:' id='house-number' value={commonData.owner?.house_number} onChange={handleChange('owner.house_number')}/>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Street:' id='street'/>
+          <InputWithLabel label='Street:' id='street' value={commonData.owner?.street} onChange={handleChange('owner.street')}/>
         </Grid>
         <Grid item xs={3}>
           <SelectWithLabel label='Province:' id='province' 
-            options={{ '0': 'from API', '1': 'from API' }} placeHolder='-- Select --' 
-            value={province} 
-            onChange={(e) => setProvince(e.target.value as string)}
+            options={provinceList} placeHolder='-- Select --' 
+            value={provinceList.indexOf(commonData.owner?.province)} 
+            onChange={handleChange('owner.province', (v: any) => provinceList[v])}
           />
         </Grid>
         <Grid item xs={3}>
           <SelectWithLabel label='City/Municipality:' id='city' 
-            options={{ '0': 'from API', '1': 'from API' }} placeHolder='-- Select --' 
-            value={city} 
-            onChange={(e) => setCity(e.target.value as string)}
+            options={cityList} placeHolder='-- Select --' 
+            value={cityList.indexOf(commonData.owner?.city)} 
+            onChange={handleChange('owner.city', (v: any) => cityList[v])}
+            disabled={!commonData.owner?.province}
           />
         </Grid>
       </Grid>
@@ -170,16 +242,16 @@ const FormOwnerGeneralInfor = () => {
       <Grid container spacing={2} sx={{ marginBottom: '50px' }}>
         <Grid item xs={3}>
           <SelectWithLabel label='Ward:*' id='ward' 
-            options={{ '0': 'from API', '1': 'from API' }} placeHolder='-- Select --' 
-            value={ward} 
-            onChange={(e) => setWard(e.target.value as string)}
+            options={wardList} placeHolder='-- Select --' 
+            value={wardList.indexOf(commonData.owner?.ward)} 
+            onChange={handleChange('owner.ward', (v: any) => wardList[v])}
           />
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='Zip Code:' id='zip-code'/>
+          <InputWithLabel label='Zip Code:' id='zip-code' disabled value={commonData.owner?.zipcode}/>
         </Grid>
         <Grid item xs={3}>
-          <InputWithLabel label='District:' id='district'/>
+          <InputWithLabel label='District:' id='district' disabled value={commonData.owner?.district}/>
         </Grid>
         
       </Grid>

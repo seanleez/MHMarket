@@ -1,9 +1,12 @@
 import { Box, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import { useStallData } from '../pages/EditStallApplication';
 import EditableDependentTable from './EditableDependentTable';
 import YesNoQuestion from './YesNoQuestion';
 
-function FormOwnerDetailInfor() {
+function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unknown>}) {
+
+  const { commonData, setCommonData } = useStallData();
 
   const [stallQuestion, setStallQuestion] = useState({
     mainAnswer: true,

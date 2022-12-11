@@ -5,9 +5,12 @@ import React, { ChangeEvent, forwardRef, memo, useEffect, useImperativeHandle } 
 import { useImmerReducer } from "use-immer";
 import { v4 as uuid } from 'uuid';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import { useStallData } from '../pages/EditStallApplication';
 
 
-interface IEditableDependentTable {}
+interface IEditableDependentTable {
+  // initial: any[];
+}
 
 type Row = {
   [key: string]: unknown,
@@ -21,6 +24,9 @@ type ModifyCase = { _id: string, key: string, value: string }
 
 const reducer = (draft: Draft<Row[]>, action: { type: string, payload?: string | ModifyCase }) => {
   switch (action.type) {
+    case 'INI':
+      return action.payload;
+
     case 'ADD':
       draft.push({
         _id: uuid(),
@@ -52,42 +58,81 @@ const numberOnly = /^[1-9]+[0-9]*$/;
   we only pass the data of table outside (to parent) 
   when submitting the form WITH the syncDataToParent method 
 */
-const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) => {
+const EditableDependentTable = forwardRef(({ initial }: IEditableDependentTable, ref) => {
 
-  const [data, dispatch] = useImmerReducer(reducer, [{
-    _id: uuid(),
-    index: 1,
-    name: '',
-    age: ''
-  }] as Row[])
+  const { commonData, setCommonData } = useStallData();
+
+  // const [data, dispatch] = useImmerReducer(reducer, [{
+  //   _id: uuid(),
+  //   // index: 1,
+  //   name: '',
+  //   age: ''
+  // }] as Row[])
+
+  // useEffect(() => {
+  //   if(initial && initial.length) {
+  //     const transformed = initial.map((m: any) => { // transform
+  //       return {
+  //         _id: m.member_id,
+  //         name: m.name,
+  //         age: m.age
+  //       };
+  //     })
+
+  //     dispatch({
+  //       type: 'INI',
+  //       payload: transformed
+  //     });
+  //   }
+  // }, [initial])
 
   // #region table feature methods
   const handleChange = (e: ChangeEvent<HTMLInputElement>, _id: string, key: string) => {
-    dispatch({
-      type: 'MOD',
-      payload: {
-        _id,
-        key,
-        value: e.target.value
+    // dispatch({
+    //   type: 'MOD',
+    //   payload: {
+    //     _id,
+    //     key,
+    //     value: e.target.value
+    //   }
+    // })
+    setCommonData(draft => {
+      const row = draft.members?.find((row) => row.member_id === _id)
+
+      const value = e.target.value;
+
+      if(row && (key === 'age' && numberOnly.test(value)) || key === 'name' || value === '') {
+        row[key] = value;
       }
     })
   } 
 
   const handleDelete = (id: string) => {
-    dispatch({ type: 'DEL', payload: id })
+    // dispatch({ type: 'DEL', payload: id })
+    setCommonData(draft => {
+      draft.members = draft.members?.filter((row) => row.member_id !== id)
+    })
   }
 
   const handleAdd = () => {
-    dispatch({ type: 'ADD' })
+    // dispatch({ type: 'ADD' })
+    setCommonData(draft => {
+      draft.members?.push({
+        member_id: uuid(),
+        // index: draft.length + 1,
+        name: '',
+        age: ''
+      })
+    })
   }
   // #endregion
 
   // #region methods for parent 
-  useImperativeHandle(ref, () => ({
-    syncDataToParent(cb: (data: Row[]) => void) {  // is callback style ok? or return data directly ok?
-      cb(data);
-    }
-  }));
+  // useImperativeHandle(ref, () => ({
+  //   syncDataToParent(cb: (data: Row[]) => void) {  // is callback style ok? or return data directly ok?
+  //     cb(data);
+  //   }
+  // }));
   // #endregion
 
 
@@ -105,7 +150,7 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
 
         <TableBody>
           { 
-            data.map((row, index) => (
+            commonData.members?.map((row, index) => (
               <TableRow key={row._id}>
 
                 <TableCell>{ index + 1 }</TableCell>
@@ -113,7 +158,7 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
                 <TableCell>
                   <TextField 
                     size='small' 
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e, row._id, 'name')} 
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e, row.member_id, 'name')} 
                     value={row.name}
                   />
                 </TableCell>
@@ -123,7 +168,7 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
                     <Grid item xs={3}>
                       <TextField 
                         size='small' 
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e, row._id, 'age')}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e, row.member_id, 'age')}
                         value={row.age}
                       />
                     </Grid>
@@ -131,7 +176,7 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
                 </TableCell>
 
                 <TableCell>
-                  <CancelPresentationIcon sx={{ color: 'red' }} onClick={() => handleDelete(row._id)} />
+                  <CancelPresentationIcon sx={{ color: 'red' }} onClick={() => handleDelete(row.member_id)} />
                 </TableCell>
                 
               </TableRow>
@@ -145,4 +190,4 @@ const EditableDependentTable = forwardRef(({  }: IEditableDependentTable, ref) =
   );
 })
 
-export default memo(EditableDependentTable);
+export default (EditableDependentTable);
