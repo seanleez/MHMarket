@@ -5,13 +5,7 @@ const applicationApis = {
   getApplications: () => axiosClient.get('/applications'),
   getApplication: (id: TId) => axiosClient.get(`/applications/${id}`),
   deleteApplication: (id: TId) => axiosClient.delete(`/applications/${id}`),
-  submitApplication: (data: any, isDraft = false) => axiosClient.post(`/applications`, {
-    data
-  }, {
-    params: {
-      draft: isDraft
-    }
-  })
+  submitApplication: (data: any, isDraft = false) => axiosClient.post(`/applications`, {...data, draft: isDraft})
 };
 
 export default applicationApis;
