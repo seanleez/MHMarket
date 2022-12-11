@@ -7,36 +7,6 @@ import YesNoQuestion from './YesNoQuestion';
 function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unknown>}) {
 
   const { commonData, setCommonData } = useStallData();
-
-  const [stallQuestion, setStallQuestion] = useState({
-    mainAnswer: true,
-    subAnswer: ''
-  })
-
-  const [taxQuestion, setTaxQuestion] = useState({
-    mainAnswer: false,
-    subAnswer: ''
-  })
-
-  const [leaseQuestion, setLeaseQuestion] = useState({
-    mainAnswer: true,
-    subAnswer: ''
-  })
-
-  const [rentQuestion, setRentQuestion] = useState({
-    mainAnswer: true,
-    subAnswer: ''
-  })
-  
-  const [violateQuestion, setViolateQuestion] = useState({
-    mainAnswer: true,
-    subAnswer: ''
-  })
-  
-  const [criminalQuestion, setCriminalQuestion] = useState({
-    mainAnswer: true,
-    subAnswer: ''
-  })
   
   return (
     <Box>

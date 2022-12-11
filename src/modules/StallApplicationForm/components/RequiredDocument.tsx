@@ -24,7 +24,7 @@ const RequiredDocument = () => {
               Proof of Residency:
             </Grid>
             <Grid item xs={12} xl={6}>
-              <ImageUploader max={3} />
+              <ImageUploader max={1} name='proof_of_residencies' />
             </Grid>
           </Grid>
         </Grid>
@@ -35,7 +35,7 @@ const RequiredDocument = () => {
               Identification:
             </Grid>
             <Grid item xs={12} xl={6}>
-              <ImageUploader max={3} />
+              <ImageUploader max={1} name='identification' />
             </Grid>
           </Grid>
         </Grid>
@@ -51,7 +51,7 @@ const RequiredDocument = () => {
               Birth Certificate:
             </Grid>
             <Grid item xs={12} xl={6}>
-              <ImageUploader max={3} />
+              <ImageUploader max={1} name='birth_certificate' />
             </Grid>
           </Grid>
         </Grid>
@@ -67,7 +67,7 @@ const RequiredDocument = () => {
               2x2 Picture:
             </Grid>
             <Grid item xs={12} xl={6}>
-              <ImageUploader max={3} />
+              <ImageUploader max={1} name="picture" />
             </Grid>
           </Grid>
         </Grid>

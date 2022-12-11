@@ -25,8 +25,8 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
           }
         }}
       >
-        <Button size='small' variant='outlined' >Cancel</Button>
-        {/* <Button size='small' variant='outlined' >Save As Draft</Button> */}
+        <Button size='small' variant='outlined' onClick={() => props.handleBack()} >Back</Button>
+        <Button size='small' variant='outlined' >Save As Draft</Button>
         <Button size='small' variant='contained' >Submit And Continue</Button>
       </Box>
     </FormContainer>

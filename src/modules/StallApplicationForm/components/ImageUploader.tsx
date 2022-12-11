@@ -2,10 +2,13 @@ import React, { useState, useEffect, DragEvent, useRef, ChangeEvent, MouseEvent,
 import { Box, Stack } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { v4 as uuid } from 'uuid';
+import floorApis from '../../../services/floorApis';
+import { useStallData } from '../pages/EditStallApplication';
 
 interface IImageUploader {
   max?: number;  // the maximum file number.
-  whiteList?: string[]
+  whiteList?: string[];
+  name: string;
 }
 
 const toBase64 = (file: File) => new Promise((resolve, reject) => {
@@ -17,11 +20,13 @@ const toBase64 = (file: File) => new Promise((resolve, reject) => {
 
 type StoredFile = { data: string, name: string, id: string }
 
-const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jpeg'] }: IImageUploader, ref) => {
+const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jpeg'], name }: IImageUploader, ref) => {
 
   const [list, setList] = useState<StoredFile[]>([]);
   const [shouldActive, setShouldActive] = useState(false);
   const input = useRef<null | HTMLInputElement>(null);
+
+  const { commonData, setCommonData } = useStallData();
 
   const handleActive = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -41,21 +46,44 @@ const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jp
     }
   }
 
+  useEffect(() => {
+    setList([
+      {
+        // @ts-ignore
+        data: commonData[name] as string, 
+        // @ts-ignore
+        name: commonData[name], 
+        id: uuid()
+      }
+    ])
+  }, []);
+
   //
   const storeFile = async (file: File) => {
     try{
-      const base64Data = await toBase64(file);
-      if(base64Data === null) {
-        throw 'Something went wrong'
-      }
+      // const base64Data = await toBase64(file);
+      // if(base64Data === null) {
+      //   throw 'Something went wrong'
+      // }
+      const imageData = new FormData();
+      // @ts-ignore
+      imageData.append('attachment', file);
+      const res = await floorApis.uploadFile(imageData);
+
       setList(prev => [
         ...prev, 
         { 
-          data: base64Data as string, 
-          name: file.name, 
+          // @ts-ignore
+          data: res.pre_signed_url as string, 
+          // @ts-ignore
+          name: res.content, 
           id: uuid()
         }
       ]);
+      setCommonData(draft => {
+        // @ts-ignore
+        draft[name] = res.pre_signed_url
+      });
     } catch (e) {
       console.log(e)
     }
@@ -91,6 +119,9 @@ const ImageUploader = forwardRef(({ max = 1, whiteList = ['image/png', 'image/jp
   const handleDelete = useCallback((id: string) => {
     setList(prev => {
       return prev.filter(file => file.id !== id);
+    })
+    setCommonData(draft => {
+      draft[name] = '';
     })
   }, []);
 
