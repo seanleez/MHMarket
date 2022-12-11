@@ -6,7 +6,6 @@ import { RequiredDocument } from '../components';
 import FormContainer from '../layouts';
 import { useStallData } from './EditStallApplication';
 
-
 const ClientIdentifyForm = (props: IStallFormShared) => {
 
   const { commonData, setCommonData } = useStallData();
@@ -28,10 +27,7 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
   }
 
   return (
-    <FormContainer
-      {...props}
-      shouldGray={false}
-    >
+    <FormContainer {...props} shouldGray={false}>
       <RequiredDocument />
 
       <Box

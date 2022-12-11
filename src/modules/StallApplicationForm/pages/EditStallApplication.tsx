@@ -7,18 +7,18 @@ import applicationApis from '../../../services/applicationsApis';
 import stallApis from '../../../services/stallApis';
 import BlankInfomationStallForm from './BlankInfomationStallForm';
 import ClientIdentifyForm from './ClientIdentifyForm';
+import Payment from './Payment';
 
 const StallData = createContext<any>(undefined);
 
 const useStallData = () => {
-  return useContext<any>(StallData as any)
-}
+  return useContext<any>(StallData as any);
+};
 
 const EditStallApplication = () => {
-
   const [step, changeStep] = useState(0);
-  const [commonData, setCommonData] = useImmer<any>({} as any)
-
+  const [commonData, setCommonData] = useImmer<any>({} as any);
+  const [applicationInfor, setApplicationInfor] = useState<any>({});
   const { enqueueSnackbar } = useSnackbar();
 
   const { id } = useParams();
@@ -147,42 +147,50 @@ const EditStallApplication = () => {
   }, [])
 
   useEffect(() => {
-    console.log(commonData)
-  }, [commonData])
+    console.log(commonData);
+  }, [commonData]);
 
   const handleBack = () => {
-    if(step === 0){
-      navigate(-1) //go back
+    if (step === 0) {
+      navigate(-1); //go back
     } else {
-      changeStep(prev => prev - 1)
+      changeStep((prev) => prev - 1);
     }
-  }
+  };
 
   const handleNext = () => {
-    changeStep(prev => prev + 1)
-  }
+    changeStep((prev) => prev + 1);
+  };
 
   return (
-    <StallData.Provider value={{ commonData, setCommonData }} >
-      {step === 0 && 
-        <BlankInfomationStallForm 
+    <StallData.Provider
+      value={{
+        commonData,
+        applicationInfor,
+        setCommonData,
+        setApplicationInfor,
+      }}>
+      {step === 0 && (
+        <BlankInfomationStallForm
           step={step}
           handleBack={handleBack}
           handleNext={handleNext}
         />
-      }
-      {step === 1 && 
-        <ClientIdentifyForm 
+      )}
+      {step === 1 && (
+        <ClientIdentifyForm
           step={step}
           handleBack={handleBack}
           handleNext={handleNext}
         />
-      }
-
+      )}
+      {step === 2 && (
+        <Payment step={step} handleBack={handleBack} handleNext={handleNext} />
+      )}
     </StallData.Provider>
   );
 };
 
 export default EditStallApplication;
 
-export { useStallData }
+export { useStallData };

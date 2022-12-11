@@ -51,6 +51,7 @@ export const getSearchField = (name: string) => {
 };
 
 export const convertDateFormat = (originDate: string | number) => {
+  if (!originDate) return;
   const date = new Date(originDate);
   const d =
     date.getDate() < 10 ? '0' + String(date.getDate()) : String(date.getDate());
