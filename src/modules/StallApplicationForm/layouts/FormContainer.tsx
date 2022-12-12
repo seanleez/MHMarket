@@ -5,34 +5,27 @@ import { FormCommonInfor, IFormCommonInfor } from '../components';
 import { useStallData } from '../pages/EditStallApplication';
 import Layout from './Layout';
 
-
-type IFormContainer  = {
+type IFormContainer = {
   children: ReactNode;
-  step: number
-} & IFormCommonInfor
+  step: number;
+} & IFormCommonInfor;
 
-const steps = [
-  'Information',
-  'Approval Sumary',
-  'Application Fee Payment'
-]
+const steps = ['Information', 'Approval Sumary', 'Application Fee Payment'];
 
-const FormContainer = ({ 
-  children, 
-  step,
-  shouldGray
-}: IFormContainer) => {
-
-  const { commonData } = useStallData();
-  // 
+const FormContainer = ({ children, step, shouldGray }: IFormContainer) => {
+  //
   return (
     <Layout>
       <Box sx={{ padding: '100px 20px 0px 20px' }}>
-        <FormCommonInfor 
-          shouldGray={shouldGray} 
-        />
+        <FormCommonInfor shouldGray={shouldGray} />
         <Divider />
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '10px 0 20px 0' }}>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '10px 0 20px 0',
+          }}>
           <Box sx={{ maxWidth: 'max-content' }}>
             <Stepper activeStep={step} alternativeLabel>
               {steps.map((label) => (
@@ -44,8 +37,8 @@ const FormContainer = ({
           </Box>
         </Box>
         <Divider />
-        
-        { children }
+
+        {children}
       </Box>
     </Layout>
   );

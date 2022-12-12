@@ -8,6 +8,11 @@ const applicationApis = {
   submitApplication: (data: any, isDraft = false) =>
     axiosClient.post(`/applications`, { ...data, draft: isDraft }),
   updateApplication: (data: any, isDraft = false) =>
+    axiosClient.put(`/applications/${data.application_id}`, {
+      ...data,
+      draft: isDraft,
+    }),
+  updateApplicationWithDocs: (data: any, isDraft = false) =>
     axiosClient.put(`/applications/${data.application_id}/docs`, {
       ...data,
       draft: isDraft,

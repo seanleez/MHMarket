@@ -35,7 +35,7 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
   const submit = (isDraft = false) => {
     (async () => {
       try {
-        const res = await applicationApis.updateApplication(
+        const res = await applicationApis.updateApplicationWithDocs(
           commonData,
           isDraft
         );
