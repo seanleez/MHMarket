@@ -47,13 +47,15 @@ const EditStallApplication = () => {
         }
       })();
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     (async () => {
       if (location?.pathname.includes('create')) {
         const search = new URLSearchParams(location.search);
 
+        // const res = await applicationApis.submitApplication({});
+        // console.log(res)
         const initialData = {
           administrative_criminal: false,
           administrative_criminal_reason: '',
@@ -150,9 +152,10 @@ const EditStallApplication = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    console.log(commonData);
-  }, [commonData]);
+  // for debugging
+  // useEffect(() => {
+  //   console.log(commonData);
+  // }, [commonData]);
 
   const handleBack = () => {
     if (step === 0) {

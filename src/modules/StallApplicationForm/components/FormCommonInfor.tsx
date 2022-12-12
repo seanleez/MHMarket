@@ -1,6 +1,10 @@
 import { Box, Container, Grid, TextField, Typography } from '@mui/material';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import React from 'react';
 import { useStallData } from '../pages/EditStallApplication';
+dayjs.extend(utc)
+
 
 export interface IFormCommonInfor {
   shouldGray?: boolean;
@@ -30,6 +34,8 @@ const status = [
 const FormCommonInfor = ({ shouldGray }: IFormCommonInfor) => {
 
   const { commonData } = useStallData();
+
+  // console.log(commonData.created_at, dayjs.utc(commonData.created_at))
 
   return (
     <Box 
@@ -69,7 +75,7 @@ const FormCommonInfor = ({ shouldGray }: IFormCommonInfor) => {
           Date Submitted:
         </Grid>
         <Grid item xs={7} sx={itemCenter}>
-          <TextField value={commonData.created_at} size='small' disabled sx={shouldGray ? grayInput : {}} />
+          <TextField value={dayjs.utc(commonData.created_at).format('MM/DD/YYYY')} size='small' disabled sx={shouldGray ? grayInput : {}} />
         </Grid>
         <Grid item xs={5} sx={itemCenter}>
           Application Form Number:

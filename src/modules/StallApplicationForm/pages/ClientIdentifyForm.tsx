@@ -1,5 +1,7 @@
+import SuccessDialog from '@components/common/dialog/SuccessDialog';
 import { Box, Button } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { IStallFormShared } from '.';
 import applicationApis from '../../../services/applicationsApis';
 import { RequiredDocument } from '../components';
@@ -9,6 +11,27 @@ import { useStallData } from './EditStallApplication';
 const ClientIdentifyForm = (props: IStallFormShared) => {
   const { commonData, setCommonData } = useStallData();
 
+  //
+  const navigate = useNavigate();
+  const [modal, setModal] = useState({
+    open: false,
+    isDraft: false,
+  });
+
+  const handleCloseModal = (isDraft: boolean) => {
+    setModal({
+      open: false,
+      isDraft: false,
+    });
+    if (isDraft) {
+      navigate('/application-list');
+    } else {
+      props.handleNext();
+    }
+  };
+
+  //
+
   const submit = (isDraft = false) => {
     (async () => {
       try {
@@ -16,11 +39,22 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
           commonData,
           isDraft
         );
-        setCommonData((draft: any) => {
-          draft = { ...draft, ...res.data };
+
+        if (!isDraft) {
+          setCommonData((draft: any) => {
+            draft = { ...draft, ...res.data };
+            return draft;
+          });
+        }
+        setModal({
+          open: true,
+          isDraft,
         });
-        // next
-        props.handleNext();
+        // setCommonData(draft => {
+        //   draft = { ...draft, ...res.data }
+        // })
+        // // next
+        // props.handleNext();
       } catch (e) {
         console.log(e);
       }
@@ -30,6 +64,11 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
   return (
     <FormContainer {...props} shouldGray={false}>
       <RequiredDocument />
+      <SuccessDialog
+        openProp={modal.open}
+        message="Submit Successfully!"
+        onCloseDialog={() => handleCloseModal(modal.isDraft)}
+      />
 
       <Box
         sx={{
