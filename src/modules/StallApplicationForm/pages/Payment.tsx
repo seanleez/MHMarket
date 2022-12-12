@@ -103,8 +103,7 @@ const Payment = (props: IStallFormShared) => {
             ))}
           </Box>
           <Typography>
-            Once you submit the application form, you will be redirected to the
-            Quezon City’s e-Payment Page. If your payment is successful, your
+            Once you submit the application form. If your payment is successful, your
             application will be submitted and the status will be updated to For
             Payment Verification. If your payment is unsuccessful (eg:
             cancelled, declined, etc.), your application will be saved but the
