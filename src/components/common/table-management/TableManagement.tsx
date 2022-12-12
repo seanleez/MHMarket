@@ -197,13 +197,16 @@ const TableManagement: FC<ITableManagement> = (props) => {
       }
 
       case 'action': {
+        console.log(row?.status);
         const isHavePmsEdit = permissions.includes('MARKET_ADD_UPDATE');
         const isHavePmsDelete = permissions.includes('MARKET_DELETE');
+        const hideBothEditAndDeleteBtn = row?.status === 4;
         return getListActionsByTableName(
           id,
           name,
           isHavePmsEdit,
           isHavePmsDelete,
+          hideBothEditAndDeleteBtn,
           onEdit,
           onDelete,
           onView

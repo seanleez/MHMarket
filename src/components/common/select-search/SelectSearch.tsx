@@ -22,8 +22,8 @@ const SelectSearch: React.FC<ISelectSearch> = ({
     <Box
       sx={{
         position: 'absolute',
-        top: '175px',
-        left: '130px',
+        top: '170px',
+        left: '150px',
         zIndex: '999',
       }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
