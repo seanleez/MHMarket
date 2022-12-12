@@ -2,7 +2,7 @@ import SuccessDialog from '@components/common/dialog/SuccessDialog';
 import CustomField from '@components/common/lease-and-application/CustomField';
 import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IStallFormShared } from '.';
 import { PAYMENT_METHODS } from '../../../const/const';
@@ -14,11 +14,11 @@ import { useStallData } from './EditStallApplication';
 import PaymentModal from './PaymentModal';
 
 const Payment = (props: IStallFormShared) => {
-  const { applicationInfor, commonData } = useStallData();
+  const { commonData } = useStallData();
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<number>(
-    applicationInfor.payment_method || PAYMENT_METHODS[0].value
+    commonData.payment_method || PAYMENT_METHODS[0].value
   );
 
   const isApproved = useRef<boolean | undefined>();
@@ -30,12 +30,12 @@ const Payment = (props: IStallFormShared) => {
     return [
       {
         label: 'Payment Due Date',
-        value: applicationInfor?.reminded_payment_date,
+        value: commonData?.reminded_payment_date,
         isDateField: true,
       },
-      { label: 'Market Name', value: applicationInfor?.market_name },
-      { label: 'Stall Number', value: applicationInfor?.stall_number },
-      { label: 'Name', value: applicationInfor?.reminded_payment_date },
+      { label: 'Market Name', value: commonData?.market_name },
+      { label: 'Stall Number', value: commonData?.stall_number },
+      { label: 'Name', value: commonData?.reminded_payment_date },
       {
         label: 'Nature of Payment',
         value: 'Application Form - New Stall',
@@ -44,19 +44,19 @@ const Payment = (props: IStallFormShared) => {
       {
         label: 'Amount',
         value:
-          applicationInfor?.initial_fee === undefined
+          commonData?.initial_fee === undefined
             ? ''
-            : applicationInfor?.initial_fee + ' $',
+            : commonData?.initial_fee + ' $',
       },
       {
         label: 'Total amount Due',
         value:
-          applicationInfor?.total_amount_due === undefined
+          commonData?.total_amount_due === undefined
             ? ''
-            : applicationInfor?.total_amount_due + ' $',
+            : commonData?.total_amount_due + ' $',
       },
     ];
-  }, [applicationInfor]);
+  }, [commonData]);
 
   const handleSubmit = () => {
     if (!id) return;
@@ -193,7 +193,10 @@ const Payment = (props: IStallFormShared) => {
             ) : (
               <></>
             )}
-            <Button size="small" variant="outlined">
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => navigate('/application-list')}>
               Close
             </Button>
           </Box>

@@ -7,24 +7,25 @@ import FormContainer from '../layouts';
 import { useStallData } from './EditStallApplication';
 
 const ClientIdentifyForm = (props: IStallFormShared) => {
-
   const { commonData, setCommonData } = useStallData();
 
   const submit = (isDraft = false) => {
     (async () => {
       try {
-        const res = await applicationApis.updateApplication(commonData, isDraft)
-        setCommonData(draft => {
-          draft = { ...draft, ...res.data } 
-        })
+        const res = await applicationApis.updateApplication(
+          commonData,
+          isDraft
+        );
+        setCommonData((draft: any) => {
+          draft = { ...draft, ...res.data };
+        });
         // next
         props.handleNext();
-
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     })();
-  }
+  };
 
   return (
     <FormContainer {...props} shouldGray={false}>
@@ -37,14 +38,37 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          '& button' : {
-            margin: '0 10px'
-          }
-        }}
-      >
-        <Button size='small' variant='outlined' onClick={() => props.handleBack()} >Back</Button>
-        <Button size='small' variant='outlined' onClick={() => submit(true)} >Save As Draft</Button>
-        <Button size='small' variant='contained' onClick={() => submit()} >Submit And Continue</Button>
+          '& button': {
+            margin: '0 10px',
+          },
+        }}>
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={() => props.handleBack()}>
+          Back
+        </Button>
+        {commonData?.status !== 3 && (
+          <>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => submit(true)}>
+              Save As Draft
+            </Button>
+            <Button size="small" variant="contained" onClick={() => submit()}>
+              Submit And Continue
+            </Button>
+          </>
+        )}
+        {(commonData?.status === 2 || commonData?.status === 3) && (
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => props.handleNext()}>
+            Next
+          </Button>
+        )}
       </Box>
     </FormContainer>
   );

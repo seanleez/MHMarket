@@ -1,6 +1,11 @@
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState, useContext, createContext } from 'react';
-import { useLocation, useNavigate, useNavigation, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from 'react-router-dom';
 import { useImmer } from 'use-immer';
 import { APPLICATION_STATUS } from '../../../const/const';
 import applicationApis from '../../../services/applicationsApis';
@@ -18,60 +23,59 @@ const useStallData = () => {
 const EditStallApplication = () => {
   const [step, changeStep] = useState(0);
   const [commonData, setCommonData] = useImmer<any>({} as any);
-  const [applicationInfor, setApplicationInfor] = useState<any>({});
   const { enqueueSnackbar } = useSnackbar();
 
   const { id } = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if(id) {
+    if (id) {
       (async () => {
         try {
-          const res = await applicationApis.getApplication(id) as any;
-          const stallRes = await stallApis.getStallInfo({ 
+          const res = (await applicationApis.getApplication(id)) as any;
+          const stallRes = await stallApis.getStallInfo({
             market_code: res.market_code,
-            floor_code : res.floor_code,
-            stall_code : res.stall_code,
-          })
+            floor_code: res.floor_code,
+            stall_code: res.stall_code,
+          });
           //@ts-ignore
-          const { code, ...rest } = stallRes
+          const { code, ...rest } = stallRes;
           setCommonData({ ...res, ...rest, stall_number: code });
         } catch (error) {
           enqueueSnackbar(error as string);
         }
-      })()
+      })();
     }
   }, [id]);
 
   useEffect(() => {
     (async () => {
-      if(location?.pathname.includes('create')){
+      if (location?.pathname.includes('create')) {
         const search = new URLSearchParams(location.search);
-        
+
         const initialData = {
           administrative_criminal: false,
-          administrative_criminal_reason: "",
-          application_id: "",
-          approved_date: "",
+          administrative_criminal_reason: '',
+          application_id: '',
+          approved_date: '',
           area: Number(search.get('stall_area')),
-          birth_certificate: "",
-          capital: "",
-          code: "",
+          birth_certificate: '',
+          capital: '',
+          code: '',
           convicted_violate_law: false,
-          convicted_violate_law_reason: "",
-          created_at: "",
-          created_by: "",
+          convicted_violate_law_reason: '',
+          created_at: '',
+          created_by: '',
           current_payment_status: 0,
           draft: false,
           exchange_rent_stall: false,
-          exchange_rent_stall_name: "",
+          exchange_rent_stall_name: '',
           floor_code: search.get('floor_code'),
           floor_name: '',
           forced_terminate_previous: false,
-          forced_terminate_reason: "",
-          identification: "",
+          forced_terminate_reason: '',
+          identification: '',
           initial_fee: 0,
           item_type: '',
           lease_code: '',
@@ -87,7 +91,7 @@ const EditStallApplication = () => {
           members: [],
           other_occupation: '',
           owned_any_stall: false,
-          owned_stall_info: "",
+          owned_stall_info: '',
           owner: {
             age: 0,
             city: '',
@@ -109,7 +113,7 @@ const EditStallApplication = () => {
             telephone: '',
             user_id: '',
             ward: '',
-            zipcode: ''
+            zipcode: '',
           },
           pay_tax_previous: true,
           pay_tax_previous_reason: '',
@@ -122,7 +126,7 @@ const EditStallApplication = () => {
           stall_area: 0,
           stall_class: Number(search.get('stall_class')),
           stall_code: search.get('stall_code'),
-          stall_id: "",
+          stall_id: '',
           stall_name: '',
           stall_type: Number(search.get('stall_type')),
           status: 0,
@@ -130,21 +134,21 @@ const EditStallApplication = () => {
           type: 0,
         };
 
-        const stallRes = await stallApis.getStallInfo({ 
+        const stallRes = await stallApis.getStallInfo({
           market_code: initialData.market_code,
-          floor_code : initialData.floor_code,
-          stall_code : initialData.stall_code,
-        })
+          floor_code: initialData.floor_code,
+          stall_code: initialData.stall_code,
+        });
         //@ts-ignore
-        const { code, ...rest } = stallRes
+        const { code, ...rest } = stallRes;
         setCommonData({
           ...initialData,
           stall_number: code,
-          ...rest
-        })
+          ...rest,
+        });
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   useEffect(() => {
     console.log(commonData);
@@ -166,9 +170,7 @@ const EditStallApplication = () => {
     <StallData.Provider
       value={{
         commonData,
-        applicationInfor,
         setCommonData,
-        setApplicationInfor,
       }}>
       {step === 0 && (
         <BlankInfomationStallForm

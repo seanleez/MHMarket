@@ -1,18 +1,12 @@
 import { Box, Button } from '@mui/material';
-import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 import { IStallFormShared } from '.';
 import applicationApis from '../../../services/applicationsApis';
-import {
-  FormCommonInfor,
-  FormOwnerDetailInfor,
-  FormOwnerGeneralInfor,
-} from '../components';
+import { FormOwnerDetailInfor, FormOwnerGeneralInfor } from '../components';
 import FormContainer from '../layouts';
 import { useStallData } from './EditStallApplication';
 
 const BlankInfomationStallForm = (props: IStallFormShared) => {
-
   const { commonData, setCommonData } = useStallData();
 
   const dependentTableRef = useRef<unknown>();
@@ -20,17 +14,19 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
   const submit = (isDraft = false) => {
     (async () => {
       try {
-        const res = await applicationApis.submitApplication(commonData, isDraft)
-        console.log(res.data)
-        setCommonData(draft => {
-          draft = { ...draft, ...res.data }
+        const res = await applicationApis.submitApplication(
+          commonData,
+          isDraft
+        );
+        console.log(res.data);
+        setCommonData((draft: any) => {
+          draft = { ...draft, ...res.data };
           return draft;
-        })
+        });
         // next
         props.handleNext();
-
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     })();
   };
@@ -57,12 +53,27 @@ const BlankInfomationStallForm = (props: IStallFormShared) => {
           onClick={() => props.handleBack()}>
           Cancel
         </Button>
-        <Button size="small" variant="outlined" onClick={() => submit(true)}>
-          Save As Draft
-        </Button>
-        <Button size="small" variant="contained" onClick={() => submit()}>
-          Submit And Continue
-        </Button>
+        {commonData?.status !== 3 && (
+          <>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => submit(true)}>
+              Save As Draft
+            </Button>
+            <Button size="small" variant="contained" onClick={() => submit()}>
+              Submit And Continue
+            </Button>
+          </>
+        )}
+        {(commonData?.status === 2 || commonData?.status === 3) && (
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => props.handleNext()}>
+            Next
+          </Button>
+        )}
       </Box>
     </FormContainer>
   );

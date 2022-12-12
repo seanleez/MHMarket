@@ -9,6 +9,7 @@ export default function getListActionsByTableName(
   tableName: string,
   isHavePmsEdit: boolean,
   isHavePmsDelete: boolean,
+  hideBothEditAndDeleteBtn: boolean,
   onEdit: ((id: string) => void) | undefined,
   onDelete: ((id: string) => void) | undefined,
   onView: ((id: string) => void) | undefined
@@ -29,12 +30,16 @@ export default function getListActionsByTableName(
           <IconButton onClick={() => onView?.(id)}>
             <img src={ViewIcon} alt={ViewIcon} />
           </IconButton>
-          <IconButton onClick={() => onEdit?.(id)}>
-            <img src={EditIcon} alt={EditIcon} />
-          </IconButton>
-          <IconButton onClick={() => onDelete?.(id)}>
-            <img src={DeleteIcon} alt={DeleteIcon} />
-          </IconButton>
+          {!hideBothEditAndDeleteBtn && (
+            <>
+              <IconButton onClick={() => onEdit?.(id)}>
+                <img src={EditIcon} alt={EditIcon} />
+              </IconButton>
+              <IconButton onClick={() => onDelete?.(id)}>
+                <img src={DeleteIcon} alt={DeleteIcon} />
+              </IconButton>
+            </>
+          )}
         </>
       );
 
