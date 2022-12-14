@@ -1,7 +1,7 @@
 import SuccessDialog from '@components/common/dialog/SuccessDialog';
 import { Box, Button } from '@mui/material';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { IStallFormShared } from '.';
 import applicationApis from '../../../services/applicationsApis';
 import { RequiredDocument } from '../components';
@@ -10,7 +10,7 @@ import { useStallData } from './EditStallApplication';
 
 const ClientIdentifyForm = (props: IStallFormShared) => {
   const { commonData, setCommonData } = useStallData();
-
+  const params = useParams();
   //
   const navigate = useNavigate();
   const [modal, setModal] = useState({
@@ -35,26 +35,15 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
   const submit = (isDraft = false) => {
     (async () => {
       try {
-        const res = await applicationApis.updateApplicationWithDocs(
-          commonData,
-          isDraft
-        );
-
+        await applicationApis.updateApplicationWithDocs(commonData, isDraft);
+        const res = await applicationApis.getApplication(params.id);
         if (!isDraft) {
-          setCommonData((draft: any) => {
-            draft = { ...draft, ...res.data };
-            return draft;
-          });
+          setCommonData((draft: any) => ({ ...draft, ...res.data }));
         }
         setModal({
           open: true,
           isDraft,
         });
-        // setCommonData(draft => {
-        //   draft = { ...draft, ...res.data }
-        // })
-        // // next
-        // props.handleNext();
       } catch (e) {
         console.log(e);
       }
