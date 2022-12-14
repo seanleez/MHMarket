@@ -35,7 +35,7 @@ const Payment = (props: IStallFormShared) => {
       },
       { label: 'Market Name', value: commonData?.market_name },
       { label: 'Stall Number', value: commonData?.stall_number },
-      { label: 'Name', value: commonData?.reminded_payment_date },
+      { label: 'Name', value: commonData?.owner?.full_name },
       {
         label: 'Nature of Payment',
         value: 'Application Form - New Stall',
