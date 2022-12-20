@@ -118,12 +118,12 @@ const Router: React.FC = () => {
       {
         path: '/lease-management',
         element: <LeaseManagement />,
-        isPublic: true,
+        isPublic: permissions.includes('MARKET_LEASE_VIEW'),
       },
       {
         path: '/lease-management/view/:id',
         element: <ViewMarketLease />,
-        isPublic: true,
+        isPublic: permissions.includes('MARKET_LEASE_VIEW'),
       },
       {
         path: '/application-list',

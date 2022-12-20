@@ -71,7 +71,7 @@ const NavigationDrawer: React.FC = () => {
         ],
         url: '',
         icon: <SettingsSuggestIcon />,
-        isPublic: true,
+        isPublic: permissions.includes('RATE_MANAGEMENT') || permissions.includes('ROLE_MANAGEMENT') || permissions.includes('USER_MANAGEMENT') ,
       },
       {
         title: 'Submit Application',
@@ -89,7 +89,7 @@ const NavigationDrawer: React.FC = () => {
         title: 'Lease Management',
         url: '/lease-management',
         icon: <PaymentIcon />,
-        isPublic: true,
+        isPublic: permissions.includes('MARKET_LEASE_VIEW'),
       },
       {
         title: 'Market Management',
@@ -101,7 +101,7 @@ const NavigationDrawer: React.FC = () => {
         title: 'Analytics and Report',
         url: '/analytics-reports',
         icon: <SignalCellularAltIcon />,
-        isPublic: true,
+        isPublic: permissions.includes('VIEW_ANALYTICS'),
       },
     ];
   }, [authorContext?.currentUser]);
