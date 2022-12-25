@@ -219,7 +219,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
           onMouseDown={checkDeselect}
           onTouchStart={checkDeselect}>
           <Layer>
-            <Image image={image} ref={imageRef} />
+            <Image image={image} ref={imageRef}/>
             {stalls.length > 0 &&
               stalls.map((stall: any) => (
                 <Rectangle

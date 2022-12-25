@@ -3,6 +3,7 @@ import CustomField from '@components/common/lease-and-application/CustomField';
 import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import React, {
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -18,8 +19,13 @@ import ImageUploader from '../components/ImageUploader';
 import FormContainer from '../layouts';
 import { useStallData } from './EditStallApplication';
 import PaymentModal from './PaymentModal';
+import {AuthorContext} from "@context/AuthorContext";
 
 const Payment = (props: IStallFormShared) => {
+  const authorContext = useContext(AuthorContext);
+  const permissions = authorContext?.currentUser?.permissions ?? [];
+  if (permissions.length === 0) return [];
+
   const { commonData, setCommonData } = useStallData();
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -183,7 +189,7 @@ const Payment = (props: IStallFormShared) => {
             <Button size="small" variant="outlined" onClick={props.handleBack}>
               Back
             </Button>
-            {commonData?.status === 3 ? (
+            {commonData?.status === 3 && permissions.includes('APPLICATION_PROCESS_PAYMENT') ? (
               <>
                 <Button
                   size="small"

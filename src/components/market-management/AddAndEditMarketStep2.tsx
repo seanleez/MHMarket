@@ -67,7 +67,7 @@ const AddAndEditMarketStep2: React.FC = () => {
         message={'Publish Successfully'}
         onCloseDialog={() => {
           setOpenSuccessDialog(false);
-          navigate('/submit-application');
+          navigate('/market-management');
         }}
       />
       <ErrorDialog
