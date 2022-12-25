@@ -190,7 +190,8 @@ const EditStallApplication = () => {
         />
       )}
       {step === 2 && (
-        <Payment step={step} handleBack={handleBack} handleNext={handleNext} />
+          // @ts-ignore
+          <Payment step={step} handleBack={handleBack} handleNext={handleNext} />
       )}
     </StallData.Provider>
   );
