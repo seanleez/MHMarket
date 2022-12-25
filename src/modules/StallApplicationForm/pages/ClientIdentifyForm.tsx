@@ -36,7 +36,9 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
     (async () => {
       try {
         await applicationApis.updateApplicationWithDocs(commonData, isDraft);
-        const res = await applicationApis.getApplication(params.id);
+        const res = await applicationApis.getApplication(
+          commonData.application_id
+        );
         if (!isDraft) {
           setCommonData((draft: any) => ({ ...draft, ...res.data }));
         }

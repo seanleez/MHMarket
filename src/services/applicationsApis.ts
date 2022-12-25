@@ -17,8 +17,8 @@ const applicationApis = {
       ...data,
       draft: isDraft,
     }),
-  updateAppPayment: (id: TId, data: any) =>
-    axiosClient.put(`/applications/${id}/payment`, data),
+  updateAppPayment: (data: any) =>
+    axiosClient.put(`/applications/${data.id}/payment`, data),
   confirmAppPayment: (id: TId, payload: any) =>
     axiosClient.put(`/applications/${id}/confirm`, payload),
 };
