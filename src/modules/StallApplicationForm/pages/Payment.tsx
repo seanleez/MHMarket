@@ -2,7 +2,13 @@ import SuccessDialog from '@components/common/dialog/SuccessDialog';
 import CustomField from '@components/common/lease-and-application/CustomField';
 import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import React, { useMemo, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IStallFormShared } from '.';
 import { PAYMENT_METHODS } from '../../../const/const';
@@ -14,16 +20,21 @@ import { useStallData } from './EditStallApplication';
 import PaymentModal from './PaymentModal';
 
 const Payment = (props: IStallFormShared) => {
-  const { commonData } = useStallData();
+  const { commonData, setCommonData } = useStallData();
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<number>(
-    commonData.payment_method || PAYMENT_METHODS[0].value
+    PAYMENT_METHODS[0].value
   );
+
+  useLayoutEffect(() => {
+    setCommonData((draft: any) => {
+      draft.payment_method = paymentMethod;
+    });
+  }, [paymentMethod]);
 
   const isApproved = useRef<boolean | undefined>();
 
-  const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const labelValuePair: TPair[] = useMemo(() => {
@@ -59,10 +70,9 @@ const Payment = (props: IStallFormShared) => {
   }, [commonData]);
 
   const handleSubmit = () => {
-    if (!id) return;
     (async () => {
       try {
-        await applicationApis.updateAppPayment(id, commonData);
+        await applicationApis.updateAppPayment(commonData);
         setOpenSuccessDialog(true);
       } catch (error) {
         enqueueSnackbar(error as string);
@@ -72,20 +82,29 @@ const Payment = (props: IStallFormShared) => {
 
   const handleSubmitModal = (comment: string) => {
     const payload = {
-      application_id: id,
+      application_id: commonData.application_id,
       comment: comment,
       is_approved: isApproved.current,
     };
     console.log(payload);
     (async () => {
       try {
-        await applicationApis.confirmAppPayment(id, payload);
+        await applicationApis.confirmAppPayment(
+          commonData.application_id,
+          payload
+        );
         setOpenSuccessDialog(true);
         navigate('/application-list');
       } catch (error) {
         enqueueSnackbar(error as string);
       }
     })();
+  };
+
+  const handleChangePaymentMethod = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPaymentMethod(Number(e.target.value));
   };
 
   return (
@@ -103,9 +122,9 @@ const Payment = (props: IStallFormShared) => {
             ))}
           </Box>
           <Typography>
-            Once you submit the application form. If your payment is successful, your
-            application will be submitted and the status will be updated to For
-            Payment Verification. If your payment is unsuccessful (eg:
+            Once you submit the application form. If your payment is successful,
+            your application will be submitted and the status will be updated to
+            For Payment Verification. If your payment is unsuccessful (eg:
             cancelled, declined, etc.), your application will be saved but the
             status will remain to be In Progress. You have the following option:
           </Typography>
@@ -131,9 +150,7 @@ const Payment = (props: IStallFormShared) => {
               size="small"
               disabled={commonData?.status === 3}
               value={paymentMethod}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPaymentMethod(Number(e.target.value))
-              }>
+              onChange={handleChangePaymentMethod}>
               {PAYMENT_METHODS.map((method: any) => (
                 <MenuItem key={method.value} value={method.value}>
                   {method.label}

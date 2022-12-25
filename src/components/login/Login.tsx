@@ -32,6 +32,7 @@ const Login: FC = () => {
         const res = await authApis.postLogin(payload);
         localStorage.setItem('accessToken', (res as any)?.access_token);
         authorContext.updateCurrentUser();
+        navigate('/home');
       } catch (error) {
         errMess.current = error as any;
         setOpenAlertDialog(true);
@@ -53,7 +54,6 @@ const Login: FC = () => {
               </InputAdornment>
             ),
           }}
-          defaultValue="CityMarketAddmin1@gmail.com"
           inputRef={usernameRef}
         />
         <br />
@@ -67,7 +67,6 @@ const Login: FC = () => {
               </InputAdornment>
             ),
           }}
-          defaultValue="P1@zz@2022"
           inputRef={passwordRef}
         />
         <br />
