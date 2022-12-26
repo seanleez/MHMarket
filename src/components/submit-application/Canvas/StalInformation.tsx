@@ -48,7 +48,7 @@ const StallInformation: React.FC<IStallInformation> = ({ position, stall }) => {
         <Card variant="outlined" sx={{ padding: 1.5 }}>
           <CardContent sx={{ padding: 0 }}>
             <Typography variant="h6" fontWeight="bold">
-              Stall No. {stall?.code}
+              Stall {stall?.stall_name}
             </Typography>
             <Divider sx={{ margin: '10px 0' }} />
             <Typography variant="subtitle1" component="span" fontWeight="bold">
