@@ -20,11 +20,13 @@ import FormContainer from '../layouts';
 import { useStallData } from './EditStallApplication';
 import PaymentModal from './PaymentModal';
 import {AuthorContext} from "@context/AuthorContext";
+import ErrorDialog from "@components/common/dialog/ErrorDialog";
 
 const Payment = (props: IStallFormShared) => {
   const authorContext = useContext(AuthorContext);
   const permissions = authorContext?.currentUser?.permissions ?? [];
   if (permissions.length === 0) return [];
+  const [openErrorDialog, setOpenErrorDialog] = useState<boolean>(false);
 
   const { commonData, setCommonData } = useStallData();
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
@@ -32,6 +34,7 @@ const Payment = (props: IStallFormShared) => {
   const [paymentMethod, setPaymentMethod] = useState<number>(
     commonData?.payment_method === 0 ? PAYMENT_METHODS[0].value : commonData?.payment_method
   );
+  const errorMes = useRef<string>('');
 
   useLayoutEffect(() => {
     setCommonData((draft: any) => {
@@ -74,8 +77,8 @@ const Payment = (props: IStallFormShared) => {
         await applicationApis.updateAppPayment(commonData);
         setOpenSuccessDialog(true);
       } catch (error) {
-        enqueueSnackbar(error as string);
-      }
+        errorMes.current = error as string;
+        setOpenErrorDialog(true);      }
     })();
   };
 
@@ -229,6 +232,11 @@ const Payment = (props: IStallFormShared) => {
         openModal={openModal}
         onCloseModal={() => setOpenModal(false)}
         onSubmitModal={handleSubmitModal}
+      />
+      <ErrorDialog
+          openProp={openErrorDialog}
+          message={errorMes.current}
+          onCloseDialog={() => setOpenErrorDialog(false)}
       />
     </>
   );
