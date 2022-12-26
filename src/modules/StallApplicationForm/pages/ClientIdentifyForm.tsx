@@ -40,7 +40,7 @@ const ClientIdentifyForm = (props: IStallFormShared) => {
           commonData.application_id
         );
         if (!isDraft) {
-          setCommonData((draft: any) => ({ ...draft, ...res.data }));
+          setCommonData((draft: any) => ({ ...draft, ...res }));
         }
         setModal({
           open: true,

@@ -30,7 +30,7 @@ const Payment = (props: IStallFormShared) => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<number>(
-    PAYMENT_METHODS[0].value
+    commonData?.payment_method === 0 ? PAYMENT_METHODS[0].value : commonData?.payment_method
   );
 
   useLayoutEffect(() => {
@@ -59,18 +59,11 @@ const Payment = (props: IStallFormShared) => {
       },
       { label: 'Rate', value: '---' },
       {
-        label: 'Amount',
-        value:
-          commonData?.initial_fee === undefined
-            ? ''
-            : commonData?.initial_fee + ' $',
-      },
-      {
         label: 'Total amount Due',
         value:
           commonData?.total_amount_due === undefined
             ? ''
-            : commonData?.total_amount_due + ' $',
+            : commonData?.initial_fee + ' $',
       },
     ];
   }, [commonData]);

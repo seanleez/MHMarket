@@ -27,7 +27,7 @@ function FormOwnerDetailInfor({tableRef}: {tableRef: React.MutableRefObject<unkn
         {/*  */}
         <YesNoQuestion
           mainQuestion='Did you own a stall in any Public Market previously?'
-          subQuestion='If yes, please indicate the public market and the stall number/section'
+          subQuestion='If yes, please indicate the public market and the stall number'
           whenEnableSub={true}
           mainAnswer={commonData.owned_any_stall}
           subAnswer={commonData.owned_stall_info}
