@@ -6,7 +6,7 @@ import useImage from 'use-image';
 import AddNewShape from '../../../assets/icon/add-new-stall-icon.svg';
 import DeleteStall from '../../../assets/icon/delete-stall-icon.svg';
 import DragArrow from '../../../assets/icon/draggable-arrow-icon.svg';
-import { CONTAINER_HEIGHT, CONTAINER_WIDTH } from '../../../const/const';
+import { CONTAINER_HEIGHT } from '../../../const/const';
 import { FloorContext } from '../../../context/FloorContext';
 import stallApis from '../../../services/stallApis';
 import ConfirmDialog from '../../common/dialog/ConfirmDialog';
@@ -59,9 +59,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
     };
 
     const newRects = [...stalls];
-    const changedRectIndex = newRects.findIndex(
-      (item) => item.stall_id === stall_id
-    );
+    const changedRectIndex = newRects.findIndex((item) => item.stall_id === stall_id);
     if (changedRectIndex !== undefined) {
       newRects[changedRectIndex] = newAttrs;
       setStalls(newRects);
@@ -141,9 +139,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
         if (type === 'text') {
           payload[name] = value;
         }
-        if (
-          ['area', 'stall_class', 'stall_status', 'stall_type'].includes(name)
-        ) {
+        if (['area', 'stall_class', 'stall_status', 'stall_type'].includes(name)) {
           payload[name] = Number(value);
         }
       }
@@ -209,16 +205,12 @@ const Canvas: React.FC<ICanvas> = (props) => {
       </Box>
       <div
         style={{
-          width: CONTAINER_WIDTH,
+          width: '100%',
           height: CONTAINER_HEIGHT,
           overflow: 'auto',
         }}>
-        <Stage
-          width={canvasWidth}
-          height={canvasHeight}
-          onMouseDown={checkDeselect}
-          onTouchStart={checkDeselect}>
-          <Layer>
+        <Stage width={canvasWidth} height={canvasHeight} onMouseDown={checkDeselect} onTouchStart={checkDeselect}>
+          <Layer strokeWidth={10} stroke="lime">
             <Image image={image} ref={imageRef} />
             {stalls.length > 0 &&
               stalls.map((stall: any) => (
@@ -244,12 +236,7 @@ const Canvas: React.FC<ICanvas> = (props) => {
         onCloseDialog={() => setOpenDetailDialog(false)}
         onSubmit={handleEditDetailStall}
       />
-      <ConfirmDialog
-        openProp={openConfirmDialog}
-        message={'Are you sure you wanna delete?'}
-        onCloseDialog={() => setOpenConfirmDialog(false)}
-        onAcceptDialog={handleDeleteStall}
-      />
+      <ConfirmDialog openProp={openConfirmDialog} message={'Are you sure you wanna delete?'} onCloseDialog={() => setOpenConfirmDialog(false)} onAcceptDialog={handleDeleteStall} />
       <SuccessDialog
         openProp={openSuccessDialog}
         message={'Successfully updated stall metadata'}

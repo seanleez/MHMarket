@@ -242,6 +242,4 @@ export const FLOOR_MANAGEMENT = 'FLOOR MANAGEMENT';
 export const LEASE_MANAGEMENT = 'LEASE MANAGEMENT';
 export const VIEW_APPLICATION_LIST = 'VIEW APPLICATION LIST';
 
-const SCROLL_BAR_WIDTH = 15;
-export const CONTAINER_WIDTH = 0.9 * window.innerWidth - SCROLL_BAR_WIDTH;
-export const CONTAINER_HEIGHT = 0.7 * window.innerHeight;
+export const CONTAINER_HEIGHT = 0.9 * window.innerHeight;
